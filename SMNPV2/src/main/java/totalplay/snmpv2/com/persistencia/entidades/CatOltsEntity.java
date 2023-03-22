@@ -26,6 +26,7 @@ public class CatOltsEntity {
 	private boolean descubrio;
 	private Integer onts_exito;
 	private Integer onts_error;
+	private int total_onts;
 	private List<CatConfiguracionEntity> configuracion;
 	
 }

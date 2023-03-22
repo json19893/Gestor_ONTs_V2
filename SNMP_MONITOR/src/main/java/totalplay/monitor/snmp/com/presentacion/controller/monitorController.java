@@ -29,7 +29,6 @@ import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.tblBitacoraEventosEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.usuariosEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.vwActualizacionEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.vwTotalOntsEntidad;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatConfiguracionRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsPdmRepositorio;
@@ -430,10 +429,11 @@ public class monitorController extends constantes {
 
     @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
     @RequestMapping(value = "/getOlts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<vwTotalOntsEntidad> getOlts() throws Exception {
+    public List<catOltsEntidad> getOlts() throws Exception {
 
         try {
-            List<vwTotalOntsEntidad> lista = vwOnts.findAll();
+            //List<vwTotalOntsEntidad> lista = vwOnts.findAll();
+            List<catOltsEntidad> lista = catalogoOlt.findAll();
             return lista;
         } catch (Exception e) {
             System.out.println(e);
