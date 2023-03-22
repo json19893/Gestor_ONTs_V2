@@ -578,6 +578,7 @@ ngOnInit() {
     this.sb.push(val)
          
   }
+  this.sb=this.sb.filter(nombre => nombre.nombre !='SERIAL NUMBER')
  }
 
 trackByFn(index: number, group: any): number {
