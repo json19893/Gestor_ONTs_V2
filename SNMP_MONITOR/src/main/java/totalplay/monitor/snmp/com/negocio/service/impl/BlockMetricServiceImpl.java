@@ -244,7 +244,7 @@ public class BlockMetricServiceImpl implements IBlockMetricService {
         } else {
             response.setCod(1);
             response.setSms("No esta asignado la metrica en el bloque");
-            response.setEntity(listConfigMetrica);
+            //response.setEntity(listConfigMetrica);
             return response;
         }
     }

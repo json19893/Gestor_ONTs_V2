@@ -50,10 +50,10 @@
           </button>
           <mat-menu #animals="matMenu">
             <button mat-menu-item [matMenuTriggerFor]="asignar">Asignar</button>
-            <button mat-menu-item >Desasignar</button>
+            <button mat-menu-item (click)="selec(row.id_metrica,data.bloque,'D')" >Desasignar</button>
           </mat-menu>
           <mat-menu #asignar="matMenu" >
-            <button mat-menu-item  (click)="selec(row.id_metrica,item.bloque)" *ngFor="let item of data.bloq" >{{item.nombre}}</button>
+            <button mat-menu-item  (click)="selec(row.id_metrica,item.bloque,'A')" *ngFor="let item of data.bloq" >{{item.nombre}}</button>
           </mat-menu>
         </td>
         </ng-container>

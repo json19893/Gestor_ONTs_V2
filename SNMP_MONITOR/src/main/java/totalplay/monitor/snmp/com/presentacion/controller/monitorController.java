@@ -571,7 +571,7 @@ public class monitorController extends constantes {
     }
 
     @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
-    @RequestMapping(value = "/removeMetricBlock/{idconfigmetric}/block/{idblock}", method = RequestMethod.PUT, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/removeMetricBlock/{idconfigmetric}/block/{idblock}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public responseDto removeMetricfromBlock(@PathVariable("idconfigmetric") int id_metrica, @PathVariable("idblock") int id_bloque) {
         return BlockMetricService.removeMetricBlock(id_metrica, id_bloque);
     }

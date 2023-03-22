@@ -38,6 +38,7 @@ export class AppUrlSettings{
     public static DETALLE_DES_MANUAL ="getDetalleDescubrimiento"
     public static DETALLES_METRICAS ="configmetric"
     public static CAMBIA_BLOQUE_METRICA="changeMetricBlock/"
+    public static DESASIGNA_BLOQUE_METRICA="removeMetricBlock/"
    
     
 }

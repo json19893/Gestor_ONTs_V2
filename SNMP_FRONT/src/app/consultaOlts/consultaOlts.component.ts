@@ -468,15 +468,17 @@ export class DialogElementsExampleDialog  implements OnInit   {
   displayedColumns: string[] = ['nombre', 'huawei', 'zte', 'fh','acciones'];
   ELEMENT_DATA:lisMetrics[] = [];
   bloqueAnt:any;
-  dataSourceMe:any
+  dataSourceMe:lisMetrics[] = [];
+  //dataSourceMe= new  MatTableDataSource<lisMetrics>(this.ELEMENT_DATA);
   arrMetricas: any[]=[]
   selectedValue: string | undefined;
    blo1:Imetricas []=[];
    blo2:Imetricas []=[];
    blo3:Imetricas []=[];
    blo4:Imetricas []=[];
-   blo:Bloques[]=[{bloque:1,nombre:"Bloque 1"},{bloque:2,nombre:"Bloque 2"},{bloque:3,nombre:"Bloque 3"},{bloque:4,nombre:"Bloque 4"},{bloque:5,nombre:"Sin bloque asignado"}]
    sb:Imetricas []=[];
+   blo:Bloques[]=[{bloque:1,nombre:"Bloque 1"},{bloque:2,nombre:"Bloque 2"},{bloque:3,nombre:"Bloque 3"},{bloque:4,nombre:"Bloque 4"},{bloque:5,nombre:"Sin bloque asignado"}]
+ 
   constructor(
     private service: pointService,
     private spinner: NgxSpinnerService,
@@ -490,9 +492,16 @@ ngOnInit() {
 
    
   getMetricas (){
-    this.ELEMENT_DATA.length =  this.ELEMENT_DATA.length - this.ELEMENT_DATA.length
+  
     this.service.detalleMetricas().subscribe(
      res =>{
+      this.ELEMENT_DATA =[]
+        this.dataSourceMe =  []
+        this.blo1=[];
+        this.blo2=[];
+        this.blo3=[];
+        this.blo4=[];
+        this.sb=[];
       let val
        for(let d in res.entity){
          val={
@@ -515,11 +524,14 @@ ngOnInit() {
           this.blo[b].bloque==2?this.blo2:
           this.blo[b].bloque==3?this.blo3:
           this.blo[b].bloque==4?this.blo4:this.sb ,
-          bloq:bl.filter(nombre => nombre.nombre !=this.blo[b].nombre)
+          bloq:bl.filter(nombre => nombre.nombre !=this.blo[b].nombre),
+          bloque:this.blo[b].bloque
 
         }
+       
         this.ELEMENT_DATA.push(valB);
       }
+      
       this.dataSourceMe = this.ELEMENT_DATA
       console.log(this.dataSourceMe);
     }
@@ -527,6 +539,7 @@ ngOnInit() {
   }
  asignaBloque(data:any,bloque:any){
   let val
+
   if (bloque.length>0){
     for(let d in bloque){
       val={
@@ -575,23 +588,35 @@ hasDetails(_: number, group: any): boolean {
   return group.items && group.items.length > 0;
 }
 
-selec(idMetrica: any,idBloque:any) {
- alert("metrica::: "+idMetrica+" Bloque::: "+idBloque)
-
+selec(idMetrica: any,idBloque:any,tipo:any) {
+ 
+  if (tipo=='A'){
      this.service.changeMetricas(idMetrica,idBloque).subscribe(
      res =>{
- 
+      this.ELEMENT_DATA =[]
+        this.dataSourceMe =  []
         this._snackbar.open(res.sms, "cerrar", {
           duration: 4000
         });
-        setTimeout(() => {
-          this.getMetricas();
-        },
-          600);
-      
-     
+        this.getMetricas();
     } 
     )
+   
+  }else{
+    this.service.removeMetricas(idMetrica,idBloque).subscribe(
+      res =>{
+        this.ELEMENT_DATA =[]
+        this.dataSourceMe =  []
+  
+         this._snackbar.open(res.sms, "cerrar", {
+           duration: 4000
+         });
+         this.getMetricas();
+     } 
+     
+     )
+    
+  }
 }
 }
 export interface Imetricas { 
@@ -611,6 +636,7 @@ export interface  lisMetrics {
  grupo:string;
  items:Imetricas[]
  bloq:Bloques[]
+ bloque:number
 }
 
 interface Food {

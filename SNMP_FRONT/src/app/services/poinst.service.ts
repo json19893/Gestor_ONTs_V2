@@ -233,6 +233,13 @@ export class pointService {
     return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.CAMBIA_BLOQUE_METRICA+idMetrica+"/block/"+idBloque);
   }
 
+  removeMetricas(idMetrica:any,idBloque:any): Observable<any> {
+    /*var headers = new HttpHeaders({
+      'Authorization': token,
+      'mode':'no-cors'});*/
+    return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.DESASIGNA_BLOQUE_METRICA+idMetrica+"/block/"+idBloque);
+  }
+
   
 
 
