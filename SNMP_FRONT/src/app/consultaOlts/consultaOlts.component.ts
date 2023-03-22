@@ -54,7 +54,7 @@ export class ConsultaOltsComponent implements OnInit {
   ELEMENT_DATA: Olts[] = [];
   descubrimiento: any = []
   dataSource = new MatTableDataSource<Olts>;
-  columnsToDisplay = ['select', 'ip', 'nombre', 'tecnologia', 'id_region', 'totalOnts', 'descripcion', 'slide'];
+  columnsToDisplay = ['select', 'ip', 'nombre', 'tecnologia', 'id_region', 'totalOnts', 'descripcion', 'slide','opciones'];
   headers = ['Ip OLT', 'Nombre', 'Tecnología', 'Región'];
 
   selection = new SelectionModel<Olts>(true, []);
