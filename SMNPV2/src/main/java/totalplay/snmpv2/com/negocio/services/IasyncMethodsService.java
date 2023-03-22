@@ -18,5 +18,6 @@ public interface IasyncMethodsService {
 	CompletableFuture<GenericResponseDto> getFaltatesInv(List<CatOltsEntity> olts );
 	CompletableFuture<GenericResponseDto> saveEmpresariales(List<InventarioOntsAuxEntity> onts );
 	CompletableFuture<GenericResponseDto> deletePdm(List<InventarioOntsPdmEntity> onts );
-	public CompletableFuture<GenericResponseDto> joinUpdateStatus(List<CatOltsEntity> olts);
+	CompletableFuture<GenericResponseDto> joinUpdateStatus(List<CatOltsEntity> olts);
+	CompletableFuture<GenericResponseDto> getFaltantesMetricas(List<CatOltsEntity> olts, String tabla, String joinField, int tipo, String idEjecucion, int idMetrica);
 }

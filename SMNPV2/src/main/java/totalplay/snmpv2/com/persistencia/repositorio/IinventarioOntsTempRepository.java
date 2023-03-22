@@ -101,7 +101,7 @@ public interface IinventarioOntsTempRepository extends MongoRepository<Inventari
 	          "{$match:{estatus:0}},\n"
 	        , "{\n"
 	        + "  $lookup:{\n"
-	        + "    from: \"tb_status_onts\",\n"
+	        + "    from: \"auxiliar\",\n"
 	        + "    localField:\"index\",\n"
 	        + "    foreignField: \"index\",\n"
 	        + "    as:\"metrica\"        \n"

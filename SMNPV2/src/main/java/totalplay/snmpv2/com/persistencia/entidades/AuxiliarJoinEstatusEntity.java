@@ -7,10 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import totalplay.snmpv2.com.negocio.dto.GenericPoleosDto;
 
-@Document(collection = "tb_inventario_onts")
+@Document(collection = "auxiliar_join_estatus")
 @Data
 @NoArgsConstructor
-public class InventarioOntsEntity extends GenericPoleosDto {
+public class AuxiliarJoinEstatusEntity extends GenericPoleosDto {
 	
 	private String alias;
 	private String tipo;

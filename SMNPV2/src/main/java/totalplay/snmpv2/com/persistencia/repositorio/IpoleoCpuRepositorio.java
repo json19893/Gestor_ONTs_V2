@@ -16,7 +16,7 @@ public interface IpoleoCpuRepositorio extends MongoRepository<PoleosCpuEntity, S
 	
 	@Aggregation(pipeline = { 
 	"{$match:{id_ejecucion:?0}}"
-	,"{$out: 'auxiliar'}"
+	,"{$out: ?1 }"
 			})
-	void outToAux(@Param("idEjecucion") String idEjecucion);
+	void outToAux(@Param("idEjecucion") String idEjecucion, @Param("tabla") String tabla);
 }

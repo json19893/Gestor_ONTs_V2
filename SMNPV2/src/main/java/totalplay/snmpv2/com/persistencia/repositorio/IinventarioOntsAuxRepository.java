@@ -25,7 +25,7 @@ public interface IinventarioOntsAuxRepository extends MongoRepository<Inventario
 		      "{$match:{$and:[{id_region:?0},{id_olt:?1}]}}\n"
 			, "{\n"
 	  		+ "        $lookup:{\n"
-	  		+ "            from: \"tb_status_onts\",\n"
+	  		+ "            from: \"auxiliar\",\n"
 	  		+ "            localField:\"index\",\n"
 	  		+ "            foreignField: \"index\",          \n"
 	  		+ "            as:\"metrica\"\n"

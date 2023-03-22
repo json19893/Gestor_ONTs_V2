@@ -89,15 +89,17 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 	private String ruta="/home/implementacion/ecosistema/comandos/";
 	
 	@Override																					
-	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia) throws IOException {
+	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error) throws IOException {
 
-		EjecucionDto proces=null;
+		EjecucionDto proces = new EjecucionDto();
 		List data = new ArrayList<T>();
 		int exitValue = 1;
     	int contador = 1;
     	String tecnologia = "" ;
     	CadenasMetricasDto cadenasMetrica=null;
     	String comando;
+    	String response ="";
+    	boolean sinOid = false;
     	
     	try {
     	
@@ -112,8 +114,11 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 				cadenasMetrica =  confMetrica.getFH();
 			}
 			
-			if(cadenasMetrica == null || cadenasMetrica.getOid().equals("")) {
-				return CompletableFuture.completedFuture(new GenericResponseDto(SIN_METRICA, 1));
+			if(  (cadenasMetrica == null || cadenasMetrica.getOid().equals(""))) {
+				if (referencia.equals(""))
+					return CompletableFuture.completedFuture(new GenericResponseDto(SIN_METRICA, 1));
+				else
+					sinOid = true;
 			}
 			
     	}catch (Exception e) {
@@ -133,28 +138,47 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
     			
     			log.info(" COMANDO ------>"+comando);
     			
-    			proces=utls.execBash(comando, ruta);
+    			if(!error || !sinOid)
+    				proces=utls.execBash(comando, ruta);
+    			
+    			proces.setOid(referencia);
+    			proces.setErrorOlt(error);
+    			proces.setSinOid(sinOid);
+    			
+    			
     			data= limpiezaCadena.getMetricasBypoleo(proces, metrica, idOlt,
-    					configuracion.getIdRegion(), idProceso, configuracion.getTecnologia(),entidad, cadenasMetrica, saveErroneos);
-				log.info("count data "+data.size());
-				exitValue=proces.getProceso().exitValue();
-				if(exitValue==0){
+    					configuracion.getIdRegion(), idProceso, configuracion.getTecnologia(),entidad, cadenasMetrica, saveErroneos, contador);
+				
+    			log.info("count data "+data.size());
+    			
+    			if(error)
+    				exitValue=0;
+    			else {
+    				try {
+    					exitValue=proces.getProceso().exitValue();
+    				}catch(Exception e){
+    					exitValue = 1;
+    					contador=3;
+    				}	
+    			}
+				if(exitValue==0 || error || (contador==3 && !referencia.equals(""))){
 					guardaInventario(metrica,data);
 				}
 			
 			
 			} catch (Exception e) {
 				log.error(EJECUCION_ERROR, e);
-				return CompletableFuture.completedFuture(new GenericResponseDto(EJECUCION_ERROR + e, 1));
+				return CompletableFuture.completedFuture(new GenericResponseDto("error", 1));
 			}finally {
 				contador++;
 			}
 		}while (contador <= 3 && exitValue != 0);
-		
+    	
+    			
     	return CompletableFuture.completedFuture(new GenericResponseDto(String.valueOf(data.size()), exitValue));
 }
-
-	private void guardaInventario(Integer idMetrica, List list ) {
+	@Override
+	public void guardaInventario(Integer idMetrica, List list ) {
 		switch (idMetrica) {
 			case 0:
 				inventarioTemp.saveAll(list);
