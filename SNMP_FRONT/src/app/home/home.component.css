@@ -1,0 +1,212 @@
+mat-grid-tile {
+  background: rgba(15, 15, 15, 0.795);
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgb(30, 30, 40);
+  cursor: pointer;
+
+ 
+}
+.tamaño{
+  height: 10vh;
+  width:20vw;
+}
+
+mat-grid-tile:hover {
+  transform: scale(.98);
+  transition: .4s ease;
+  
+}
+.titulo{
+  background: rgba(15, 15, 15, 0.795);
+  color: rgb(223, 225, 240);
+  text-align:center;
+  font-size: 14px;
+  border-width: 3px;
+  border-style: solid;
+  border-color: rgb(59, 69, 89);
+  
+}
+.subtitulos{
+  background: rgba(15, 15, 15, 0.795);
+  border-width: 3px;
+  border-style: solid;
+  border-color: rgba(59, 69, 89);
+  width:15vw;
+  height: 15vh;
+}
+
+.totalTexto{
+  color: rgb(20, 45, 235);
+  text-align:center;
+  font-size: 12px;
+  font-weight: bold
+}
+
+.totalNumero{
+  color: rgb(20, 45, 235);
+  text-align:center;
+  font-size: 13px;
+  font-weight: bold
+}
+
+.arribaTexto{
+  color: rgb(6, 240, 56);
+  text-align:center;
+  font-size: 12px;
+  font-weight: bold
+}
+
+.arribaNumero{
+  color: rgb(6, 240, 56);
+  text-align:center;
+  font-size: 18px;
+  font-weight: bold
+}
+
+.abajoTexto{
+  color: rgb(250, 79, 11);
+  text-align:center;
+  font-size: 12px;
+  font-weight: bold
+}
+
+.abajoNumero{
+  color: rgb(250, 79, 11);
+  text-align:center;
+  font-size: 18px;
+  font-weight: bold
+}
+.totalNumero{
+  color: rgb(245, 163, 10);
+  text-align:center;
+  font-size: 18px;
+  font-weight: bold
+}
+.totalTexto{
+  color:  rgb(245, 163, 10);
+  text-align:center;
+  font-size: 12px;
+  font-weight: bold
+}
+
+.cambioNumero{
+  color: rgb(13, 91, 236);
+  text-align:center;
+  font-size: 18px;
+  font-weight: bold
+}
+.cambioTexto{
+  color:  rgb(13, 91, 236);
+  text-align:center;
+  font-size: 12px;
+  font-weight: bold
+}
+
+
+.title-center {
+  flex: 1 1 auto;
+  text-align: center;
+  color: aliceblue;
+  font-weight: bold;
+  
+}
+.tool{
+  background-color: rgb(59, 69, 89);
+}
+.tool2{
+  background-color: rgba(15, 15, 15, 0);
+}
+
+.iconCur{
+  cursor: pointer;
+}
+
+
+.subtitulo{
+  font-size: 12px;
+  font-family: 'Montserrat', sans-serif;
+  }
+  .tituloTec{
+    font-size: 11px;
+    font-family: 'Montserrat', sans-serif;
+  }
+  .tituloTe2{
+    font-size: 13px;
+    font-family: 'Montserrat', sans-serif;
+  }
+  .totales{
+    font-size: 10px;
+    font-family: 'Montserrat', sans-serif;
+  font-weight: bold
+  }
+  .tatalUpDown{
+    font-size: 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold
+  }
+  
+  .title-center2 {
+    flex: 1 1 auto;
+    font-size: 20px;
+    text-align: center;
+    color: rgb(5, 5, 5);
+    font-family: 'Montserrat', sans-serif;
+  
+    
+  }
+  .title-center {
+    flex: 1 1 auto;
+    text-align: center;
+    color: rgb(255, 248, 248);
+    font-weight: bold;
+    
+  }
+
+  .tool{
+    background-color: rgb(59, 69, 89);
+  }
+  .tool2{
+    background-color: rgba(15, 15, 15, 0);
+  }
+  
+  .info{
+    background-color: rgb(30, 30, 40);
+    color: aliceblue;
+    
+  
+  }
+  .iconCur{
+    cursor: pointer;
+  }
+
+  .icon-avata{
+    height: 15px;
+    width: 15px;
+  }
+  
+  
+  .icon-avata2{
+    height: 15px;
+    width: 15px;
+  }
+
+
+  .spacios{
+
+    margin-right: -280px;
+    
+ 
+}
+
+.spacios2{
+  margin-right: 0px;
+    padding-right: 0px;
+    height: 11vh;
+  width: 17vw;
+}
+
+.spacios3{
+  margin-top: 4px;
+
+}

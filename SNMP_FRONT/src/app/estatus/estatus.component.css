@@ -1,0 +1,14 @@
+.contenedor{
+    background-color: hwb(0 15% 85% / 0.356);
+  }
+
+  .parametros{
+    background-color: hwb(0 83% 13% / 0.842);
+  }
+
+  .conteo{
+    background-color: hwb(0 11% 89% / 0.842);
+    color: rgb(8, 226, 8);
+    font-weight: bold;
+    font-size: 25px;
+  }

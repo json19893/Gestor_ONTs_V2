@@ -1,0 +1,79 @@
+<h1 mat-dialog-title>Asignación y ejecución de metricas </h1>
+<div mat-dialog-content>
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let data of dataSourceMe">
+      <mat-expansion-panel-header>{{ data.grupo }}</mat-expansion-panel-header>
+ 
+  
+
+      <section class="example-container mat-elevation-z8" tabindex="0">
+  <table mat-table [dataSource]="data.items" >
+    <!--ng-container matColumnDef="select">
+      <th mat-header-cell *matHeaderCellDef>
+       
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox   (click)="selec(selection.isSelected(row),row.id_metrica,data.grupo)"
+                      (change)="$event ? selection.toggle(row) : null"
+                      [checked]="selection.isSelected(row)"
+                      [disabled]="false"
+                     >
+        </mat-checkbox>
+      </td>
+    </ng-container-->
+        <ng-container matColumnDef="nombre">
+          <th mat-header-cell *matHeaderCellDef > Nombre </th>
+        <td mat-cell *matCellDef="let row" >{{row.nombre}}</td>
+        
+        </ng-container>
+        <ng-container matColumnDef="huawei">
+          <th mat-header-cell *matHeaderCellDef > Oid huawei </th>
+        <td mat-cell *matCellDef="let row" >{{row.oidHuawei}}</td>
+        
+        </ng-container>
+        <ng-container matColumnDef="zte">
+          <th mat-header-cell *matHeaderCellDef > Oid zte </th>
+        <td mat-cell *matCellDef="let row" >{{row.oidZte}}</td>
+        
+        </ng-container>
+        <ng-container matColumnDef="fh">
+          <th mat-header-cell *matHeaderCellDef > Oid fiber home </th>
+        <td mat-cell *matCellDef="let row" >{{row.oidFh}}</td>
+        </ng-container>
+        <ng-container matColumnDef="acciones">
+          <th mat-header-cell *matHeaderCellDef > 
+        Acciones
+          </th>
+        <td mat-cell *matCellDef="let row" >
+          <button mat-icon-button [matMenuTriggerFor]="animals" aria-label="Example icon-button with a menu">
+            <mat-icon matTooltip="Acciones" >settings</mat-icon>
+          </button>
+          <mat-menu #animals="matMenu">
+            <button mat-menu-item [matMenuTriggerFor]="asignar">Asignar</button>
+            <button mat-menu-item >Desasignar</button>
+          </mat-menu>
+          <mat-menu #asignar="matMenu" >
+            <button mat-menu-item  (click)="selec(row.id_metrica,item.bloque)" *ngFor="let item of data.bloq" >{{item.nombre}}</button>
+          </mat-menu>
+        </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns;sticky: true"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+        <tr class="mat-row" *matNoDataRow>
+          <td style="text-align: center;" class="mat-cell" colspan="15">Este bloque no tiene ninguna metrica asignada</td>
+        </tr>
+    </table>
+  </section>
+  </mat-expansion-panel>
+</mat-accordion>
+</div>
+  
+
+
+
+
+
+
+
+
+

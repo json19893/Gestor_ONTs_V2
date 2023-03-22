@@ -1,0 +1,362 @@
+<mat-card class="contCard" style="box-shadow: none;">
+  <mat-card-title class="header">Nombre de OLT <p>OLT: {{nombre}}  ({{ip}})</p></mat-card-title>
+  <div class="container" >
+      <div class="row">
+          <div class="col-sm-3" (click)="cambiaTabla(1)">
+              <mat-card class="info">
+                  <div class="container">
+                      <div class="row">
+                          <div class="col-sm-2"><img  class="icon-avata" src="./assets/img/network.png"/></div>
+                          <div class="col-sm-10">
+                              <h5 class="subtitulo">&nbsp;&nbsp; &nbsp;&nbsp;TOTAL:</h5>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-sm-4"></div>
+                          <div class="col-sm-4">
+                              <h5 class="subtitulo2">{{totalOnt}}</h5>
+                          </div>
+
+                      </div>
+
+                  </div>
+              </mat-card>
+          </div>
+          <div class="col-sm-3" (click)="cambiaTabla(2)">
+              <mat-card class="info">
+                  <div class="container">
+                      <div class="row">
+                          <div class="col-sm-2"><img  class="icon-avata" src="./assets/img/up.png"/></div>
+                          <div class="col-sm-10">
+                              <h5 class="subtitulo"> &nbsp;&nbsp;ARRIBA:</h5>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-sm-4"></div>
+                          <div class="col-sm-4">
+                              <h5 class="subtitulo2">{{up}}</h5>
+                          </div>
+
+                      </div>
+
+                  </div>
+              </mat-card>
+          </div>
+
+          <div class="col-sm-3" (click)="cambiaTabla(3)">
+              <mat-card class="info">
+                  <div class="container">
+                      <div class="row">
+                          <div class="col-sm-2"><img  class="icon-avata" src="./assets/img/down.png"/></div>
+                          <div class="col-sm-10">
+                              <h5 class="subtitulo">&nbsp;&nbsp; ABAJO:</h5>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-sm-4"></div>
+                          <div class="col-sm-4">
+                              <h5 class="subtitulo2">{{dowm}}</h5>
+                          </div>
+
+                      </div>
+
+                  </div>
+              </mat-card>
+          </div>
+          <div class="col-sm-3" (click)="cambiaTabla(4)">
+              <mat-card class="info">
+                  <div class="container">
+                      <div class="row">
+                          <div class="col-sm-2"><img  class="icon-avata" src="./assets/img/change.png"/></div>
+                          <div class="col-sm-10">
+                              <h5 class="subtitulo">&nbsp;&nbsp;CAMBIOS:</h5>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-sm-4"></div>
+                          <div class="col-sm-4">
+                              <h5 class="subtitulo2">{{his}}</h5>
+                          </div>
+
+                      </div>
+
+                  </div>
+              </mat-card>
+          </div>
+      </div>
+      <br>
+      <div class="container">
+      <div class="row">
+          <div class="col-sm-12">
+
+                  <mat-toolbar class="tool"> <span class="title-center"><img  class="icon-avata" src={{icono}}/> &nbsp;&nbsp;{{titulo}}</span></mat-toolbar>
+                  <br>
+                  <mat-accordion  [ngStyle]="{'width':width}" >
+                      <mat-expansion-panel hideToggle>
+                        <mat-expansion-panel-header class="panelTitle">
+                          <mat-panel-title >
+                              <img  class="icon-avata" src="./assets/img/search.SVG"/>
+                            
+                          </mat-panel-title>
+                          <mat-panel-description>
+                            Criterios de búsqueda
+                          </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <mat-form-field >
+                          <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" #input>
+                        </mat-form-field>
+                     
+                      
+                      </mat-expansion-panel>
+                      <br>
+                    </mat-accordion>
+                  </div> 
+                </div> 
+              
+                <div class="table-responsive">
+                  <table class="table"> 
+                     
+                        <table mat-table [dataSource]="dataUp" multiTemplateDataRows matSort class="mat-elevation-z8" >
+                        <ng-container matColumnDef="tipo">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header > Tipo </th>
+                          <td mat-cell *matCellDef="let row" > <img *ngIf="row.selected" class="icon-avata" src="./assets/img/flecha-derecha.png"/>{{row.tipo}}</td>
+                        </ng-container>
+
+                         <!-- Progress Column -->
+                        <ng-container matColumnDef="oid">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header class="tdCenter"> OID </th>
+                          <td mat-cell *matCellDef="let row" class="tdCenter">{{row.oid}}</td>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="frame">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header  class="tdCenter"> Frame </th>
+                          <td mat-cell *matCellDef="let row" class="tdCenter">{{row.frame}}</td>
+                        </ng-container>
+                        
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="slot">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header  class="tdCenter"> Slot</th>
+                          <td mat-cell *matCellDef="let row" class="tdCenter">{{row.slot}}</td>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="puerto">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header  class="tdCenter"> Puerto </th>
+                          <td mat-cell *matCellDef="let row" class="tdCenter">{{row.puerto}}</td>
+                        </ng-container>
+
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="uid">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header  class="tdCenter"> UID</th>
+                          <td mat-cell *matCellDef="let row" class="tdCenter">{{row.uid}}</td>
+                        </ng-container>
+
+                        
+
+                        <!-- ID Column -->
+                        <ng-container matColumnDef="numeroSerie">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> Número de serie </th>
+                          <td mat-cell *matCellDef="let row"> <span style="font-weight: bold; ">{{row.numero_serie}}</span> </td>
+                        </ng-container>
+                    
+                        <!-- Progress Column -->
+
+                        <ng-container matColumnDef="alias">
+                          <th style="width:8% !important;" mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
+                          <td   style="width:8% !important; height: 80%; " 
+                            mat-cell 
+                            *matCellDef="let row"
+                            matTooltip={{row.alias}}
+                            matTooltipClass="example-tooltip-uppercase"
+                            aria-label="Button that shows a red tooltip" > 
+                            <span *ngIf="row.alias!=null"> {{(row.alias).substr(0, 16)}}</span> 
+                            <span *ngIf="row.alias==null||row.alias==''"> ---</span> 
+                          </td>
+                        </ng-container>                        
+                        <!--ng-container matColumnDef="alias">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> Alias </th>
+                          
+                          <td   mat-cell *matCellDef="let row"> {{row.alias}} &nbsp;&nbsp;</td>
+                      
+                        </ng-container --> 
+                        <ng-container matColumnDef="estatus">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> Estatus </th>
+                          
+                          
+                          <td style="text-align: center;"  mat-cell *matCellDef="let row" class="tdLeft"> {{row.estatus}} &nbsp; </td>
+                        </ng-container>
+                        <ng-container matColumnDef="desEstatus">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> Causa</th>
+                          
+                          <td   mat-cell *matCellDef="let row"> {{row.desEstatus}} </td>
+                      
+                        </ng-container>
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="fecha">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha actualización</th>
+                          <td mat-cell *matCellDef="let row"> 
+                          <span *ngIf="row.fecha_descubrimiento!=undefined ||row.fecha_descubrimiento!='--'||row.fecha_descubrimiento!='-'||row.fecha_descubrimiento!='0-0-0,0:0:0.0,.0:0'||row.fecha_descubrimiento!=''">&nbsp;{{row.fecha_descubrimiento | date:'dd-MM-yyyy'}} {{row.fecha_descubrimiento | date:'mediumTime'}}</span>
+                          <span *ngIf="row.fecha_descubrimiento==undefined||row.fecha_descubrimiento=='--'||row.fecha_descubrimiento=='-'||row.fecha_descubrimiento=='0-0-0,0:0:0.0,.0:0'||row.fecha_descubrimiento==''   ">&nbsp;-----</span>
+                        
+                        </td>
+                        </ng-container>
+                        <!-- Name Column -->
+                        <ng-container matColumnDef="fechaUltimaCaida">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha última caída</th>
+                          <td mat-cell *matCellDef="let row"> 
+                            <span *ngIf="row.fecha_ultima_caida!=undefined ||row.fecha_ultima_caida!='--'||row.fecha_ultima_caida!='-'||row.fecha_ultima_caida!='0-0-0,0:0:0.0,.0:0'||row.fecha_ultima_caida!='' ">{{row.fecha_ultima_caida | date:'dd-MM-yyyy'}} {{row.fecha_ultima_caida | date:'mediumTime'}}</span>
+                            <span *ngIf="row.fecha_ultima_caida==undefined ||row.fecha_ultima_caida=='--'||row.fecha_ultima_caida=='-'||row.fecha_ultima_caida=='0-0-0,0:0:0.0,.0:0'||row.fecha_ultima_caida==''">-----</span>
+                          </td>
+                        </ng-container>
+                        
+                   
+
+                      <div *ngIf="tipoCambio">
+                        <ng-container matColumnDef="tipoCambio">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header>Descripción cambio</th>
+                          <td mat-cell *matCellDef="let row"> {{row.tipoCambio}} </td>
+                        </ng-container>
+                      </div>  
+
+                      <ng-container matColumnDef="expand">
+                        <th mat-header-cell *matHeaderCellDef aria-label="row actions">Metricas</th>
+                        <td mat-cell *matCellDef="let row">
+                          <button mat-icon-button aria-label="expand row" (click)="(expandedElement = expandedElement === row ? null : row); $event.stopPropagation()">
+                            <mat-icon  (click)="getData(row.oid,row.id_olts);"  matTooltip="Mostrar" *ngIf="expandedElement !== row">keyboard_arrow_down</mat-icon>
+                            <mat-icon  matTooltip="Ocultar"*ngIf="expandedElement === row">keyboard_arrow_up</mat-icon>
+                          </button>
+                        </td>
+                      </ng-container>
+
+                        <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+                        <ng-container matColumnDef="expandedDetail">
+                          <td mat-cell *matCellDef="let row" [attr.colspan]="13" style="background:'rgba(56, 53, 53, 0.938)';color:rgb(255, 255, 255)">
+                            <div class="example-element-detail w-100" 
+                              [@detailExpand]="row == expandedElement ? 'expanded' : 'collapsed'">               
+                              <div class="container">
+                                <div class="row" >
+                                      <div class="col-sm-3">
+                                        <span class="cabe">Fecha de poleo:</span>
+                                        <br>
+                                        <span class="data">{{fechaPoleo=="" ? "--": (fechaPoleo | date:'dd-MM-yyyy')}} {{fechaPoleo=="" ? "" :fechaPoleo | date:'mediumTime'}}</span>
+                                      </div>
+              
+                                    <div class="col-sm-3">
+                                      <span class="cabe">Última fecha arriba:</span>
+                                        <br>
+                                        <span class="data">{{lastUpTime==""? "--": lastUpTime| date:'dd-MM-yyyy'}} {{lastUpTime==""? "":lastUpTime | date:'mediumTime'}}</span>
+                                      </div>
+              
+                                    <div class="col-sm-3">
+                                      <span class="cabe">Bytes de subida:</span>
+                                        <br>
+                                        <span class="data">{{upBytes=="" ? "--": upBytes | number: '1.0-0'}} MB</span>
+                                      </div>
+              
+                                      <div class="col-sm-3">
+                                        <span class="cabe">Periodo de trabajo:</span>
+                                        <br>
+                                        <span class="data">{{timeOut=="" ? "--":timeOut}}</span>
+                                      </div>
+                                  </div>
+                                  <br>
+                                  <div class="row" >
+                                        <div class="col-sm-3">
+                                          <span class="cabe">Paquetes arriba:</span>
+                                        <br>
+                                        <span class="data"> {{upPackets ==""? "--" : upPackets | number: '1.0-0'}} MB</span>
+                                      </div>
+              
+                                    <div class="col-sm-3">
+                                      <span class="cabe">Paquetes perdidos:</span>
+                                        <br>
+                                        <span class="data">{{downPackets=="" ? "--":downPackets | number: '1.0-0'}} MB</span>
+                                      </div>
+              
+                                    <div class="col-sm-3">
+                                        <span class="cabe">Paquetes perdidos de subida:</span>
+                                        <br>
+                                        <span class="data">{{dropUpPackets=="" ? "--": dropUpPackets | number: '1.0-0'}} MB</span>
+                                      </div>
+              
+                                      <div class="col-sm-3">
+                                        <span class="cabe">Paquetes perdidos de bajada:</span>
+                                        <br>
+                                        <span class="data">{{dropDownPackets ==""? "--":dropDownPackets | number: '1.0-0'}} MB </span>
+                                      </div>
+                                  </div>
+                                  <br>
+                                  <div class="row" >
+                                        <div class="col-sm-3">
+                                        <span class="cabe">CPU ocupado:</span>
+                                        <br>
+                                        <span class="data">{{cpu == "" ? "--":cpu}} %</span>
+                                      </div>
+              
+                                    <div class="col-sm-3">
+                                      <span class="cabe">Memoria ocupada:</span>
+                                        <br>
+                                        <span class="data">{{memoria == "" ? "--" : memoria}} %</span>
+                                      </div>
+              
+                                    <div class="col-sm-3">
+                                      <span class="cabe">Nombre de perfil:</span>
+                                        <br>
+                                        <span class="data">{{profName == "" ? "--": profName}}</span>
+                                      </div>
+                                      <div class="col-sm-3">
+                                        <span class="cabe">Paquetes recibidos :</span>
+                                        <br>
+                                        <span class="data">{{downBytes==""? "--": downBytes | number: '1.0-0'}} MB</span>
+                                      </div>
+                                     
+                                  </div>
+                                  <br>
+                                  <div class="row" ></div>
+                              </div>
+                                  </div>
+                            </td>
+                        </ng-container>
+     
+                    
+                <tr mat-header-row *matHeaderRowDef="columnsToDisplayWithExpand"></tr>
+                <tr mat-row *matRowDef="let element; columns: columnsToDisplayWithExpand;"
+                    class="example-element-row"
+                    [class.example-expanded-row]="expandedElement === element">
+                </tr>
+                <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></tr>
+                                <!-- Row shown when there is no matching data. -->
+                                <tr  class="mat-row" *matNoDataRow>
+                                  <td style="text-align: center;" class="mat-cell" colspan="15">Sin registros </td>
+                        </tr>
+                      </table>
+                  
+                      <mat-paginator  #tbl1 [pageSizeOptions]="[10, 25, 100]" aria-label="Select page of users" ></mat-paginator>
+                   
+                    </table>
+                  </div>  
+      </div>
+  </div>
+  <br>
+
+      <div class="container">
+          <div class="row">
+              <div class="col-sm-11"></div>
+              <div class="col-sm-1">
+                  <div class="example-button-container">
+                      <button (click)="regresar()" mat-fab color="primary" aria-label="Regresar"
+                      #tooltip="matTooltip"
+                      matTooltip="Regresar"
+                      matTooltipPosition="left"
+                      aria-tooltip="toltip">
+                        <mat-icon>keyboard_return</mat-icon>
+                        
+                      </button>
+                    </div>
+              </div>
+          </div>
+
+      </div>
+</mat-card>

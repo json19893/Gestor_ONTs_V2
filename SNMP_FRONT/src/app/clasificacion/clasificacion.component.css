@@ -1,0 +1,202 @@
+mat-grid-tile {
+  background: rgba(14, 13, 13, 0.966);
+  border-width: 2px;
+  border-style: solid;
+  border-color: rgb(78, 78, 185);
+  cursor: pointer;
+  height: 68vh;
+
+ 
+}
+.tamaño{
+  height: 10vh;
+  width:20vw;
+}
+
+mat-grid-tile:hover {
+  transform: scale(.98);
+  transition: .4s ease;
+  
+}
+.titulo{
+  background: rgba(15, 15, 15, 0.795);
+  color: rgb(223, 225, 240);
+  text-align:center;
+  font-size: 14px;
+  border-width: 3px;
+  border-style: solid;
+  border-color: rgb(59, 69, 89);
+  
+}
+.subtitulos{
+  background: rgba(15, 15, 15, 0.795);
+  border-width: 3px;
+  border-style: solid;
+  border-color: rgba(59, 69, 89);
+  width:15vw;
+  height: 15vh;
+}
+.subtitulo{
+font-size: 12px;
+font-family: 'Montserrat', sans-serif;
+}
+.tituloTec{
+  font-size: 11px;
+  font-family: 'Montserrat', sans-serif;
+}
+.tituloTe2{
+  font-size: 11px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.tituloCard{
+  font-size: 12px;
+  font-weight: bold;
+  align-items: flex-start;
+  font-family: 'Montserrat', sans-serif;
+}
+.totales{
+  font-size: 10px;
+  font-family: 'Montserrat', sans-serif;
+font-weight: bold
+}
+.tatalUpDown{
+  font-size: 10px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold
+}
+
+.title-center2 {
+  flex: 1 1 auto;
+  font-size: 20px;
+  text-align: center;
+  color: rgb(5, 5, 5);
+  font-family: 'Montserrat', sans-serif;
+
+  
+}
+.title-center {
+  flex: 1 1 auto;
+  text-align: center;
+  color: rgb(255, 248, 248);
+  font-weight: bold;
+  
+}
+.tool{
+  background-color: rgb(59, 69, 89);
+}
+.tool2{
+  background-color: rgba(15, 15, 15, 0);
+}
+
+.info{
+  background-color: rgb(30, 30, 40);
+  color: aliceblue;
+  
+
+}
+
+
+.iconCur{
+  cursor: pointer;
+}
+
+
+
+
+.icon-avata{
+  height: 15px;
+  width: 15px;
+}
+
+
+.icon-avata2{
+  height: 15px;
+  width: 15px;
+}
+
+.rojo {
+	width: 1rem;
+	height: 1rem;
+	border-radius: 100%;
+	background: rgb(172, 39, 39);
+  color:aliceblue;
+  padding:6%
+}
+
+.verde {
+	width: 1rem;
+	height: 1rem;
+	border-radius: 100%;
+	background: rgb(15, 117, 5);
+  color:aliceblue;
+  padding:6%
+}
+.info:hover{
+  transform: scale(.98);
+  transition: .4s ease;
+}
+
+.spacios{
+
+    margin-right: -197px;
+    padding-right: -100px;
+ 
+}
+
+
+.spacios2{
+  margin-right: 0px;
+    padding-right: 0px;
+    height: 10vh;
+  width: 15vw;
+
+}
+
+
+
+
+
+
+
+
+
+.totales2 {
+font-size: 25px;
+font-family: 'Montserrat', sans-serif;
+font-weight: bold
+}
+
+.tituloGrafica{
+  text-align: center;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.ult{
+  font-size: 18px;
+  font-family: 'Montserrat', sans-serif;
+}
+.act{
+  font-size: 18px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+}
+.fecha{
+  font-size: 19px;
+font-family: 'Montserrat', sans-serif;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.actual{
+  margin-left: 870px;
+  margin-top: -240px;
+  
+}
+
+
+
+.mat-divider {
+  border-top-color: rgba(218, 213, 213, 0.842) !important;
+}

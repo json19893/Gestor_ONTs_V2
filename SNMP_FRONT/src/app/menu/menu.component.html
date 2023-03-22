@@ -1,0 +1,80 @@
+<mat-toolbar color="primary" class="menu-tol">
+	<button mat-icon-button (click)="isExpanded = !isExpanded"><mat-icon>menu</mat-icon></button>
+  <span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <img  src="./assets/img/totalplay.svg" class="logo" >
+         <span class="example-spacer"></span>
+         <span class="togg">Todo</span>&nbsp;
+         <mat-slide-toggle
+          class="example-margin"
+          [color]="color"
+          [checked]="checked"
+          [disabled]="disabled">
+         
+      </mat-slide-toggle>
+      &nbsp;
+      <span class="togg">{{clasificacion}}</span>
+		    
+         <button mat-button [matMenuTriggerFor]="usua">
+             <img  class="icon-avata" src="./assets/img/avatar.png"/>&nbsp;&nbsp;{{usuario}}
+         </button>
+             <mat-menu #usua="matMenu">
+             <button mat-menu-item  (click)="salir()"  >
+             <mat-icon >
+                 power_settings_new
+             </mat-icon>    
+                 Salir
+             </button>
+             </mat-menu>         
+
+</mat-toolbar>
+<mat-sidenav-container class="example-container" autosize>
+	<mat-sidenav #sidenav class="example-sidenav" mode="side" opened="true" (mouseenter)="mouseenter()" (mouseleave)="mouseleave()">
+		<mat-nav-list>
+      <mat-list-item (click)="home()">
+				<span class="full-width letra" *ngIf="isExpanded || isShowing">Inicio</span>
+				<mat-icon  [ngStyle]="{'color':'aliceblue'}" mat-list-icon>home</mat-icon>
+			</mat-list-item>
+      <mat-list-item mat-button (click)="openDialog()">
+				<span class="full-width letra" *ngIf="isExpanded || isShowing">Búsqueda general</span>
+				<mat-icon  [ngStyle]="{'color':'aliceblue'}" mat-list-icon>search</mat-icon>
+      </mat-list-item>
+      <mat-list-item mat-button (click)="getmuestradetalle()">
+				<span class="full-width letra" *ngIf="isExpanded || isShowing">Detalle de actualización</span>
+				<mat-icon  [ngStyle]="{'color':'aliceblue'}" mat-list-icon>autorenew</mat-icon>
+      </mat-list-item>
+      <mat-list-item *ngIf="acceso"  mat-button (click)="getmuestraOnts()">
+				<span class="full-width letra" *ngIf="isExpanded || isShowing">Muestra Onts</span>
+				<mat-icon  [ngStyle]="{'color':'aliceblue'}" mat-list-icon>phonelink</mat-icon>
+      </mat-list-item>
+			<!--mat-list-item >
+				<span class="full-width letra" *ngIf="isExpanded || isShowing">PROGRAMACIÓN</span>
+				<mat-icon [ngStyle]="{'color':'aliceblue'}" mat-list-icon>timer</mat-icon>
+			</mat-list-item>
+      <mat-list-item (click)="showSubmenu = !showSubmenu" class="parent">
+				<span class="full-width letra" *ngIf="isExpanded || isShowing">JOBS</span>
+				<mat-icon [ngStyle]="{'color':'aliceblue'}" mat-list-icon>settings</mat-icon>
+				<mat-icon class="menu-button" [ngClass]="{'rotated' : showSubmenu}" *ngIf="isExpanded || isShowing">expand_more</mat-icon>
+			</mat-list-item>
+    <mat-list-item class="submenu " [ngClass]="{'expanded' : showSubmenu}" *ngIf="isShowing || isExpanded">
+				<p class="letra" href="...">Submenu Item 1</p>
+    </mat-list-item>
+    <mat-list-item class="submenu " [ngClass]="{'expanded' : showSubmenu}" *ngIf="isShowing || isExpanded">
+      <p class="letra" href="...">Submenu Item 1</p>
+  </mat-list-item-->
+  
+		</mat-nav-list>
+
+	</mat-sidenav>
+
+    <mat-card class="contenedor">
+        <!--mat-card-title class="header">Titulo indice</mat-card-title-->
+        <mat-card class="contenedor2">
+          <!--app-estatus></app-estatus-->     
+          <!--app-home></app-home-->
+          <app-clasificacion></app-clasificacion>
+        </mat-card>
+      
+      </mat-card>
+
+
+</mat-sidenav-container>

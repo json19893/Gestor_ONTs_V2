@@ -1,0 +1,50 @@
+<div class="container">
+    <h2 mat-dialog-title style="font-family: montserrat; font-weight: 600;">Actualización masiva de ONTs</h2>
+
+ 
+    <mat-dialog-content  class="d-flex justify-content-center col-sm-12 flex-wrap">
+       
+        <div class="col-sm-7">
+            <!-- <mat-toolbar-row>
+                <input   disabled="{{loading}}" matInput [(ngModel)]="fileAttr" readonly name="name" style="font-family: montserrat;" />
+            </mat-toolbar-row> -->
+       
+            <input   disabled="{{loading}}" matInput [(ngModel)]="fileAttr" readonly name="name" style="font-family: montserrat; 
+            text-decoration: underline;" />
+        </div>
+        <div class="col-sm-3"> 
+            <button  mat-flat-button color="primary" (click)="fileInput.click()" >Elegir archivo</button>
+            <input  style="display:none" type="file" (change)="onFileChange($event)" #fileInput id="uploadFile" name="uploadFile" accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" />          
+        </div>
+        <div class="col-sm-12 mt-2" *ngIf="response">
+            <table class="table table-response">
+                <thead class="thead-light">
+                    <tr>  
+                        <th>recibidos</th>
+                        <th>actualizados</th>
+                        <th>no actualizados</th>
+                        <th>acciones</th>  
+                    </tr>
+                </thead>
+                <tr>
+                    <td>{{recibidos}}</td>
+                    <td>{{actualizados}}</td>
+                    <td>{{noActualizados}}</td>
+                    <td class="p-0">
+                        <button *ngIf="noActualizados!=null" class="p-0 m-1 px-1"  mat-flat-button color="primary" (click)="descargarNoAct()">Descarga no actualizados</button>
+                    </td> 
+                </tr>
+
+            </table> 
+        </div>
+        
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button align="start" mat-raised-button style="font-weight: 400; background-color:#2196F3" (click)="exportTemplateAsExcel()" color="accent">Descargar template</button>&nbsp;
+        <button disabled="{{loading}}"mat-raised-button style="font-weight: 400;" (click)="cancelar()">Cerrar</button>&nbsp;
+        <button disabled="{{loadingExcel}}" mat-raised-button style="font-weight: 600;" (click)="exportExcel()" color="primary">
+            Ejecutar
+        </button>
+        
+    </mat-dialog-actions> 
+</div>

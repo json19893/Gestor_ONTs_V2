@@ -1,0 +1,62 @@
+<h5 mat-dialog-title class="mb-0" style="width:80%">Búsqueda general</h5>
+
+<mat-tab-group>
+  <mat-tab label="ONTs" >
+
+
+    <form [formGroup]="form1" id="form1" (ngSubmit)="openBottomSheet1()" novalidate class="mt-4 mb-1">
+      <mat-form-field appearance="legacy">
+        <mat-label>Número de serie</mat-label>
+        <input matInput formControlName="numeroSerie"  [matAutocomplete]="autoSerie"  (input)="findSerieOnts()" [matAutocompletePosition]="'below'">
+        <mat-autocomplete #autoSerie="matAutocomplete">
+          <mat-option *ngFor="let item of optionsSerieOnts" [value]="item.numero_serie" style="font-size:10px; padding:2px">
+            {{item.numero_serie}}
+          </mat-option>          
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <mat-form-field style="margin-left: 90px; width:37%;" appearance="legacy">
+        <mat-label>Alias</mat-label>
+        <input matInput formControlName="alias" [matAutocomplete]="auto"  (input)="findAliasOnts()" [matAutocompletePosition]="'below'"  (focus)="verifyWidth()">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let item of optionsOnts" [value]="item.alias" style="font-size:10px; padding:2px">
+            {{item.alias}}
+          </mat-option>          
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <button mat-raised-button type="submit" style="margin-left: 550px;" color="primary">Buscar</button>
+      <button mat-button mat-dialog-close>Close</button>
+
+    </form>
+  </mat-tab>
+
+  <mat-tab label="OLTs">
+
+    <form [formGroup]="form2" (ngSubmit)="openBottomSheet2()" novalidate  class="mt-4 mb-1">
+      <mat-form-field appearance="legacy">
+        <mat-label>IP OLT</mat-label>
+        <input matInput formControlName="ip" [matAutocomplete]="autoIp"  (input)="findIpOlts()" [matAutocompletePosition]="'below'">
+        <mat-autocomplete #autoIp="matAutocomplete">
+          <mat-option *ngFor="let item of optionsIpOlts" [value]="item.ip" style="font-size:10px; padding:2px">
+            {{item.ip}}
+          </mat-option>          
+        </mat-autocomplete>
+      </mat-form-field>
+
+
+      <mat-form-field style="margin-left: 90px; width:37%;" appearance="legacy">
+        <mat-label>Nombre OLT</mat-label>
+        <input matInput formControlName="nombre" [matAutocomplete]="autoTest"  (input)="findNamesOlts()" [matAutocompletePosition]="'below'">
+        <mat-autocomplete #autoTest="matAutocomplete">
+          <mat-option *ngFor="let item of optionsOlts" [value]="item.nombre" style="font-size:10px; padding:2px">
+            {{item.nombre}}
+          </mat-option>          
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <button mat-raised-button type="submit" style="margin-left: 55px;" mat-raised-button
+        color="primary">Buscar</button>
+    </form>
+  </mat-tab>
+</mat-tab-group>

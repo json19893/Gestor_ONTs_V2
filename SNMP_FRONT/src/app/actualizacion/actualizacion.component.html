@@ -1,0 +1,92 @@
+<span class="title-center2"> Detalle de actualizaciones</span>
+<br><br>
+<mat-divider></mat-divider>
+<br>
+<mat-accordion class="mat-elevation-z8"  >
+  <mat-expansion-panel hideToggle>
+    <mat-expansion-panel-header class="panelTitle">
+      <mat-panel-title >
+          <img  class="icon-avata" src="./assets/img/search.SVG"/>
+
+      </mat-panel-title>
+      <mat-panel-description>
+        Criterios de búsqueda
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <form [formGroup]="form1" id="form1" (ngSubmit)="applyFilter()" novalidate class="mt-4 mb-1">
+      <mat-form-field appearance="legacy">
+        <mat-label>Número de serie</mat-label>
+        <input matInput formControlName="numeroSerie"  [matAutocomplete]="autoSerie"  (input)="findSerieOnts()" [matAutocompletePosition]="'below'">
+        <mat-autocomplete #autoSerie="matAutocomplete">
+          <mat-option *ngFor="let item of optionsSerieOnts" [value]="item.numero_serie" style="font-size:10px; padding:2px">
+            {{item.numero_serie}}
+          </mat-option>          
+        </mat-autocomplete>
+      </mat-form-field>
+
+      <button mat-raised-button type="submit" style="margin-left: 55px;" color="primary">Buscar</button>
+
+    </form>
+
+  </mat-expansion-panel>
+  <br>
+</mat-accordion>
+
+<table mat-table [dataSource]="dataSource"  class="mat-elevation-z8">
+
+    <!--- Note that these columns can be defined in any order.
+          The actual rendered columns are set as a property on the row definition" -->
+  
+    <!-- Position Column -->
+    <ng-container matColumnDef="tipo">
+      <th mat-header-cell *matHeaderCellDef > Tipo </th>
+      <td mat-cell *matCellDef="let element"> {{element.tip}} </td>
+    </ng-container>
+  
+    <!-- Name Column -->
+    <ng-container matColumnDef="numeroSerie">
+      <th mat-header-cell *matHeaderCellDef > Número serie </th>
+      <td mat-cell *matCellDef="let element"> <span style="font-weight: bold; ">{{element.numeroSerie}}</span> </td>
+    </ng-container>
+  
+    <!-- Weight Column -->
+    <ng-container matColumnDef="region">
+      <th mat-header-cell *matHeaderCellDef > Región </th>
+      <td mat-cell *matCellDef="let element"> {{element.region}} </td>
+    </ng-container>
+  
+    <!-- Symbol Column -->
+    <ng-container matColumnDef="estatus">
+      <th mat-header-cell *matHeaderCellDef > Estatus </th>
+      <td mat-cell *matCellDef="let element"> <span style="font-weight: bold; ">{{element.estatus}}</span> </td>
+    </ng-container>
+    <ng-container matColumnDef="fechaDescubrimiento">
+      <th mat-header-cell *matHeaderCellDef > Fecha actualización </th>
+      <td mat-cell *matCellDef="let element"> 
+        <span *ngIf="element.fechaDescubrimiento!=undefined ||element.fechaDescubrimiento!='--'||element.fechaDescubrimiento!='-'||element.fechaDescubrimiento!='0-0-0,0:0:0.0,.0:0'||element.fechaDescubrimiento!=''">{{element.fechaDescubrimiento | date:'dd-MM-yyyy'}} {{element.fechaDescubrimiento | date:'mediumTime'}}</span>
+        <span *ngIf="element.fechaDescubrimiento==undefined||element.fechaDescubrimiento=='--'||element.fechaDescubrimiento=='-'||element.fechaDescubrimiento=='0-0-0,0:0:0.0,.0:0'||element.fechaDescubrimiento==''   ">-----</span>
+      
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="desActualizacion">
+    <th mat-header-cell *matHeaderCellDef> Descripción actualización </th>
+    <td mat-cell *matCellDef="let element"> {{element.desActualizacion}} </td>
+  </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+  </table>
+  <br>
+  
+
+  <mat-paginator #paginator
+  class="demo-paginator"
+  (page)="handlePageEvent($event)"
+  [length]="length"
+  [pageSize]="pageSize"
+  [disabled]="disabled"
+  [showFirstLastButtons]="showFirstLastButtons"
+  [pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
+  [hidePageSize]="hidePageSize"
+  [pageIndex]="pageIndex"
+  aria-label="Select page">
+</mat-paginator>

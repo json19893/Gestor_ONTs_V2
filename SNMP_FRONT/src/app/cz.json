@@ -1,0 +1,9 @@
+{
+    "ITEMS_PER_PAGE_LABEL": "Items por página ",
+    "NEXT_PAGE_LABEL": "Siguiente",
+    "PREVIOUS_PAGE_LABEL": "Anterior",
+    "FIRST_PAGE_LABEL": "Primera",
+    "LAST_PAGE_LABEL": "Última",
+    "RANGE_PAGE_LABEL_1": "0 z {{length}}",
+    "RANGE_PAGE_LABEL_2": "{{startIndex}} - {{endIndex}} z {{length}}"
+}  

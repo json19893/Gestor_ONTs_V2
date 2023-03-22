@@ -1,0 +1,7 @@
+{
+    "/totalplay/*": {
+      "target": "http://localhost:9200",
+      "secure": false,
+      "chargeOrigin":true
+    }
+  }

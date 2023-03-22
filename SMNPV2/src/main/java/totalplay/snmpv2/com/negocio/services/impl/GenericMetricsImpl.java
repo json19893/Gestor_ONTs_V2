@@ -1,0 +1,214 @@
+package totalplay.snmpv2.com.negocio.services.impl;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
+import totalplay.snmpv2.com.configuracion.Constantes;
+import totalplay.snmpv2.com.configuracion.Utils;
+import totalplay.snmpv2.com.negocio.dto.CadenasMetricasDto;
+import totalplay.snmpv2.com.negocio.dto.EjecucionDto;
+import totalplay.snmpv2.com.negocio.dto.GenericPoleosDto;
+import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
+import totalplay.snmpv2.com.negocio.dto.configuracionDto;
+import totalplay.snmpv2.com.negocio.services.IGenericMetrics;
+import totalplay.snmpv2.com.negocio.services.IlimpiezaCadena;
+import totalplay.snmpv2.com.persistencia.entidades.ConfiguracionMetricaEntity;
+import totalplay.snmpv2.com.persistencia.repositorio.IconfiguracionMetricaRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoAliasRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoCpuRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoDownBytesRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoDownPacketsRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoDropDownPacketsRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoDropUpPacketsRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoEstatusRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoFrameSlotPortRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoLastDownCauseRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoLastDownTimeRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoLastUpTimeRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoMemoryRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoProfNameRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoTimeOutRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoUpBytesRepositorio;
+import totalplay.snmpv2.com.persistencia.repositorio.IpoleoUpPacketsRepositorio;
+
+@Service
+@Slf4j
+public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
+	
+	@Autowired
+	IlimpiezaCadena limpiezaCadena;
+	@Autowired 
+	IinventarioOntsTempRepository inventarioTemp;
+	@Autowired
+	IconfiguracionMetricaRepository configuracionMetrica;
+	
+	@Autowired
+	IpoleoLastDownCauseRepositorio poleoLastDownCause;
+	@Autowired
+	IpoleoLastUpTimeRepositorio poleoLastUpTime;
+	@Autowired
+	IpoleoLastDownTimeRepositorio poleoLastDownTime;
+	@Autowired
+	IpoleoUpBytesRepositorio poleoUpBytes;
+	@Autowired
+	IpoleoDownBytesRepositorio poleoDownBytes;
+	@Autowired
+	IpoleoTimeOutRepositorio poleoTimeOut;
+	@Autowired
+	IpoleoUpPacketsRepositorio poleoUpPackets;
+	@Autowired
+	IpoleoDownPacketsRepositorio poleoDownPackets;
+	@Autowired
+	IpoleoDropUpPacketsRepositorio poleoDropUpPackets;
+	@Autowired
+	IpoleoDropDownPacketsRepositorio poleoDropDownPackets;
+	@Autowired
+	IpoleoCpuRepositorio poleoCpu;
+	@Autowired
+	IpoleoMemoryRepositorio poleoMemory;
+	@Autowired
+	IpoleoAliasRepositorio poleoAlias;
+	@Autowired
+	IpoleoProfNameRepositorio poleoProfName;
+	@Autowired
+	IpoleoFrameSlotPortRepositorio poleoFrameSlotPort;
+	@Autowired
+	IpoleoEstatusRepositorio poleoEstatus;
+	
+	
+	Utils utls=new Utils();
+    //private String ruta="/dev/ecosistema/comandos/bash";
+	//private String ruta="/home/daniel/Documentos/comandos/";
+	private String ruta="/home/implementacion/ecosistema/comandos/";
+	
+	@Override																					
+	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia) throws IOException {
+
+		EjecucionDto proces=null;
+		List data = new ArrayList<T>();
+		int exitValue = 1;
+    	int contador = 1;
+    	String tecnologia = "" ;
+    	CadenasMetricasDto cadenasMetrica=null;
+    	String comando;
+    	
+    	try {
+    	
+	    	ConfiguracionMetricaEntity confMetrica = configuracionMetrica.getMetrica(metrica, configuracion.getIdConfiguracion());
+			tecnologia = configuracion.getTecnologia(); 
+			
+			if (tecnologia.equals("ZTE")) {
+				cadenasMetrica = confMetrica.getZTE();			
+			} else if (tecnologia.equals("HUAWEI")){
+				cadenasMetrica =  confMetrica.getHUAWEI();
+			}else if (tecnologia.equals("FIBER HOME")){
+				cadenasMetrica =  confMetrica.getFH();
+			}
+			
+			if(cadenasMetrica == null || cadenasMetrica.getOid().equals("")) {
+				return CompletableFuture.completedFuture(new GenericResponseDto(SIN_METRICA, 1));
+			}
+			
+    	}catch (Exception e) {
+			log.info(e.toString());
+		}
+    	
+    	
+    		
+    	do{
+    		try {
+    						
+    			if(referencia.equals("")) {
+    				comando = configuracion.getComando() + SPACE + cadenasMetrica.getOid();
+    			}else {
+    				comando = configuracion.getComando() + SPACE + cadenasMetrica.getOid() + "." + referencia; 
+    			}
+    			
+    			log.info(" COMANDO ------>"+comando);
+    			
+    			proces=utls.execBash(comando, ruta);
+    			data= limpiezaCadena.getMetricasBypoleo(proces, metrica, idOlt,
+    					configuracion.getIdRegion(), idProceso, configuracion.getTecnologia(),entidad, cadenasMetrica, saveErroneos);
+				log.info("count data "+data.size());
+				exitValue=proces.getProceso().exitValue();
+				if(exitValue==0){
+					guardaInventario(metrica,data);
+				}
+			
+			
+			} catch (Exception e) {
+				log.error(EJECUCION_ERROR, e);
+				return CompletableFuture.completedFuture(new GenericResponseDto(EJECUCION_ERROR + e, 1));
+			}finally {
+				contador++;
+			}
+		}while (contador <= 3 && exitValue != 0);
+		
+    	return CompletableFuture.completedFuture(new GenericResponseDto(String.valueOf(data.size()), exitValue));
+}
+
+	private void guardaInventario(Integer idMetrica, List list ) {
+		switch (idMetrica) {
+			case 0:
+				inventarioTemp.saveAll(list);
+			break;
+			case 1:
+				poleoEstatus.saveAll(list);
+				break;
+			case 2:
+				//poleoMetrica.saveAll(list);
+				poleoLastDownCause.saveAll(list);
+				break;
+			case 3:
+				poleoLastUpTime.saveAll(list);
+				break;
+			case 4:
+				poleoLastDownTime.saveAll(list);
+				break;
+			case 5:
+				poleoUpBytes.saveAll(list);
+				break;
+			case 6:
+				poleoDownBytes.saveAll(list);
+				break;
+			case 7:
+				poleoTimeOut.saveAll(list);
+				break;
+			case 8:
+				poleoUpPackets.saveAll(list);
+				break;
+			case 9:
+				poleoDownPackets.saveAll(list);
+				break;
+			case 10:
+				poleoDropUpPackets.saveAll(list);
+				break;
+			case 11:
+				poleoDropDownPackets.saveAll(list);
+				break;
+			case 12:
+				poleoCpu.saveAll(list);
+				break;
+			case 13:
+				poleoMemory.saveAll(list);
+				break;
+			case 14:
+				poleoAlias.saveAll(list);
+				break;
+			case 15:
+				poleoProfName.saveAll(list);
+				break;
+			case 16:
+				poleoFrameSlotPort.saveAll(list);
+				break;
+
+		}
+}
+}

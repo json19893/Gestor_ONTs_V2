@@ -1,0 +1,85 @@
+table {
+    width: 100%;
+  }
+  .table-response th{
+    text-align: center !important;
+}
+.table-response td{
+    font-size: 13px !important;
+    text-align: center !important;
+}
+.mat-typography {
+    min-width: 500px;
+}
+
+.mat-typography2 {
+    min-width: 500px;
+}
+
+.mat-form-field {
+    margin: 40px 0;
+    width: 500px !important;
+}
+.mat-toolbar-single-row {
+    height: auto !important;
+    background: transparent;
+}
+.mat-toolbar-single-row button {
+    width: 200px;
+}
+.mat-form-field {
+    width: 100%;
+}
+#uploadFile {
+    top: 0px;
+    left: 0px;
+    width: 100%;    
+    z-index: 9;
+    opacity: 0;
+    height: 100%;
+    cursor: pointer;
+    position: absolute;
+}
+
+.swal2-confirm {
+    background-color: #1565c0 !important;
+}
+
+.mat-header-cell {
+    text-align: center;
+    background: rgb(59, 69, 89);
+    color: aliceblue;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    font-size: 10px;
+  
+  }
+
+  .mat-cell{
+
+    font-size: 10px;
+    font-family: 'Montserrat', sans-serif;
+    text-align: left;
+    text-overflow: ellipsis;
+  }
+
+
+  .example-viewport {
+    height: 400px;
+    width: 699px;
+    border: 1px solid black;
+  }
+  
+  .example-item {
+    height: 50px;
+  }
+
+  .example-container {
+    height: 150px;
+    overflow: auto;
+  }
+  mat-panel-title{
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center!important;
+  }
