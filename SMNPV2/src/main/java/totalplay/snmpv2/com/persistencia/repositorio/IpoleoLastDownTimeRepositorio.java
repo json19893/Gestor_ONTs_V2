@@ -13,7 +13,7 @@ import totalplay.snmpv2.com.persistencia.entidades.PoleosLastDownTimeEntity;
 public interface IpoleoLastDownTimeRepositorio extends MongoRepository<PoleosLastDownTimeEntity, String> {
 	@Aggregation(pipeline = { 
 			"{$match:{id_ejecucion:?0}}"
-			,"{$out: 'auxiliar'}"
+			,"{$out: ?1 }"
 					})
-	void outToAux(@Param("idEjecucion") String idEjecucion);
+	void outToAux(@Param("idEjecucion") String idEjecucion, @Param("tabla") String tabla);
 }

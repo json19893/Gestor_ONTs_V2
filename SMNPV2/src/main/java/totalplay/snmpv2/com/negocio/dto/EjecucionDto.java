@@ -14,4 +14,8 @@ public class EjecucionDto extends GenericResponseDto {
 	private String error;
 	private String file;
 	private String comando;
+	private String oid;
+	private boolean errorOlt;
+	private boolean sinOid;
+	
 }

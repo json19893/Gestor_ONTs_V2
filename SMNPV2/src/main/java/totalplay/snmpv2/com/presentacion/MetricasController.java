@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.extern.slf4j.Slf4j;
@@ -34,12 +35,14 @@ import totalplay.snmpv2.com.persistencia.repositorio.IconfiguracionMetricaReposi
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorActualizacionEstatusRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorEjecucionRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.ImonitorPoleoManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorPoleoMetricaRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorPoleoOltMetricaRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorPoleoRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IparametrosGeneralesRepository;
 import totalplay.snmpv2.com.persistencia.entidades.MonitorEjecucionEntity;
 import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoEntity;
+import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoManualEntity;
 import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoMetricaEntity;
 import totalplay.snmpv2.com.persistencia.entidades.ParametrosGeneralesEntity;
 @Slf4j
@@ -64,6 +67,8 @@ public class MetricasController extends Constantes {
 	IparametrosGeneralesRepository parametrosGenerales;
 	@Autowired
 	IinventarioOntsRepository inventarioOnts;
+	@Autowired
+	ImonitorPoleoManualRepository monitorPoleoManual;
 	
 	
 	
@@ -79,7 +84,7 @@ public class MetricasController extends Constantes {
 		
 	//@Scheduled(fixedRate = 14400000)
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-	@GetMapping(value = "/separatePoleo", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/poleoMetricas", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String separatePoleo() throws Exception {
 		String response = "ok";
 
@@ -91,6 +96,7 @@ public class MetricasController extends Constantes {
 		ParametrosGeneralesEntity params = null;
 		Integer maxOntsEmpresariales;
 		int activas = 0;
+		MonitorPoleoMetricaEntity monitPoleoMetrica;
 		
 			
 		
@@ -98,22 +104,26 @@ public class MetricasController extends Constantes {
 			
 			//monitorMetrica.deleteAll();
 			//monitorOlt.deleteAll();
-			//Se crea un nuevo registro para el monitor
+			
+			//Se crea un nuevo registro para el monitor			
 			idMonitorPoleo = monitorPoleo.save(new MonitorPoleoEntity(LocalDateTime.now().toString(), null,INICIO_DESC+"POLEO" , INICIO)).getId();
 			
-			params =  parametrosGenerales.getParametros(1);
+			
 			
 			List<CatOltsEntity> olts = catOlts.findByEstatus(1);
 			List<CompletableFuture<String>> regionSegmentOnts;
 			List<CompletableFuture<String>> regionSegmentOntsEmpresariales;
 			
-			for(int j=1;j<=16;j++) {
+			for(int j=3;j<=16;j++) {
 				
-				activas = confMetricas.getCountMetricas(j, params.getBloque());
+				activas = confMetricas.getCountActive(j);
 				
 				if(activas>0){
 					
-					idMonitorMetrica = monitorMetrica.save(new MonitorPoleoMetricaEntity(Integer.valueOf(j),LocalDateTime.now().toString(),idMonitorPoleo)).getId();
+					monitPoleoMetrica = monitorMetrica.save(new MonitorPoleoMetricaEntity(Integer.valueOf(j),LocalDateTime.now().toString(),idMonitorPoleo));
+					idMonitorMetrica = monitPoleoMetrica.getId(); 
+					//monitPoleoMetrica = monitorMetrica.getMonitorMetrica(idMonitorMetrica);
+					
 					regionSegmentOnts = new ArrayList<CompletableFuture<String>>();			
 					
 					Integer maxOnts = (olts.size() /50) + 1;
@@ -132,9 +142,11 @@ public class MetricasController extends Constantes {
 					CompletableFuture.allOf(regionSegmentOnts.toArray(new CompletableFuture[regionSegmentOnts.size()])).join();
 					
 					//Obtener las empresariales no poeladas y mandarlas con otro servicio
-					ontsEmpresariales =  poleoMetricas.getOntsEmpreariales(j,idMonitorPoleo, true);
+					ontsEmpresariales =  poleoMetricas.getOntsFaltantes(j,idMonitorPoleo, true, false, "auxiliar", 2);
+					monitPoleoMetrica.setOntsSnmp(ontsEmpresariales.size());
 					
 					if(ontsEmpresariales != null) {
+						log.info("::::::::::::::::::::::::::::::Se hace el cruce de faltantes para " + ontsEmpresariales.size() );
 						regionSegmentOntsEmpresariales = new ArrayList<CompletableFuture<String>>();
 						maxOntsEmpresariales = (ontsEmpresariales.size()/50) + 1;
 						
@@ -157,7 +169,6 @@ public class MetricasController extends Constantes {
 						
 					}
 					
-					MonitorPoleoMetricaEntity monitPoleoMetrica = monitorMetrica.getMonitorMetrica(idMonitorMetrica);
 					monitPoleoMetrica.setFecha_fin(LocalDateTime.now().toString());
 					monitorMetrica.save(monitPoleoMetrica);
 					
@@ -173,9 +184,6 @@ public class MetricasController extends Constantes {
 			MonitorPoleoEntity monitor = monitorPoleo.getMonitorPoleo(idMonitorPoleo);
 			monitor.setFecha_fin(LocalDateTime.now().toString());
 			monitorPoleo.save(monitor);
-			
-			params.setBloque(params.getBloque()+1);
-			parametrosGenerales.save(params);
 		}
 
 		return response;
@@ -220,7 +228,7 @@ public class MetricasController extends Constantes {
 
 				CompletableFuture.allOf(regionSegmentOnts.toArray(new CompletableFuture[regionSegmentOnts.size()])).join();
 				
-				List<OntsConfiguracionDto> ontsEmpresariales =  poleoMetricas.getOntsEmpreariales(201,idMonitorPoleo, true);
+				List<OntsConfiguracionDto> ontsEmpresariales =  poleoMetricas.getOntsFaltantes(1,idMonitorPoleo, true, false,"auxiliar_estatus", 3);
 				
 				ArrayList<CompletableFuture<String>> regionSegmentOntsEmpresariales = new ArrayList<CompletableFuture<String>>();
 				Integer maxOntsEmpresariales = (ontsEmpresariales.size() /42) + 1;
@@ -261,8 +269,110 @@ public class MetricasController extends Constantes {
 			return "Fin";
 
 		}
-	
+		
+		@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+		@GetMapping(value = "/poleoMetricasManual/{bloque}", produces = MediaType.APPLICATION_JSON_VALUE)
+		public String poleoMetricasManual(@PathVariable(name = "bloque") Integer bloque) throws Exception {
+			String response = "ok";
 
+			
+			Integer estatusPoleo = FALLIDO;
+			String idMonitorPoleo = "";
+			String idMonitorMetrica = "";
+			List<OntsConfiguracionDto> ontsEmpresariales;
+			ParametrosGeneralesEntity params = null;
+			Integer maxOntsEmpresariales;
+			int activas = 0;
+			
+				
+			
+			try {
+				
+				//Se crea un nuevo registro para el monitor
+				idMonitorPoleo = monitorPoleoManual.save(new MonitorPoleoManualEntity(LocalDateTime.now().toString(), null,INICIO_DESC+"POLEO" , INICIO)).getId();
+				
+				//params =  parametrosGenerales.getParametros(1);
+				
+				List<CatOltsEntity> olts = catOlts.findByEstatus(1);
+				List<CompletableFuture<String>> regionSegmentOnts;
+				List<CompletableFuture<String>> regionSegmentOntsEmpresariales;
+				MonitorPoleoMetricaEntity monitPoleoMetrica;
+				
+				for(int j=1;j<=16;j++) {
+					
+					activas = confMetricas.getCountMetricasBloque(j, bloque);
+					
+					if(activas>0){
+						
+						idMonitorMetrica = monitorMetrica.save(new MonitorPoleoMetricaEntity(Integer.valueOf(j),LocalDateTime.now().toString(),idMonitorPoleo)).getId();
+						monitPoleoMetrica = monitorMetrica.getMonitorMetrica(idMonitorMetrica);
+						
+						regionSegmentOnts = new ArrayList<CompletableFuture<String>>();			
+						
+						Integer maxOnts = (olts.size() /50) + 1;
+						
+						for (int i = 0; i < olts.size(); i += maxOnts) {
+							Integer limMax = i + maxOnts;
+							if (limMax >= olts.size()) {
+								limMax = olts.size();
+							}
+							List<CatOltsEntity> listSegment = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
+			
+							CompletableFuture<String> executeProcess = poleoMetricas.executeProcess(listSegment, idMonitorPoleo, j);
+							regionSegmentOnts.add(executeProcess);
+						}
+						
+						CompletableFuture.allOf(regionSegmentOnts.toArray(new CompletableFuture[regionSegmentOnts.size()])).join();
+						
+						
+						//Obtener las empresariales no poeladas y mandarlas con otro servicio
+						ontsEmpresariales =  poleoMetricas.getOntsFaltantes(j,idMonitorPoleo, true, false, "auxiliar_poleo_manual", 1);
+						monitPoleoMetrica.setOntsSnmp(ontsEmpresariales.size());
+						
+						if(ontsEmpresariales != null) {
+							regionSegmentOntsEmpresariales = new ArrayList<CompletableFuture<String>>();
+							maxOntsEmpresariales = (ontsEmpresariales.size()/50) + 1;
+							
+							for (int i = 0; i < ontsEmpresariales.size(); i += maxOntsEmpresariales) {
+								log.info("--------------------------------------------"+i+"------------------------------------");
+								Integer limMax = i + maxOntsEmpresariales;
+								if (limMax >= ontsEmpresariales.size()) {
+									limMax = ontsEmpresariales.size();
+								}
+								
+								List<OntsConfiguracionDto> listSegment = new ArrayList<OntsConfiguracionDto>(ontsEmpresariales.subList(i, limMax));
+								
+								
+								CompletableFuture<String> executeProcess = poleoMetricas.getMetricaEmpresarialesByMetrica( listSegment,idMonitorPoleo, j);
+								
+								regionSegmentOntsEmpresariales.add(executeProcess);
+							}
+			
+							CompletableFuture.allOf(regionSegmentOntsEmpresariales.toArray(new CompletableFuture[regionSegmentOntsEmpresariales.size()])).join();
+							
+						}
+						
+						monitPoleoMetrica.setFecha_fin(LocalDateTime.now().toString());
+						monitorMetrica.save(monitPoleoMetrica);
+						
+						
+					}
+				}
+				
+				
+			} catch (Exception e) {
+				log.info("error:" + e);
+				response = "error:::" + e;
+			}finally {
+				MonitorPoleoManualEntity monitor = monitorPoleoManual.getMonitorPoleo(idMonitorPoleo);
+				monitor.setFecha_fin(LocalDateTime.now().toString());
+				monitorPoleoManual.save(monitor);
+				
+			}
+
+			return response;
+
+		}
 		
 
 }

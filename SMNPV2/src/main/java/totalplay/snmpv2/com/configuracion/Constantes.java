@@ -9,7 +9,7 @@ public class Constantes {
 	public static final String ERROR_EJECUTAR_COMANDO = "Ocurrio un error al ejecutar el comando bash: ";
 	public static final String NO_PIN = "No es pineable ";
 	public static final String ERROR_LIMPIAR_CADENA = "Ocurrio un error al limpiar la cadena ";
-	public static final String SIN_METRICA = "Sin métrica";
+	public static final String SIN_METRICA = "Sin metrica";
 	
 	/* Constantes de ejecucion de SNMP */
 	public static final String SNMP_BULK = "snmpbulkwalk ";

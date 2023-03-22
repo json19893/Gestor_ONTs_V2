@@ -115,7 +115,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			 //Enviar a la tabla de diferencias las olts duplicadas
 			 log.info(":::::::::::::::::::::::::: enviar a duplicados  :::::::::::::::::::::::");
 			 idEjecucion =  monitorEstatus.findFirstByOrderByIdDesc().getId();
-			 poleometricas.getOntsEmpreariales(1,idEjecucion, false);
+			 poleometricas.getOntsFaltantes(1,idEjecucion, false, false, "auxiliar",2);
 			 inventarioTmp.sendTbDiferencias();
 			
 			//Migrar los datos de inventariotmp a aux
@@ -150,10 +150,10 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			//Obtener los faltantes de inventario
 			getInventario();
 			
-			//Econtar los oids repetidos y ver la posibilidad de aislarlos
+			//Econtar los oids repetidos (ver la posibilidad de aislarlos)
 			cleanOidsRepetidos();
 			
-			//getEmpresarialesVips();
+			 getEmpresarialesVips();
 			 deleteInventarioPdm();
 			
 			//Respaldar inventario
@@ -188,7 +188,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 		
 		List<CatOltsEntity> olts= catOltRepository.findByEstatus(1);
 		
-		poleometricas.getOntsEmpreariales(metrica, idPoleo, false);
+		poleometricas.getOntsFaltantes(metrica, idPoleo, false, false, "auxiliar", 2);
 		
 		
 		List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();

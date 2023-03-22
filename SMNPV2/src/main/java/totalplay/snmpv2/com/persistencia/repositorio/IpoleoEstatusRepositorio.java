@@ -14,9 +14,9 @@ public interface IpoleoEstatusRepositorio extends MongoRepository<PoleosEstatusE
 
 	@Aggregation(pipeline = { 
 			"{$match:{id_ejecucion:?0}}"
-			,"{$out: 'tb_status_onts'}"
+			,"{$out: ?1 }"
 					})
-	void outToAux(@Param("idEjecucion") String idEjecucion);
+	void outToAux(@Param("idEjecucion") String idEjecucion, @Param("tabla") String tabla);
 	
 	@Aggregation(pipeline = { 
 			"{$match:{id_ejecucion:?0}}"
