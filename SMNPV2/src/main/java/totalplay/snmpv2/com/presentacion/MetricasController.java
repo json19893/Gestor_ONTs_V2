@@ -206,10 +206,7 @@ public class MetricasController extends Constantes {
 			try {
 				
 				idMonitorPoleo = monitorEstatus.save(new MonitorActualizacionEstatusEntity(LocalDateTime.now().toString(), INICIO_PUT_ESTATUS)).getId();
-									
-				
 				List<CatOltsEntity> olts = catOlts.findByEstatus(1);
-				
 				ArrayList<CompletableFuture<String>> regionSegmentOnts = new ArrayList<CompletableFuture<String>>();			
 				
 				maxOnts = (olts.size() / 42) + 1;
@@ -253,9 +250,6 @@ public class MetricasController extends Constantes {
 				//cruce de métricas
 				poleoMetricas.joinUpdateStatus(idMonitorPoleo);
 				
-				
-				
-				
 			} catch (Exception e) {
 				estatus = "ERRONEO";
 			} finally {
@@ -274,8 +268,6 @@ public class MetricasController extends Constantes {
 		@GetMapping(value = "/poleoMetricasManual/{bloque}", produces = MediaType.APPLICATION_JSON_VALUE)
 		public String poleoMetricasManual(@PathVariable(name = "bloque") Integer bloque) throws Exception {
 			String response = "ok";
-
-			
 			Integer estatusPoleo = FALLIDO;
 			String idMonitorPoleo = "";
 			String idMonitorMetrica = "";
@@ -283,9 +275,7 @@ public class MetricasController extends Constantes {
 			ParametrosGeneralesEntity params = null;
 			Integer maxOntsEmpresariales;
 			int activas = 0;
-			
-				
-			
+
 			try {
 				
 				//Se crea un nuevo registro para el monitor

@@ -18,9 +18,5 @@ node_modules
 *.pack
 *.MF
 *.MF
-*.properties
 *.old
 *.prefs
-*.class
-*.class
-.class
