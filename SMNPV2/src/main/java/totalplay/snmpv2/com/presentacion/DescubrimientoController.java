@@ -55,12 +55,14 @@ public class DescubrimientoController extends Constantes {
 	@Autowired
 	IinventarioOntsErroneas inventarioErroneas;
 
+
 	private Integer valMaxOlts = 50;
 	Utils util =new Utils();
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@GetMapping("/descubrimiento")
 	public GenericResponseDto getDescubrimientoOnts() throws IOException {
 		String idProceso="";
+		MonitorEjecucionEntity monitorDescubrimiento;
 		try {
 			log.info("================== "+INICIO_DESC+" DESCUBRIMIENTO ====================================");
 			
@@ -70,8 +72,9 @@ public class DescubrimientoController extends Constantes {
 			List<CatOltsEntity> olts=new ArrayList<CatOltsEntity>();
 			List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();
 			
-			idProceso=	monitor.save(new MonitorEjecucionEntity(INICIO_DESC+"DESCUBRIMIENTO",fechaInicio,null,INICIO)).getId();
-		 	
+			monitorDescubrimiento = monitor.save(new MonitorEjecucionEntity(INICIO_DESC+"DESCUBRIMIENTO",fechaInicio,null,INICIO));
+			idProceso = monitorDescubrimiento.getId();
+				
 			olts= catOltRepository.findByEstatus(1);
 			log.info("Total olts primera ejecucion: "+ olts.size());
 			thredOlts  = getProceso(olts,idProceso);
@@ -84,11 +87,16 @@ public class DescubrimientoController extends Constantes {
 			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
 			}
 			
-			Optional<MonitorEjecucionEntity> monitorEnt=monitor.findById(idProceso);
 			
-			monitorEnt.get().setDescripcion(FINAL_EXITO+" DESCUBRIMIENTO");
-			monitorEnt.get().setFecha_fin( LocalDateTime.now().toString());
-			monitor.save(monitorEnt.get());
+			limpiezaOnts.updateDescripcion(monitorDescubrimiento, INICIO_DESC+"LIMPIEZA");
+			
+			limpiezaOnts.getInventarioPuertos(monitorDescubrimiento);
+			limpiezaOnts.getInventarioaux(monitorDescubrimiento);
+			
+			monitorDescubrimiento.setDescripcion(FINAL_EXITO+" DESCUBRIMIENTO & LIMPIEZA");
+			monitorDescubrimiento.setFecha_fin( LocalDateTime.now().toString());
+			monitor.save(monitorDescubrimiento);
+			return new GenericResponseDto(EJECUCION_EXITOSA, 0);
 		} catch (Exception e) {
 			Optional<MonitorEjecucionEntity> monitorEnt=monitor.findById(idProceso);
 			monitorEnt.get().setDescripcion(EJECUCION_ERROR + e);
@@ -98,12 +106,6 @@ public class DescubrimientoController extends Constantes {
 			return new GenericResponseDto(EJECUCION_ERROR + e, 0);
 			
 		}
-		
-		
-		limpiezaOnts.getInventarioPuertos();
-		limpiezaOnts.getInventarioaux();
-	
-		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
 	}
 
 	public List<CompletableFuture<GenericResponseDto>> getProceso ( List<CatOltsEntity> olts,String idProceso) throws IOException{

@@ -1,4 +1,4 @@
-package totalplay.snmpv2.com.persistencia.entidades;
+package totalplay.monitor.snmp.com.persistencia.entidad;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,7 +23,7 @@ public class MonitorPoleoManualEntity {
 		this.fecha_fin = fecha_fin;
 		this.descripcion = descripcion;
 		this.estatus = estatus;
-		this.bloque =bloque;
+		this.bloque = bloque;
 	}
 	
 }
