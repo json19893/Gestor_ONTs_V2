@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import totalplay.snmpv2.com.configuracion.Constantes;
 import totalplay.snmpv2.com.configuracion.Utils;
+import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.negocio.dto.OntsConfiguracionDto;
 import totalplay.snmpv2.com.negocio.services.IdescubrimientoService;
 import totalplay.snmpv2.com.negocio.services.IpoleoMetricasService;
@@ -266,7 +267,7 @@ public class MetricasController extends Constantes {
 		
 		@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 		@GetMapping(value = "/poleoMetricasManual/{bloque}", produces = MediaType.APPLICATION_JSON_VALUE)
-		public String poleoMetricasManual(@PathVariable(name = "bloque") Integer bloque) throws Exception {
+		public GenericResponseDto poleoMetricasManual(@PathVariable(name = "bloque") Integer bloque) throws Exception {
 			String response = "ok";
 			Integer estatusPoleo = FALLIDO;
 			String idMonitorPoleo = "";
@@ -275,13 +276,31 @@ public class MetricasController extends Constantes {
 			ParametrosGeneralesEntity params = null;
 			Integer maxOntsEmpresariales;
 			int activas = 0;
+			
+			try {
+				//Marcar el proceso iniciado
+				params= parametrosGenerales.getParametros(1);
+				
+				if(params!=null && params.isPoleo_metrica()) {
+					return new GenericResponseDto(EJECUCION_ERROR +"Ejecución en curso", 0);
+				}else {
+					params.setBloque(bloque);
+					params.setPoleo_metrica(true);
+					parametrosGenerales.save(params);
+				}
+				
+			} catch (Exception e) {
+				log.info(e.toString());
+				return new GenericResponseDto(EJECUCION_ERROR +"Error al obtener el estatus de la ejecución", 0);
+			}
 
 			try {
 				
-				//Se crea un nuevo registro para el monitor
-				idMonitorPoleo = monitorPoleoManual.save(new MonitorPoleoManualEntity(LocalDateTime.now().toString(), null,INICIO_DESC+"POLEO" , INICIO)).getId();
 				
-				//params =  parametrosGenerales.getParametros(1);
+				//Se crea un nuevo registro para el monitor
+				idMonitorPoleo = monitorPoleoManual.save(new MonitorPoleoManualEntity(LocalDateTime.now().toString(), null,INICIO_DESC+"POLEO" , INICIO, bloque)).getId();
+				
+				
 				
 				List<CatOltsEntity> olts = catOlts.findByEstatus(1);
 				List<CompletableFuture<String>> regionSegmentOnts;
@@ -349,6 +368,7 @@ public class MetricasController extends Constantes {
 					}
 				}
 				
+				estatusPoleo=EXITOSO;
 				
 			} catch (Exception e) {
 				log.info("error:" + e);
@@ -356,11 +376,17 @@ public class MetricasController extends Constantes {
 			}finally {
 				MonitorPoleoManualEntity monitor = monitorPoleoManual.getMonitorPoleo(idMonitorPoleo);
 				monitor.setFecha_fin(LocalDateTime.now().toString());
+				monitor.setEstatus(estatusPoleo);
 				monitorPoleoManual.save(monitor);
+				
+				if(params!=null) {
+					params.setPoleo_metrica(false);
+					parametrosGenerales.save(params);
+				}
 				
 			}
 
-			return response;
+			return new GenericResponseDto(FINAL_EXITO +" POLEO MANUAL", 1);
 
 		}
 		

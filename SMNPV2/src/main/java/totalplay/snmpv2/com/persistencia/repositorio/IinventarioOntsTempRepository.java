@@ -95,7 +95,7 @@ public interface IinventarioOntsTempRepository extends MongoRepository<Inventari
 		      , "{ $merge: { into: \"tb_inventario_onts_tmp\", on: \"_id\", whenMatched: \"replace\", whenNotMatched: \"insert\" } }"
 		      })
 	@Meta(allowDiskUse = true)
-	List<InventarioOntsTmpEntity> findDuplicadas();
+	void findDuplicadas();
 	
 	
 	@Aggregation(pipeline = { 

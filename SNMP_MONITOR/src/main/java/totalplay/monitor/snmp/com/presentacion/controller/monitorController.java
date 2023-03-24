@@ -34,6 +34,7 @@ import totalplay.monitor.snmp.com.persistencia.repository.IcatConfiguracionRepos
 import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsPdmRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsRepositorio;
+import totalplay.monitor.snmp.com.persistencia.repository.ImonitorPoleoManualRepository;
 import totalplay.monitor.snmp.com.persistencia.repository.ImonitorPoleoRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.ItblDescubrimientoManualRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IusuariosRepositorio;
@@ -78,6 +79,8 @@ public class monitorController extends constantes {
     bitacoraEventosRepository bitacoraEventos;
     @Autowired
     IvwTotalOntsRepositorio vwOnts;
+    @Autowired
+    ImonitorPoleoManualRepository monitorPoleoManual;
 
     @Autowired
     IBlockMetricService BlockMetricService;
@@ -574,5 +577,17 @@ public class monitorController extends constantes {
     @RequestMapping(value = "/removeMetricBlock/{idconfigmetric}/block/{idblock}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public responseDto removeMetricfromBlock(@PathVariable("idconfigmetric") int id_metrica, @PathVariable("idblock") int id_bloque) {
         return BlockMetricService.removeMetricBlock(id_metrica, id_bloque);
+    }
+    
+    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/getOltsOnts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<responseOltsOntsDto> getOltsOnts() {
+        return inventario.getOltsOnts();
+    }
+    
+    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/getMonitorInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<responseMonitorMetricasManualInfoDto> getMonitorInfo() {
+        return monitorPoleoManual.getMonitorData();
     }
 }
