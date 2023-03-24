@@ -2,11 +2,14 @@ package totalplay.snmpv2.com.negocio.services;
 import totalplay.snmpv2.com.negocio.dto.CadenasMetricasDto;
 import totalplay.snmpv2.com.negocio.dto.EjecucionDto;
 import totalplay.snmpv2.com.negocio.dto.GenericPoleosDto;
+import totalplay.snmpv2.com.persistencia.entidades.MonitorEjecucionEntity;
+
 import java.io.IOException;
 import java.util.List;
 
 public interface IlimpiezaOntsService {
    
-	boolean getInventarioPuertos();
-	boolean getInventarioaux();
+	boolean getInventarioPuertos(MonitorEjecucionEntity monitor);
+	boolean getInventarioaux(MonitorEjecucionEntity monitor);
+	void updateDescripcion(MonitorEjecucionEntity monitor, String descripcion);
 }
