@@ -83,18 +83,16 @@ public class DescubrimientoController extends Constantes {
 			idProceso=	monitor.save(new MonitorEjecucionEntity(INICIO_DESC+"DESCUBRIMIENTO",fechaInicio,null,INICIO)).getId();
 			olts= catOltRepository.findByEstatus(1);
 			log.info("Total olts primera ejecucion: "+ olts.size());
-			thredOlts  = getProceso(olts,idProceso);
+			thredOlts  = getProceso(olts,idProceso,false,"System");
 			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
 			olts= catOltRepository.findByEstatusAndDescubrio(1,false); 
 			log.info("Total ols segunda ejecucion: "+ olts.size());
 			if (olts.isEmpty()){
-			thredOlts  = getProceso(olts,idProceso);
+			thredOlts  = getProceso(olts,idProceso,false,"System");
 			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
 			}
-
 			limpiezaOnts.getInventarioPuertos();
 			limpiezaOnts.getInventarioaux();
-			
 			Optional<MonitorEjecucionEntity> monitorEnt=monitor.findById(idProceso);
 			
 			monitorEnt.get().setDescripcion(FINAL_EXITO+" DESCUBRIMIENTO");
@@ -113,7 +111,7 @@ public class DescubrimientoController extends Constantes {
 		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
 	}
 
-	public List<CompletableFuture<GenericResponseDto>> getProceso ( List<CatOltsEntity> olts,String idProceso) throws IOException{
+	public List<CompletableFuture<GenericResponseDto>> getProceso ( List<CatOltsEntity> olts,String idProceso,Boolean manual,String usuario) throws IOException{
 		valMaxOlts = (olts.size() /40) + 1;
 			List<CompletableFuture<GenericResponseDto>> thredOlts = new ArrayList<CompletableFuture<GenericResponseDto>>();
 			for (int i = 0; i < olts.size(); i += valMaxOlts) {
@@ -123,7 +121,7 @@ public class DescubrimientoController extends Constantes {
 				}
 				List<CatOltsEntity> segmentOlts = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
 				CompletableFuture<GenericResponseDto> executeProcess = descubrimientoService
-						.getDescubrimiento(segmentOlts, idProceso, false);
+						.getDescubrimiento(segmentOlts, idProceso, manual,usuario);
 				thredOlts.add(executeProcess);
 			}
 			return thredOlts;
@@ -135,14 +133,26 @@ public class DescubrimientoController extends Constantes {
 
 		try {
 			ibitacoraEventos.save(new BitacoraEventosEntity(LocalDateTime.now().toString(),DES_MANUAL,datos.getUsuario(),DESC_EVENTO_MANUAL + datos.getOlts()));
-			
 			long proc = descubrimientoManual.countByEstatus(0);
 			if (proc > 0) {
 				return new GenericResponseDto(PROCESANDO, 1);
 			}
-			idProceso=	monitor.save(new MonitorEjecucionEntity(INICIO_DESC+"DESCUBRIMIENTO",LocalDateTime.now().toString(),null,INICIO)).getId();
+			
+			MonitorEjecucionEntity desc=monitor.findFirstByOrderByIdDesc();
+			if(desc.getFecha_fin()==null){
+				return new GenericResponseDto(PROCESANDO, 1);
+			}
+			List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();
+			List<CatOltsEntity> olts=new ArrayList<CatOltsEntity>();
+			for (Integer d : datos.getOlts()) {
+				CatOltsEntity olt=catOltRepository.getOlt(d);
+				olts.add(olt);
+			}
+			thredOlts  = getProceso(olts,idProceso,true,datos.getUsuario());
+			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
+		//Limpieza de datos para inventario final
 		} catch (Exception e) {
-			return new GenericResponseDto(EJECUCION_ERROR, 0);
+			return new GenericResponseDto(EJECUCION_ERROR, 1);
 		}
 		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
 	}

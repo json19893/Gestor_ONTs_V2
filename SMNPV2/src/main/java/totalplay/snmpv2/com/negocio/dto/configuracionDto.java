@@ -19,4 +19,5 @@ public class configuracionDto extends GenericResponseDto {
 	private Integer idOlt;
 	private String tecnologia;
 	private Integer idConfiguracion;
+	private String nombreOlt;
 }

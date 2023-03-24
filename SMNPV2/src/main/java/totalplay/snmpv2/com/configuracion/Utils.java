@@ -41,7 +41,7 @@ public class Utils extends Constantes {
 			response.setIdRegion(conf.get(0).getId_region());
 			response.setTecnologia(conf.get(0).getTecnologia());
 			response.setIdConfiguracion(conf.get(0).getId_configuracion());
-
+			response.setNombreOlt(conf.get(0).getNombre());
 			if (conf.get(0).getId_configuracion() != 0) {
 				response.setVersion(conf.get(0).getConfiguracion().get(0).getVersion());
 				response.setUserName(conf.get(0).getConfiguracion().get(0).getUsuario());

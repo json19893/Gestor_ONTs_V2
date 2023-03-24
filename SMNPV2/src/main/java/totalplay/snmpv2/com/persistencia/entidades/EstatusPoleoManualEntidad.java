@@ -20,4 +20,16 @@ public class EstatusPoleoManualEntidad {
 	public String descripcion;
 	public Integer onts;
 	public String usuario;
+
+	public EstatusPoleoManualEntidad(Integer idOlt,String ip,String nombre,
+	String fecha,Integer estatus,String descripcion,Integer onts,String usuario) {
+		this.idOlt = idOlt;
+		this.ip = ip;
+		this.nombre = nombre;
+		this.fecha = fecha;
+		this.estatus = estatus;
+		this.descripcion = descripcion;
+		this.onts = onts;
+		this.usuario = usuario;
+	}
 }

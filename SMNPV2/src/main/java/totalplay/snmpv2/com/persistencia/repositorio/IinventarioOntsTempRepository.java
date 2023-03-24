@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.Meta;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
@@ -117,4 +118,7 @@ public interface IinventarioOntsTempRepository extends MongoRepository<Inventari
 	        , "{$out: \"tb_diferencias\" }"})
 	@Meta(allowDiskUse = true)
 	List<InventarioOntsTmpEntity> sendTbDiferencias();
+
+	@Query(value = "{'id_olts': ?0}", count = true)
+	Integer finOnts(@Param("idOlts") Integer idOlts);
 }
