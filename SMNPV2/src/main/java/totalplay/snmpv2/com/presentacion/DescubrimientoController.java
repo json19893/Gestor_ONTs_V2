@@ -22,21 +22,28 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import lombok.extern.slf4j.Slf4j;
 
 import totalplay.snmpv2.com.configuracion.Constantes;
 import totalplay.snmpv2.com.configuracion.Utils;
+import totalplay.snmpv2.com.negocio.dto.DescubrimientoManualDto;
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.negocio.services.IdescubrimientoService;
 import totalplay.snmpv2.com.negocio.services.IlimpiezaOntsService;
+import totalplay.snmpv2.com.persistencia.entidades.BitacoraEventosEntity;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsTmpEntity;
+import totalplay.snmpv2.com.persistencia.repositorio.IBitacoraEventosRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IcatConfiguracionRepositorio;
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsErroneas;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorEjecucionRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.ItblDescubrimientoManualRepositorio;
 import totalplay.snmpv2.com.persistencia.entidades.MonitorEjecucionEntity;
 @Slf4j
 @RestController
@@ -55,37 +62,43 @@ public class DescubrimientoController extends Constantes {
 	@Autowired
 	IinventarioOntsErroneas inventarioErroneas;
 
+	@Autowired
+	IBitacoraEventosRepository ibitacoraEventos;
+	@Autowired
+	ItblDescubrimientoManualRepositorio descubrimientoManual;
+	@Autowired
 
 	private Integer valMaxOlts = 50;
+	String idProceso="";
 	Utils util =new Utils();
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@GetMapping("/descubrimiento")
 	public GenericResponseDto getDescubrimientoOnts() throws IOException {
 		String idProceso="";
 		MonitorEjecucionEntity monitorDescubrimiento;
+
 		try {
 			log.info("================== "+INICIO_DESC+" DESCUBRIMIENTO ====================================");
-			
 			inventarioTmp.deleteAll();
 			inventarioErroneas.deleteAll();
 			String fechaInicio = LocalDateTime.now().toString();
 			List<CatOltsEntity> olts=new ArrayList<CatOltsEntity>();
 			List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();
-			
-			monitorDescubrimiento = monitor.save(new MonitorEjecucionEntity(INICIO_DESC+"DESCUBRIMIENTO",fechaInicio,null,INICIO));
-			idProceso = monitorDescubrimiento.getId();
-				
+
+			idProceso=	monitor.save(new MonitorEjecucionEntity(INICIO_DESC+"DESCUBRIMIENTO",fechaInicio,null,INICIO)).getId();
 			olts= catOltRepository.findByEstatus(1);
 			log.info("Total olts primera ejecucion: "+ olts.size());
 			thredOlts  = getProceso(olts,idProceso);
 			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
-			
 			olts= catOltRepository.findByEstatusAndDescubrio(1,false); 
 			log.info("Total ols segunda ejecucion: "+ olts.size());
 			if (olts.isEmpty()){
 			thredOlts  = getProceso(olts,idProceso);
 			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
 			}
+
+			limpiezaOnts.getInventarioPuertos();
+			limpiezaOnts.getInventarioaux();
 			
 			
 			limpiezaOnts.updateDescripcion(monitorDescubrimiento, INICIO_DESC+"LIMPIEZA");
@@ -105,7 +118,9 @@ public class DescubrimientoController extends Constantes {
 			log.error(EJECUCION_ERROR, e);
 			return new GenericResponseDto(EJECUCION_ERROR + e, 0);
 			
-		}
+		}	
+		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
+
 	}
 
 	public List<CompletableFuture<GenericResponseDto>> getProceso ( List<CatOltsEntity> olts,String idProceso) throws IOException{
@@ -123,5 +138,24 @@ public class DescubrimientoController extends Constantes {
 			}
 			return thredOlts;
 	}
+
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@PostMapping("/descubrimientoManual")
+	public GenericResponseDto descubrimientoManual(@RequestBody DescubrimientoManualDto datos) throws Exception {
+
+		try {
+			ibitacoraEventos.save(new BitacoraEventosEntity(LocalDateTime.now().toString(),DES_MANUAL,datos.getUsuario(),DESC_EVENTO_MANUAL + datos.getOlts()));
+			
+			long proc = descubrimientoManual.countByEstatus(0);
+			if (proc > 0) {
+				return new GenericResponseDto(PROCESANDO, 1);
+			}
+			idProceso=	monitor.save(new MonitorEjecucionEntity(INICIO_DESC+"DESCUBRIMIENTO",LocalDateTime.now().toString(),null,INICIO)).getId();
+		} catch (Exception e) {
+			return new GenericResponseDto(EJECUCION_ERROR, 0);
+		}
+		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
+	}
+
 
 }
