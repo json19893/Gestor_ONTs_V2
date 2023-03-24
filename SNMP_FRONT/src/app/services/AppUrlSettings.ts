@@ -34,6 +34,7 @@ export class AppUrlSettings{
     public static LOGIN ="login"
     public static UPDATE_ESTATUS_OLT ="updateStatusOlt/"
     public static DESCUBRIMIENTO_MANUAL ="descubrimientoManual"
+    public static POLEO_METRICAS_MANUAL="poleoMetricasManual/"
     public static VALIDA_MAXIMO ="validaMaximoDescunbrimiento"
     public static DETALLE_DES_MANUAL ="getDetalleDescubrimiento"
     public static DETALLES_METRICAS ="configmetric"
