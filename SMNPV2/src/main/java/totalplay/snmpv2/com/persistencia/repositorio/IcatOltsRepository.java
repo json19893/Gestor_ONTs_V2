@@ -10,7 +10,14 @@ import org.springframework.data.repository.query.Param;
 public interface IcatOltsRepository extends MongoRepository<CatOltsEntity, String> {
 	
 	List<CatOltsEntity> findByEstatus(Integer estatus);
+	
 	@Aggregation(pipeline = {"{'$match':{id_olt:?0} } "})
 	CatOltsEntity  getOlt(@Param("idOLt") Integer idOLt);
+	
 	List<CatOltsEntity> findByEstatusAndDescubrio(Integer estatus,boolean descubrio);
+	
+	@Aggregation(pipeline = {
+			"{'$match':{id_olt: {$in : ?0} } }"
+			})
+	List<CatOltsEntity> getOltsById(@Param("idOLts") List<Integer> idOLts);
 }

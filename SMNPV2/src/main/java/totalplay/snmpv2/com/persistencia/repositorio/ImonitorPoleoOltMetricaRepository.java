@@ -13,4 +13,8 @@ public interface ImonitorPoleoOltMetricaRepository extends MongoRepository<Monit
 	
 	@Aggregation(pipeline = {"{'$match':{_id: ObjectId(?0)} } "})
 	MonitorPoleoOltMetricaEntity  getMonitorOlt(@Param("id") String id);
+	
+	@Aggregation(pipeline = {"{'$match':{$and:[{id_poleo: ?0}, {id_metrica:?1}, {id_olt:?2} ]} } "})
+	MonitorPoleoOltMetricaEntity  getMonitorExist (@Param("idPoleo") String idPoleo, @Param("idMetrica") Integer idMetrica, @Param("idOlt") Integer idOlt );
+	
 }

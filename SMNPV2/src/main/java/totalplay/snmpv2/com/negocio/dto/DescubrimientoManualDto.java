@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 public class DescubrimientoManualDto {
     private List<Integer> olts;
 	private String usuario;
+	private Integer bloque;
     
 }

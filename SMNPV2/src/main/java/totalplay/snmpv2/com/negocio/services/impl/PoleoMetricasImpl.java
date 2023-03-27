@@ -156,20 +156,22 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
 		String hilo = Thread.currentThread().getName(); 
 		Integer estatusPoleo = FALLIDO;
 		ConfiguracionMetricaEntity confMetrica;
+		MonitorPoleoOltMetricaEntity monitor;
+		String idMonitorOlt ="";
 		
 		
 		try {
 			
-			for (CatOltsEntity olt : olts) {
-				
-				
+			for (CatOltsEntity olt : olts) {				
 				try {
 									
-					String fechaInicioOlt = LocalDateTime.now().toString();
 					Integer idOlt= olt.getId_olt();
-					Integer estatusPoleoOlt = FALLIDO;
-					String nombreOlt = olt.getNombre();
-					String idMonitorOlt =  monitorPoleoOltMetrica.save(new MonitorPoleoOltMetricaEntity(idOlt,Integer.valueOf(idMetrica),LocalDateTime.now().toString(), idMonitorPoleo)).getId();
+					monitor = monitorPoleoOltMetrica.getMonitorExist(idMonitorPoleo, idMetrica, olt.getId_olt());
+					
+					if(monitor !=null)
+						idMonitorOlt = monitor.getId();
+					else
+						idMonitorOlt =  monitorPoleoOltMetrica.save(new MonitorPoleoOltMetricaEntity(idOlt,Integer.valueOf(idMetrica),LocalDateTime.now().toString(), idMonitorPoleo)).getId();
 					
 					
 					AggregationOperation match = Aggregation.match(Criteria.where("id_olt").is(idOlt));
@@ -235,8 +237,9 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
 						break;
 					}		
 					
-					estatusPoleoOlt = EXITOSO;
+					
 					MonitorPoleoOltMetricaEntity monitorPoleoOlt= monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
+					monitorPoleoOlt.setFecha_inicio(fechaInicio);
 					monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
 					monitorPoleoOlt.setError( metrica.get().getSms().equals("0") || metrica.get().getSms().equals("error")  || metrica.get().getSms().equals("Sin metrica") );
 					monitorPoleoOlt.setResultado(metrica.get().getSms());
@@ -245,8 +248,17 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
 					
 				} catch (Exception e) {
 					log.error("error:" + e);
+					
+					if(!idMonitorOlt.equals("")) {
+						MonitorPoleoOltMetricaEntity monitorPoleoOlt= monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
+						monitorPoleoOlt.setFecha_inicio(fechaInicio);
+						monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
+						monitorPoleoOlt.setError( true );
+						
+						monitorPoleoOltMetrica.save(monitorPoleoOlt);
+					}
+					
 				}			
-				//monitorPoleo.updateMonitorPoleoOlt(idMOnitorPoleoOlt, idMonitorPoleoRegionHilo, idOlt, nombreOlt, fechaInicioOlt, null, LocalDateTime.now().toString(), estatusPoleoOlt);
 			
 				estatusPoleo = EXITOSO;
 				
@@ -261,7 +273,7 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
     }	
     
     @Override
-	public List<OntsConfiguracionDto> getOntsFaltantes(int idMetrica, String idEjecucion, boolean resultado, boolean empresariales, String tabla, int tipo ){
+	public List<OntsConfiguracionDto> getOntsFaltantes(int idMetrica, String idEjecucion, boolean resultado, boolean empresariales, String tabla, int tipo, List<CatOltsEntity> olts ){
 		
     	List<OntsConfiguracionDto> faltantes=null;
 		
@@ -329,7 +341,7 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
 					else
 						faltantes = inventario.findOntsEmpresarialesMetricasFrameSlotPort(tabla);
 				}else {
-					faltantes = getFaltantes(idMetrica,tabla, tipo, idEjecucion);				
+					faltantes = getFaltantes(idMetrica,tabla, tipo, idEjecucion, olts);				
 				}
 			} catch (Exception e) {
 				System.out.println(e);
@@ -454,7 +466,7 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
     	
     	log.info("::::::::::::::::::::::::::::::::::::Inicia la actualizaciòn de estatus del inventario final");
     	
-    	getOntsFaltantes(1,idMonitorPoleo, false, true, "auxiliar_estatus",2);
+    	getOntsFaltantes(1,idMonitorPoleo, false, true, "auxiliar_estatus",2, null);
     	
     		
     	try {
@@ -492,7 +504,7 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
     	    	
     }
     
-    public List<OntsConfiguracionDto> getFaltantes(int idMetrica, String tablaJoin,  int tipo, String idEjecucion ){
+    public List<OntsConfiguracionDto> getFaltantes(int idMetrica, String tablaJoin,  int tipo, String idEjecucion, List<CatOltsEntity> olts ){
     	
     	List<OntsConfiguracionDto> respuesta = null;
     	String joinField = "index";
@@ -502,8 +514,14 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
     		if(idMetrica ==16 )
     			joinField = "indexFSP";
     			
+    		List<CatOltsEntity> oltsInventario;
     		
-    		List<CatOltsEntity> oltsInventario= inventario.getOlts();				
+    		if(olts != null) {
+    			oltsInventario = olts;
+    		}else {
+    			oltsInventario= inventario.getOlts();
+    		}
+    						
     		ArrayList<CompletableFuture<GenericResponseDto>> regionSegmentOlts = new ArrayList<CompletableFuture<GenericResponseDto>>();
     		
     		Integer maxOnts = (oltsInventario.size() / 42) + 1;
