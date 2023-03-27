@@ -132,7 +132,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			 log.info(":::::::::::::::::::::::::: enviar a duplicados  :::::::::::::::::::::::");
 			 updateDescripcion(monitor, INICIO_DESC+" AISLAR DUPLICADOS");
 			 idEjecucion =  monitorEstatus.findFirstByOrderByIdDesc().getId();
-			 poleometricas.getOntsFaltantes(1,idEjecucion, false, false, "auxiliar",2);
+			 poleometricas.getOntsFaltantes(1,idEjecucion, false, false, "auxiliar",2, null);
 			 inventarioTmp.sendTbDiferencias();
 			
 			//Migrar los datos de inventariotmp a aux
@@ -221,7 +221,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 		
 		List<CatOltsEntity> olts= catOltRepository.findByEstatus(1);
 		
-		poleometricas.getOntsFaltantes(metrica, idPoleo, false, false, "auxiliar", 2);
+		poleometricas.getOntsFaltantes(metrica, idPoleo, false, false, "auxiliar", 2, null);
 		
 		
 		List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();

@@ -66,7 +66,7 @@ public class DescubrimientoController extends Constantes {
 	IBitacoraEventosRepository ibitacoraEventos;
 	@Autowired
 	ItblDescubrimientoManualRepositorio descubrimientoManual;
-	@Autowired
+	
 
 	private Integer valMaxOlts = 50;
 	String idProceso="";

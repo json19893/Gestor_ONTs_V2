@@ -17,13 +17,15 @@ public class MonitorPoleoManualEntity {
 	private String descripcion;
 	private Integer estatus;
 	private Integer bloque;
+	private String id_ejecucion;
 	
-	public MonitorPoleoManualEntity(String fecha_inicio, String fecha_fin, String descripcion, Integer estatus, Integer bloque) {
+	public MonitorPoleoManualEntity(String fecha_inicio, String fecha_fin, String descripcion, Integer estatus, Integer bloque, String id_ejecucion) {
 		this.fecha_inicio = fecha_inicio;
 		this.fecha_fin = fecha_fin;
 		this.descripcion = descripcion;
 		this.estatus = estatus;
 		this.bloque =bloque;
+		this.id_ejecucion = id_ejecucion;
 	}
 	
 }
