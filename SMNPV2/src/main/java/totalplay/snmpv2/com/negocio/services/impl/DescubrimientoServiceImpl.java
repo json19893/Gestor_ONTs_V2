@@ -1,6 +1,7 @@
 package totalplay.snmpv2.com.negocio.services.impl;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -20,8 +21,11 @@ import totalplay.snmpv2.com.negocio.dto.configuracionDto;
 import totalplay.snmpv2.com.negocio.services.IGenericMetrics;
 import totalplay.snmpv2.com.negocio.services.IdescubrimientoService;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
+import totalplay.snmpv2.com.persistencia.entidades.EstatusPoleoManualEntidad;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsTmpEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.ItblDescubrimientoManualRepositorio;
 import totalplay.snmpv2.com.configuracion.Constantes;
 @Service
 @Slf4j
@@ -32,13 +36,17 @@ public class DescubrimientoServiceImpl extends Constantes implements Idescubrimi
 	IGenericMetrics genericMetrics;
 	@Autowired 
 	IcatOltsRepository catOLtsRepository;
+	@Autowired
+	ItblDescubrimientoManualRepositorio descubrimientoManual;
+	@Autowired
+	IinventarioOntsTempRepository inventarioTmp;
 	Utils util=new Utils();
 	@Override
 	@Async("taskExecutor")
 	public CompletableFuture<GenericResponseDto> getDescubrimiento(List<CatOltsEntity> olts, String idProceso,
-			boolean manual) throws IOException {
+			boolean manual,String usuario) throws IOException {
 		try {
-			if (!manual)
+	
 				for (CatOltsEntity o : olts) {
 					boolean pin=util.vaidaPin(o.getIp());
 					o.setPin(pin?1:0);
@@ -48,20 +56,20 @@ public class DescubrimientoServiceImpl extends Constantes implements Idescubrimi
 					o.setOnts_error(!pin?0:null);
 					catOLtsRepository.save(o);
 					if(pin)
-						descubrimiento(o.getId_olt(), idProceso);
-			}else {
-					
+						descubrimiento(o.getId_olt(), idProceso,manual,usuario);
 			}
 
 		} catch (Exception e) {
-
+			return CompletableFuture.completedFuture(new GenericResponseDto(EJECUCION_ERROR, 1));
 		}
 
-		return null;
+		return CompletableFuture.completedFuture(new GenericResponseDto(EJECUCION_EXITOSA, 0));
 	}
 
-	public boolean descubrimiento(Integer olt, String idProceso) throws IOException {
+	public boolean descubrimiento(Integer olt, String idProceso,boolean manual,String usuario) throws IOException {
 		String oid="";
+		String idDescubrimientoManual="";
+		EstatusPoleoManualEntidad registro= new EstatusPoleoManualEntidad();
 		try {
 			AggregationOperation match = Aggregation.match(Criteria.where("id_olt").is(olt));
 			AggregationOperation lookup = Aggregation.lookup("cat_configuracion", "id_configuracion",
@@ -73,12 +81,33 @@ public class DescubrimientoServiceImpl extends Constantes implements Idescubrimi
 			configuracionDto configuracion = Utils.getConfiguracion(out.getMappedResults());
 			//oid= Utils.getMetrica(configuracion.getTecnologia(), 0);
 			log.info("Tecnologia:::: "+oid);
-			CompletableFuture<GenericResponseDto> descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpEntity.class, true, "");
+			if(manual){
+				idDescubrimientoManual=	descubrimientoManual.save(new EstatusPoleoManualEntidad(configuracion.getIdOlt(),configuracion.getIp(),
+				configuracion.getNombreOlt(),LocalDate.now().toString(),0,INICIO_PROCESO_MANUAL,null,usuario)).getId();
+				registro=descubrimientoManual.findByid(idDescubrimientoManual);
+			}
+			CompletableFuture<GenericResponseDto> descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpEntity.class, true, "", false);
 			CompletableFuture.allOf(descubrimiento);
-			oid= Utils.getMetrica(configuracion.getTecnologia(), 1);
+			if(manual){
+				if(descubrimiento.get().getCod()==0){
+					registro.setDescripcion(FIN_EXITO_PROCESO_MANUAL);
+						registro.setOnts(inventarioTmp.finOnts(configuracion.getIdOlt()));
+						registro.setEstatus(1);
+						descubrimientoManual.save(registro);
+				}else{
+						registro.setDescripcion(FIN_ERROR_PROCESO_MANUAL);
+						registro.setEstatus(2);
+						descubrimientoManual.save(registro);
+				}
+			}
+			//oid= Utils.getMetrica(configuracion.getTecnologia(), 1);
 			/*CompletableFuture<GenericResponseDto> estatus=genericMetrics.poleo(configuracion, idProceso, oid, 1,olt ,estatusTemporalEntity.class);
 			CompletableFuture.allOf(estatus);*/
 		} catch (Exception e) {
+			if(manual){
+				registro.setDescripcion(FIN_ERROR_PROCESO_MANUAL+" "+e);
+				registro.setEstatus(2);
+			}
 			return false;
 		}
 		return true;

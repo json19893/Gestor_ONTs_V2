@@ -205,6 +205,12 @@ export class pointService {
       'mode':'no-cors'});*/
     return this.http.post<any>(AppUrlSettings.BASE_API_DESCUBRIMIENTO + AppUrlSettings.DESCUBRIMIENTO_MANUAL, data);
   }
+  poleoMetrica(data: any): Observable<any> {
+    /*var headers = new HttpHeaders({
+      'Authorization': token,
+      'mode':'no-cors'});*/
+    return this.http.post<any>(AppUrlSettings.BASE_API_DESCUBRIMIENTO + AppUrlSettings.POLEO_METRICAS_MANUAL,data);
+  }
   validaMaximo(): Observable<any> {
     /*var headers = new HttpHeaders({
       'Authorization': token,

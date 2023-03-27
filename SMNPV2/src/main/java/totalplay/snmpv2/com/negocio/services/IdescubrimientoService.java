@@ -8,6 +8,6 @@ import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 
 public interface IdescubrimientoService {
-    CompletableFuture<GenericResponseDto> getDescubrimiento(List<CatOltsEntity> olts,String idProceso,boolean manual) throws IOException;
+    CompletableFuture<GenericResponseDto> getDescubrimiento(List<CatOltsEntity> olts,String idProceso,boolean manual,String usuario) throws IOException;
     
 }

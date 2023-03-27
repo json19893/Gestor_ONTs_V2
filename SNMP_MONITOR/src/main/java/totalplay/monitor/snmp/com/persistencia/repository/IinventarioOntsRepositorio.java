@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import totalplay.monitor.snmp.com.negocio.dto.datosRegionDto;
+import totalplay.monitor.snmp.com.negocio.dto.responseOltsOntsDto;
 import totalplay.monitor.snmp.com.negocio.dto.totalesOntsEmpDto;
 import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.vwActualizacionEntidad;
@@ -685,6 +686,33 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 					+ "  }" })
 			@Meta(allowDiskUse = true)
 			List<vwActualizacionEntidad> getDetalleActualizacionE(@Param("limit") Integer limit);
+			
+			
+			@Aggregation(pipeline = {
+					  " {$unionWith:\"tb_inventario_onts_pdm\"},\r\n"
+					, "{\r\n"
+					+ "        \"$group\": {\r\n"
+					+ "                \"_id\": \"$id_olt\", \r\n"
+					+ "                \"count\": { \"$sum\": 1 },      \r\n"
+					+ "          },\r\n"
+					+ "} \r\n"
+					, "{\r\n"
+					+ "		\"$lookup\":{\r\n"
+					+ "			from: \"cat_olts\",\r\n"
+					+ "			localField:\"_id\",\r\n"
+					+ "			foreignField:\"id_olt\",\r\n"
+					+ "			as: \"olts\",\r\n"
+					+ "		}\r\n"
+					+ "}\r\n"
+					, "{$unwind:\"$olts\"}\r\n"
+					, "{\r\n"
+					+ "        $set:{\r\n"
+					+ "            \"olts.onts\":\"$count\"\r\n"
+					+ "        }\r\n"
+					+ "}\r\n"
+					, "{ $replaceRoot: { newRoot: \"$olts\" } }" })
+			@Meta(allowDiskUse = true)
+			List<responseOltsOntsDto> getOltsOnts();
 
 
 	

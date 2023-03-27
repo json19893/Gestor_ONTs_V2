@@ -26,6 +26,7 @@ import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioPuertosRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorActualizacionEstatusRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.ImonitorEjecucionRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorPoleoRepository;
 import totalplay.snmpv2.com.persistencia.entidades.inventarioOntsErroneas;
 import org.springframework.scheduling.annotation.Async;
@@ -42,6 +43,7 @@ import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsPdmEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsTmpEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioPuertosEntity;
+import totalplay.snmpv2.com.persistencia.entidades.MonitorEjecucionEntity;
 
 @Slf4j
 @Service
@@ -73,28 +75,38 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 	IinventarioAuxTransRepository inventarioTrans;
 	@Autowired
 	IinventarioOntsPdmRepository inventarioPdm;
+	@Autowired
+	ImonitorEjecucionRepository monitorDescubrimiento;
 	
 	@Override
-	public boolean getInventarioPuertos() {
-		//TODO: Obtener las olts poleadas
+	public boolean getInventarioPuertos(MonitorEjecucionEntity monitor) {
 		
-		List<CatOltsEntity> olts= catOltRepository.findByEstatus(1);
 		
-		List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();
-		int ValMaxOlts = (olts.size()/40) + 1;
-		
-		for (int i = 0; i < olts.size(); i += ValMaxOlts) {
-			Integer limMax = i + ValMaxOlts;
+		try {
+			updateDescripcion(monitor, INICIO_DESC+"INVENTARIO PUERTOS");
+			List<CatOltsEntity> olts= catOltRepository.findByEstatus(1);
 			
-			if (limMax >= olts.size()) {
-				limMax = olts.size();
+			List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();
+			int ValMaxOlts = (olts.size()/40) + 1;
+			
+			for (int i = 0; i < olts.size(); i += ValMaxOlts) {
+				Integer limMax = i + ValMaxOlts;
+				
+				if (limMax >= olts.size()) {
+					limMax = olts.size();
+				}
+				List<CatOltsEntity> segmentOlts = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
+				CompletableFuture<GenericResponseDto> executeProcess = asyncMethods.getFaltantes(segmentOlts);
+				thredOlts.add(executeProcess);
 			}
-			List<CatOltsEntity> segmentOlts = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
-			CompletableFuture<GenericResponseDto> executeProcess = asyncMethods.getFaltantes(segmentOlts);
-			thredOlts.add(executeProcess);
+			
+			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
+			
+			updateDescripcion(monitor, EJECUCION_EXITOSA+"INVENTARIO PUERTOS");
+		}catch (Exception e) {
+			
+			updateDescripcion(monitor, EJECUCION_ERROR+"INVENTARIO PUERTOS");
 		}
-		
-		CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
 		
 		
 			
@@ -102,24 +114,30 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 	}
 	
 	@Override
-	public boolean getInventarioaux() {
-		//TODO: Detectar las diferencias en la tambla de temporales
-		List<InventarioOntsTmpEntity> duplicadas;
+	public boolean getInventarioaux(MonitorEjecucionEntity monitor) {
+		
 		List<DiferenciasManualEntity> diferenciaManuales;
 		List<InventarioOntsAuxEntity> diferenciaFinales;
 		String idEjecucion;
 		try {
 			//Marcar con cero las duplicadas de la tabla de temporales
-			 duplicadas = inventarioTmp.findDuplicadas();
-			
+			 try {
+				 updateDescripcion(monitor, INICIO_DESC+" DETECIÒN DUPLICADOS");
+				 inventarioTmp.findDuplicadas();
+			 }catch (Exception e) {
+				log.info("Falló la detecciò de duplicados "+e);
+			 }
+			 
 			 //Enviar a la tabla de diferencias las olts duplicadas
 			 log.info(":::::::::::::::::::::::::: enviar a duplicados  :::::::::::::::::::::::");
+			 updateDescripcion(monitor, INICIO_DESC+" AISLAR DUPLICADOS");
 			 idEjecucion =  monitorEstatus.findFirstByOrderByIdDesc().getId();
-			 poleometricas.getOntsEmpreariales(1,idEjecucion, false);
+			 poleometricas.getOntsFaltantes(1,idEjecucion, false, false, "auxiliar",2, null);
 			 inventarioTmp.sendTbDiferencias();
 			
 			//Migrar los datos de inventariotmp a aux
 			 log.info(":::::::::::::::::::::::::: enviar a auxiliar  :::::::::::::::::::::::");
+			 updateDescripcion(monitor, INICIO_DESC+" MIGRACIÒN AUXILIAR");
 			 inventarioAux.deleteAll();
 			 try {
 				 inventarioTmp.sendToAux();		
@@ -129,18 +147,21 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			//Obtener las difencias que van al inventario auxiliar
 			 //
 			 log.info(":::::::::::::::::::::::::: get diferecias  :::::::::::::::::::::::");
+			 updateDescripcion(monitor, INICIO_DESC+" OBTENER DIFERENCIAS DEFINITIVAS");
 			 diferenciaFinales =  diferencias.findDiferencias();
 			 inventarioAux.saveAll(diferenciaFinales);
 			
 			
 			//Obtener las onts que se van al inventario de carga manual
 			 log.info(":::::::::::::::::::::::::: get carga manual  :::::::::::::::::::::::");
+			 updateDescripcion(monitor, INICIO_DESC+" OBTENER DIFERENCIAS MANUALES");
 			diferenciasManual.deleteAll();	  
 			diferenciaManuales = diferencias.findDiferenciasManual();
 			diferenciasManual.saveAll(diferenciaManuales);
 			
 			//hacer el cruce de estatus
 			String idPoleo =  monitorPoleo.findFirstByOrderByIdDesc().getId();
+			updateDescripcion(monitor, INICIO_DESC+" CRUCES  MÈTRICAS");
 			crucesMetricas(1,idEjecucion );
 			crucesMetricas(2,idPoleo );
 			crucesMetricas(4,idPoleo );
@@ -148,17 +169,22 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			crucesMetricas(16,idPoleo );
 			
 			//Obtener los faltantes de inventario
+			updateDescripcion(monitor, INICIO_DESC+" OBTENER  FALTANTES");
 			getInventario();
 			
-			//Econtar los oids repetidos y ver la posibilidad de aislarlos
+			//Econtar los oids repetidos (ver la posibilidad de aislarlos)
+			updateDescripcion(monitor, INICIO_DESC+" QUITAR OIDS REPETIDOS");
 			cleanOidsRepetidos();
 			
-			//getEmpresarialesVips();
+			 updateDescripcion(monitor, INICIO_DESC+" OBTENER VIPS");
+			 getEmpresarialesVips();
+			 updateDescripcion(monitor, INICIO_DESC+" OBTENER PDM");
 			 deleteInventarioPdm();
 			
 			//Respaldar inventario
 			try {
 				log.info(":::::::::::::::::::::::::: repaldar inventario  :::::::::::::::::::::::");
+				updateDescripcion(monitor, INICIO_DESC+" RESPALDAR  PDM");
 				inventarioOnts.sentToResp();
 				
 			}catch (Exception e) {
@@ -168,6 +194,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			//Cambiar el inventario por inventario auxliar
 			try {
 				log.info(":::::::::::::::::::::::::: actualizar inventario  :::::::::::::::::::::::");
+				updateDescripcion(monitor, INICIO_DESC+" ACTUALIZAR INVENTARIO");
 				inventarioAux.sendToInventario();
 				
 			}catch (Exception e) {
@@ -182,13 +209,19 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 		return true;
 	}
 	
+	@Override
+	public void updateDescripcion(MonitorEjecucionEntity monitor, String descripcion) {		
+				monitor.setDescripcion(descripcion);
+				monitorDescubrimiento.save(monitor);
+	}
+	
 	private void crucesMetricas(int metrica, String idPoleo ) {
 		
 		log.info(":::::::::::::::::::::::::: cruce metrica " +metrica+"  :::::::::::::::::::::::");
 		
 		List<CatOltsEntity> olts= catOltRepository.findByEstatus(1);
 		
-		poleometricas.getOntsEmpreariales(metrica, idPoleo, false);
+		poleometricas.getOntsFaltantes(metrica, idPoleo, false, false, "auxiliar", 2, null);
 		
 		
 		List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();

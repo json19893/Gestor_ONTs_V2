@@ -21,6 +21,7 @@ public class MonitorPoleoOltMetricaEntity {
 	private String fecha_fin;
 	private String id_poleo;
 	private String resultado;
+	private boolean error;
 
 	public MonitorPoleoOltMetricaEntity(Integer id_olt, Integer id_metrica, String fecha_inicio, String id_poleo) {
 		super();

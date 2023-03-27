@@ -1,8 +1,6 @@
 
 package totalplay.monitor.snmp.com.negocio.service.impl;
 
-import jdk.nashorn.internal.ir.Block;
-import jdk.nashorn.internal.runtime.regexp.joni.Config;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Metric;
 import org.springframework.stereotype.Service;

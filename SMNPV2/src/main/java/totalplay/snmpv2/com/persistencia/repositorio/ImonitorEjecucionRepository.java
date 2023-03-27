@@ -8,4 +8,5 @@ import totalplay.snmpv2.com.persistencia.entidades.MonitorEjecucionEntity;
 
 
 public interface ImonitorEjecucionRepository extends MongoRepository<MonitorEjecucionEntity, String> {
+    MonitorEjecucionEntity findFirstByOrderByIdDesc();
 }

@@ -13,6 +13,7 @@ import { ThemePalette } from "@angular/material/core";
 
 
 import {descubrimientoManual} from '../model/descubrimientoManual';
+import {poleoManual} from '../model/poleoManual';
 import * as FileSaver from "file-saver";
 const EXCEL_TYPE = 'application/vnd.openxmlformats- officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
@@ -29,7 +30,10 @@ interface Olts {
   id: string;
   descubrio:boolean;
 }
-
+export interface Bloques { 
+  bloque: number;
+  nombre:string;
+}
 
 @Component({
   selector: 'app-consultaOlts',
@@ -40,11 +44,12 @@ interface Olts {
 
 export class ConsultaOltsComponent implements OnInit {
   public usuario: any;
- 
+  blo:Bloques[]=[{bloque:1,nombre:"Bloque 1"},{bloque:2,nombre:"Bloque 2"},{bloque:3,nombre:"Bloque 3"},{bloque:4,nombre:"Bloque 4"}]
   public dat:any;
   @ViewChild('table') table: ElementRef | undefined;
   public rol: any;
   public manualDto:descubrimientoManual | undefined;
+  public poleoManualDto:poleoManual|undefined;
   acceso = false;
   color: ThemePalette = 'primary';
   public intentos: any;
@@ -54,7 +59,7 @@ export class ConsultaOltsComponent implements OnInit {
   ELEMENT_DATA: Olts[] = [];
   descubrimiento: any = []
   dataSource = new MatTableDataSource<Olts>;
-  columnsToDisplay = ['select', 'ip', 'nombre', 'tecnologia', 'id_region', 'totalOnts', 'descripcion', 'slide'];
+  columnsToDisplay = ['select', 'ip', 'nombre', 'tecnologia', 'id_region', 'totalOnts', 'descripcion', 'slide','opciones'];
   headers = ['Ip OLT', 'Nombre', 'Tecnología', 'Región'];
 
   selection = new SelectionModel<Olts>(true, []);
@@ -115,7 +120,12 @@ EXCEL_EXTENSION);
 }
 
   selec(evento: any, idOlt: any) {
-    this.service.validaMaximo().subscribe(
+    if (!evento) {
+      this.descubrimiento.push(idOlt);
+    }else{
+      this.descubrimiento = this.descubrimiento.filter((item: string) => item !== idOlt)
+    }
+    /*this.service.validaMaximo().subscribe(
       res => {
 
         this.intentos = res;  
@@ -142,7 +152,7 @@ EXCEL_EXTENSION);
             600);
 
         }
-      })
+      })*/
 
 
   }
@@ -180,28 +190,39 @@ EXCEL_EXTENSION);
   }
   descubrimientoManual() {
     if (this.descubrimiento.length > 0) {
-      if (this.descubrimiento.length > 5) {
+     /* if (this.descubrimiento.length > 5) {
         this._snackBar.open("Solo puedes realizar 5 descubrimientos  por día", "cerrar", {
           duration: 4000
         });
-      } else {
+      } else {*/
         this.openDetalle()
         this.manualDto=new descubrimientoManual(this.descubrimiento,this.usuario);
         this.service.descubrimiento(this.manualDto).subscribe(
           res => {
-         
-            if (res.cod == 1) {
               this._snackBar.open(res.sms, "cerrar", {
                 duration: 4000
               });
-              setTimeout(() => {
-                //window.location.reload();
-              },
-                6000);
-
-            }
+              
           })
-      }
+        /*}*/
+    } else {
+      this._snackBar.open("Debes seleccionar al menos una olt", "cerrar", {
+        duration: 4000
+      });
+    }
+  }
+
+  poleoMetrica(idBloque:any) {
+    if (this.descubrimiento.length > 0) {
+      this.poleoManualDto=new poleoManual(this.descubrimiento,this.usuario,idBloque);
+        //this.openDetalle()
+        this.service.poleoMetrica(this.poleoManualDto).subscribe(
+          res => {
+              this._snackBar.open(res.sms, "cerrar", {
+                duration: 4000
+              });
+          })
+       
     } else {
       this._snackBar.open("Debes seleccionar al menos una olt", "cerrar", {
         duration: 4000
@@ -578,6 +599,7 @@ ngOnInit() {
     this.sb.push(val)
          
   }
+  this.sb=this.sb.filter(nombre => nombre.nombre !='SERIAL NUMBER')
  }
 
 trackByFn(index: number, group: any): number {
@@ -639,8 +661,4 @@ export interface  lisMetrics {
  bloque:number
 }
 
-interface Food {
-  value: string;
-  viewValue: string;
-}
 

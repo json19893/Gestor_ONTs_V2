@@ -1,5 +1,7 @@
 package totalplay.snmpv2.com.negocio.services.impl;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -41,11 +43,11 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
     
     @Override
     public <T extends GenericPoleosDto> List<T> getMetricasBypoleo(EjecucionDto proces, Integer idmetrica,
-            Integer idOlt, Integer idRegion, String IdEjecucion, String tecnologia, Class<T> entidad, CadenasMetricasDto cadenas, boolean saveErroneos )
+            Integer idOlt, Integer idRegion, String IdEjecucion, String tecnologia, Class<T> entidad, CadenasMetricasDto cadenas, boolean saveErroneos, int intentos )
             throws IOException {
                 
     			List<T> response = new ArrayList<T>();
-                String s;
+    			String s = "";
                 List<String> replace = util.getReplace(idmetrica, tecnologia);
                 List<inventarioOntsErroneas> erroneasList=new ArrayList<inventarioOntsErroneas>();
                 Integer erroneas=0;
@@ -54,8 +56,29 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                 log.info("######################## inicio de la limpieza para OLTS: "+idOlt+" ##########################");
                 
                 try {
+                	if(proces.isErrorOlt() || proces.isSinOid()) {
+                		T metrica = entidad.getConstructor().newInstance();
+                        metrica.setOid(proces.getOid());
+                        metrica.setError(true);
+                        metrica.setFecha_poleo( Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS)) );
+                        metrica.setId_olt(idOlt);
+                        metrica.setValor(proces.isSinOid() ? "No se cuenta con Oid para polear":"Problemas al polear la olt");
+                        metrica.setId_metrica(idmetrica);
+                        metrica.setId_ejecucion(IdEjecucion);
+                        metrica.setId_region(idRegion);
+                        metrica.setTecnologia(tecnologia);
+                        if(idmetrica.intValue() == 16)
+                        	metrica.setIndexFSP(idOlt+"-"+metrica.getOid());
+                        else {
+                        	metrica.setIndex(idOlt+"-"+metrica.getOid());
+                        }
+                        
+                        response.add(metrica);
+                        return response;
+                		
+                	}
                     while ((s = proces.getBuffer().readLine()) != null) {
-                           // log.info("descubrimiento valores :" + s);
+                        //log.info("descubrimiento valores :" + s);
                         T metrica = entidad.getConstructor().newInstance();
                         String value = s.replaceAll(replace.get(0), "");
                         String[] val = value.split(replace.get(1));
@@ -102,7 +125,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                                     metrica.setId_ejecucion(IdEjecucion);
                                     metrica.setId_region(idRegion);
                                     metrica.setTecnologia(tecnologia);
-                                    metrica.setIndexFSP(idOlt+"-"+metrica.getId_puerto());
+                                    metrica.setIndexFSP(idOlt+"-"+metrica.getOid());
                                     response.add(metrica);
                                 }
                             } else {
@@ -190,15 +213,97 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
 	                                erroneasEntidad.setUid(null);
 	                            }
                           
-                            erroneasList.add(erroneasEntidad);  
-                           
-                        }
-                      
+	                            erroneasList.add(erroneasEntidad);                             
+                            }                      
+                        }else if(!proces.getOid().equals("")) {
+                        	metrica = entidad.getConstructor().newInstance();
+	                        metrica.setOid(proces.getOid());
+	                        metrica.setError(true);
+	                        metrica.setFecha_poleo( Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS)) );
+	                        metrica.setId_olt(idOlt);
+	                        metrica.setValor( s.split("=").length >1 ? s.split("=")[1]:s );
+	                        metrica.setId_metrica(idmetrica);
+	                        metrica.setId_ejecucion(IdEjecucion);
+	                        metrica.setId_region(idRegion);
+	                        metrica.setTecnologia(tecnologia);
+	                        if(idmetrica.intValue() == 16)
+	                        	metrica.setIndexFSP(idOlt+"-"+metrica.getOid());
+	                        else {
+	                        	metrica.setIndex(idOlt+"-"+metrica.getOid());
+	                        }
+	                        
+	                        response.add(metrica);
+                        	
                         }
                     }
                     proces.getProceso().waitFor(5000, TimeUnit.MILLISECONDS);
-                    if(proces.getProceso().exitValue()==0 && saveErroneos){
-                    	erroneasRepositori.saveAll(erroneasList);
+                    
+                    if(proces.getProceso().exitValue()==0 ){
+                    	if(saveErroneos)
+                    		erroneasRepositori.saveAll(erroneasList);
+                    	
+//                    	if(s==null) {
+//                    		try (final BufferedReader b = new BufferedReader(new InputStreamReader(
+//                        			proces.getProceso().getErrorStream()))) {
+//                               
+//                        		String line;
+//                                if ((line = b.readLine()) != null) {
+//                                	T metrica = entidad.getConstructor().newInstance();
+//    		                        metrica.setOid(proces.getOid());
+//    		                        metrica.setError(true);
+//    		                        metrica.setFecha_poleo( Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS)) );
+//    		                        metrica.setId_olt(idOlt);
+//    		                        metrica.setValor(line + " || " + proces.getComando());
+//    		                        metrica.setId_metrica(idmetrica);
+//    		                        metrica.setId_ejecucion(IdEjecucion);
+//    		                        metrica.setId_region(idRegion);
+//    		                        metrica.setTecnologia(tecnologia);
+//    		                        if(idmetrica.intValue() == 16)
+//    		                        	metrica.setIndexFSP(idOlt+"-"+metrica.getOid());
+//    		                        else {
+//    		                        	metrica.setIndex(idOlt+"-"+metrica.getOid());
+//    		                        }
+//    		                        
+//    		                        response.add(metrica);
+//                                	
+//                                }
+//                                   
+//                            
+//                        	} catch (final IOException e) {
+//                                e.printStackTrace();
+//                            }
+//                    	}
+                    }if(intentos==3 && !proces.getOid().equals("")) {
+                    	try (final BufferedReader b = new BufferedReader(new InputStreamReader(
+                    			proces.getProceso().getErrorStream()))) {
+                           
+                    		String line;
+                            if ((line = b.readLine()) != null) {
+                            	T metrica = entidad.getConstructor().newInstance();
+		                        metrica.setOid(proces.getOid());
+		                        metrica.setError(true);
+		                        metrica.setFecha_poleo( Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS)) );
+		                        metrica.setId_olt(idOlt);
+		                        metrica.setValor(line + " || " + proces.getComando());
+		                        metrica.setId_metrica(idmetrica);
+		                        metrica.setId_ejecucion(IdEjecucion);
+		                        metrica.setId_region(idRegion);
+		                        metrica.setTecnologia(tecnologia);
+		                        if(idmetrica.intValue() == 16)
+		                        	metrica.setIndexFSP(idOlt+"-"+metrica.getOid());
+		                        else {
+		                        	metrica.setIndex(idOlt+"-"+metrica.getOid());
+		                        }
+		                        
+		                        response.add(metrica);
+                            	
+                            }
+                               
+                        
+                    	} catch (final IOException e) {
+                            e.printStackTrace();
+                        }
+                    	
                     }
                     if (idmetrica==0){
                         if(proces.getProceso().exitValue()==0){
@@ -214,11 +319,41 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                     proces.getProceso().destroy();
                 } catch (Exception e) {
                     if (idmetrica==0){
-                    CatOltsEntity olt=catOltRepository.getOlt(idOlt);
-                    olt.setDescripcion(ERROR_LIMPIAR_CADENA+ e);
-                    olt.setDescubrio(false);
-                    catOltRepository.save(olt);
+	                    CatOltsEntity olt=catOltRepository.getOlt(idOlt);
+	                    olt.setDescripcion(ERROR_LIMPIAR_CADENA+ e);
+	                    olt.setDescubrio(false);
+	                    catOltRepository.save(olt);
                     }
+                    
+                    
+                    
+                    try {
+                    	proces.getProceso().waitFor(5000, TimeUnit.MILLISECONDS);
+                    	if(proces.getProceso()==null || proces.getProceso().exitValue() == 0 || intentos == 3 ) {
+		                	if(!proces.getOid().equals("")) {
+		                		T metrica = entidad.getConstructor().newInstance();
+		                        metrica.setOid(proces.getOid());
+		                        metrica.setError(true);
+		                        metrica.setFecha_poleo( Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS)) );
+		                        metrica.setId_olt(idOlt);
+		                        metrica.setValor(s.equals("") ? e.toString(): s.split("=").length >1 ? s.split("=")[1]:s );
+		                        metrica.setId_metrica(idmetrica);
+		                        metrica.setId_ejecucion(IdEjecucion);
+		                        metrica.setId_region(idRegion);
+		                        metrica.setTecnologia(tecnologia);
+		                        if(idmetrica.intValue() == 16)
+		                        	metrica.setIndexFSP(idOlt+"-"+metrica.getOid());
+		                        else {
+		                        	metrica.setIndex(idOlt+"-"+metrica.getOid());
+		                        }
+		                        
+		                        response.add(metrica);
+		                	}
+                    	}
+                	}catch (Exception e2) {
+						// TODO: handle exception
+					}
+                    
                     log.error(proces.getComando() + ":::" + ERROR_LIMPIAR_CADENA, e);
                 }
                 return response;

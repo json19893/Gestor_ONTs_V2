@@ -33,6 +33,7 @@ public class GenericPoleosDto {
 	private String index;
 	private String indexFSP;
 	private String descripcion;
+	private boolean error;
 	
 
 }

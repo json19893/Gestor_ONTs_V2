@@ -11,6 +11,15 @@ import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoEntity;
 public interface ImonitorPoleoRepository extends MongoRepository<MonitorPoleoEntity, String> {
 
 	MonitorPoleoEntity findFirstByOrderByIdDesc();
+	
 	@Aggregation(pipeline = {"{'$match':{_id: ObjectId(?0)} } "})
 	MonitorPoleoEntity  getMonitorPoleo(@Param("id") String id);
+	
+	@Aggregation(pipeline = {
+			  "{'$match': { fecha_fin: { $ne: null } } } "
+			, "{$sort: {_id: -1}} "
+			, "{$limit:1}"})
+	MonitorPoleoEntity  getLastFinishId ();
+	
+	
 }

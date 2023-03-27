@@ -75,11 +75,6 @@ table {
   }
 
   .example-container {
-    height: 150px;
+    height: 40vh;
     overflow: auto;
-  }
-  mat-panel-title{
-  display: flex !important;
-  justify-content: space-between !important;
-  align-items: center!important;
   }
