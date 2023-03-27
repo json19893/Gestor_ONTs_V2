@@ -18,6 +18,7 @@ public class catOltsEntidad {
 	private Integer estatus;
 	private Integer pin;
 	private boolean descubrio;
+	private int total_onts;
 
 	public String get_id() {
 		return id;
@@ -113,6 +114,14 @@ public class catOltsEntidad {
 
 	public void setDescubrio(boolean descubrio) {
 		this.descubrio = descubrio;
+	}
+
+	public int getTotal_onts() {
+		return total_onts;
+	}
+
+	public void setTotal_onts(int total_onts) {
+		this.total_onts = total_onts;
 	}
 
 	@Override
