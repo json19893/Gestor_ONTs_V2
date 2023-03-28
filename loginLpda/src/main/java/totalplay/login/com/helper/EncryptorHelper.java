@@ -1,4 +1,4 @@
-package totalplay.snmpv2.com.helper;
+package totalplay.login.com.helper;
 
 import lombok.Getter;
 import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;

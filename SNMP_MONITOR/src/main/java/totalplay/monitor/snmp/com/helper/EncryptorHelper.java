@@ -14,7 +14,7 @@ public class EncryptorHelper {
             .getLogger(EncryptorHelper.class);
     @Getter
     public static EncryptorHelper INSTANCE = new EncryptorHelper();
-    @Value("${spring.data.mongodb.uri.test}")
+    @Value("${spring.data.mongodb.uri}")
     private String propertyMongoUri;
     @Autowired
     private Environment environment;
