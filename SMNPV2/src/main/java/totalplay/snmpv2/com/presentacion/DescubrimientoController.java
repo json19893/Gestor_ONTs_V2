@@ -97,7 +97,7 @@ public class DescubrimientoController extends Constantes {
 			}
 
 			limpiezaOnts.updateDescripcion(monitorDescubrimiento, INICIO_DESC+"LIMPIEZA");
-			limpiezaOnts.getInventarioPuertos(monitorDescubrimiento);
+			limpiezaOnts.getInventarioPuertos(monitorDescubrimiento, null);
 			limpiezaOnts.getInventarioaux(monitorDescubrimiento);
 			
 			monitorDescubrimiento.setDescripcion(FINAL_EXITO+" DESCUBRIMIENTO & LIMPIEZA");
@@ -148,6 +148,7 @@ public class DescubrimientoController extends Constantes {
 			if(desc.getFecha_fin()==null){
 				return new GenericResponseDto(PROCESANDO, 1);
 			}
+			inventarioTmp.deleteAll();
 			List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();
 			List<CatOltsEntity> olts=new ArrayList<CatOltsEntity>();
 			for (Integer d : datos.getOlts()) {
@@ -156,12 +157,14 @@ public class DescubrimientoController extends Constantes {
 			}
 			thredOlts  = getProceso(olts,idProceso,true,datos.getUsuario());
 			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
-		//Limpieza de datos para inventario final
+			//Limpieza de datos para inventario final
+			limpiezaOnts.LimpiezaManual(olts, null);
 		} catch (Exception e) {
 			return new GenericResponseDto(EJECUCION_ERROR, 1);
 		}
 		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
 	}
 
-
+	
+	
 }

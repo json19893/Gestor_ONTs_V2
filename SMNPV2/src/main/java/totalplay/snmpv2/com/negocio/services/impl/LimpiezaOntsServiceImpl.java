@@ -16,6 +16,7 @@ import totalplay.snmpv2.com.negocio.dto.CadenasMetricasDto;
 import totalplay.snmpv2.com.negocio.dto.EjecucionDto;
 import totalplay.snmpv2.com.negocio.dto.GenericPoleosDto;
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
+import totalplay.snmpv2.com.negocio.dto.LimpiezaManualDto;
 import totalplay.snmpv2.com.negocio.services.IasyncMethodsService;
 import totalplay.snmpv2.com.negocio.services.IlimpiezaCadena;
 import totalplay.snmpv2.com.negocio.services.IlimpiezaOntsService;
@@ -37,9 +38,11 @@ import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.DiferenciasManualEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.IhistoricoConteoOltRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioAuxTransRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsAuxManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsAuxRepository;
 import totalplay.snmpv2.com.persistencia.entidades.HistoricoConteosOltsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsPdmEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsTmpEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioPuertosEntity;
@@ -77,14 +80,19 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 	IinventarioOntsPdmRepository inventarioPdm;
 	@Autowired
 	ImonitorEjecucionRepository monitorDescubrimiento;
+	@Autowired
+	IinventarioOntsAuxManualRepository inventarioAuxManual;
 	
 	@Override
-	public boolean getInventarioPuertos(MonitorEjecucionEntity monitor) {
+	public boolean getInventarioPuertos(MonitorEjecucionEntity monitor, List<CatOltsEntity> olts) {
 		
 		
 		try {
-			updateDescripcion(monitor, INICIO_DESC+"INVENTARIO PUERTOS");
-			List<CatOltsEntity> olts= catOltRepository.findByEstatus(1);
+			if(monitor  != null)
+				updateDescripcion(monitor, INICIO_DESC+"INVENTARIO PUERTOS");
+			
+			if(olts == null)
+			  olts= catOltRepository.findByEstatus(1);
 			
 			List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();
 			int ValMaxOlts = (olts.size()/40) + 1;
@@ -101,11 +109,11 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			}
 			
 			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
-			
-			updateDescripcion(monitor, EJECUCION_EXITOSA+"INVENTARIO PUERTOS");
+			if(monitor  != null)
+				updateDescripcion(monitor, EJECUCION_EXITOSA+"INVENTARIO PUERTOS");
 		}catch (Exception e) {
-			
-			updateDescripcion(monitor, EJECUCION_ERROR+"INVENTARIO PUERTOS");
+			if(monitor  != null)
+				updateDescripcion(monitor, EJECUCION_ERROR+"INVENTARIO PUERTOS");
 		}
 		
 		
@@ -160,13 +168,13 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			diferenciasManual.saveAll(diferenciaManuales);
 			
 			//hacer el cruce de estatus
-			String idPoleo =  monitorPoleo.findFirstByOrderByIdDesc().getId();
+			String idPoleo =  monitorPoleo.getLastFinishId().getId();
 			updateDescripcion(monitor, INICIO_DESC+" CRUCES  MÈTRICAS");
-			crucesMetricas(1,idEjecucion );
-			crucesMetricas(2,idPoleo );
-			crucesMetricas(4,idPoleo );
-			crucesMetricas(14,idPoleo );
-			crucesMetricas(16,idPoleo );
+			crucesMetricas(1,idEjecucion, "auxiliar", null, false );
+			crucesMetricas(2,idPoleo, "auxiliar", null, false  );
+			crucesMetricas(4,idPoleo, "auxiliar", null, false );
+			crucesMetricas(14,idPoleo, "auxiliar", null, false  );
+			crucesMetricas(16,idPoleo, "auxiliar", null, false );
 			
 			//Obtener los faltantes de inventario
 			updateDescripcion(monitor, INICIO_DESC+" OBTENER  FALTANTES");
@@ -215,14 +223,55 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 				monitorDescubrimiento.save(monitor);
 	}
 	
-	private void crucesMetricas(int metrica, String idPoleo ) {
+	@Override
+	public void LimpiezaManual(List<CatOltsEntity> olts, MonitorEjecucionEntity monitor ) {	
+		
+		List<LimpiezaManualDto> limpieza;
+		try {
+			inventarioAuxManual.deleteAll();
+			
+			getInventarioPuertos(monitor, olts);
+			
+			//updateDescripcion(monitor, INICIO_DESC+" OBTENCIÓN INFO TABLAS");
+			log.info(INICIO_DESC+" OBTENCIÓN INFO TABLAS");
+			limpieza =  inventarioTmp.getOntsInventarios();
+			
+			inventarioOnts.deleteAll(limpieza.get(0).getEliminar());
+			diferencias.saveAll(limpieza.get(0).getDuplicados());
+			diferenciasManual.saveAll(limpieza.get(0).getManual());
+			inventarioAuxManual.saveAll(limpieza.get(0).getInventarioAux());
+			
+			
+			String idPoleo =  monitorPoleo.getLastFinishId().getId();
+			
+			//updateDescripcion(monitor, INICIO_DESC+" CRECE MÉTRICAS");
+			log.info(INICIO_DESC+" CRECE MÉTRICAS");
+			
+			crucesMetricas(2,idPoleo, "auxiliar_descubrimiento_manual", olts, true );
+			crucesMetricas(4,idPoleo, "auxiliar_descubrimiento_manual", olts, true );
+			crucesMetricas(14,idPoleo, "auxiliar_descubrimiento_manual", olts, true );
+			crucesMetricas(16,idPoleo, "auxiliar_descubrimiento_manual", olts, true );
+			
+			//updateDescripcion(monitor, INICIO_DESC+" SEND INVENTARIO");
+			log.info(INICIO_DESC+" SEND INVENTARIO");
+			
+			
+			saveOnts(inventarioAuxManual.getInv());
+			log.info("FIN");
+		}catch (Exception e) {
+			log.info(e.toString());
+		}
+	}
+	
+	private void crucesMetricas(int metrica, String idPoleo, String tabla, List<CatOltsEntity> olts, boolean manual ) {
 		
 		log.info(":::::::::::::::::::::::::: cruce metrica " +metrica+"  :::::::::::::::::::::::");
+		if(olts == null)
+			olts= catOltRepository.findByEstatus(1);
 		
-		List<CatOltsEntity> olts= catOltRepository.findByEstatus(1);
+		poleometricas.getOntsFaltantes(metrica, idPoleo, false, false, tabla, 2, null);
 		
-		poleometricas.getOntsFaltantes(metrica, idPoleo, false, false, "auxiliar", 2, null);
-		
+		inventarioTrans.deleteAll();
 		
 		List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();
 		int ValMaxOlts = (olts.size()/40) + 1;
@@ -234,14 +283,18 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 				limMax = olts.size();
 			}
 			List<CatOltsEntity> segmentOlts = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
-			CompletableFuture<GenericResponseDto> executeProcess = asyncMethods.getMetrica(segmentOlts,metrica);
+			CompletableFuture<GenericResponseDto> executeProcess = asyncMethods.getMetrica(segmentOlts,metrica, manual);
 			
 			thredOlts.add(executeProcess);
 		}
 		
 		CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
 		try {
-			inventarioTrans.outToInvAux();
+			if(manual)
+				inventarioTrans.outToInvAuxManual();
+			else 
+				inventarioTrans.outToInvAux();
+		
 		}catch (Exception e) {
 			log.info(e.toString());
 		}
@@ -349,5 +402,34 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 		
 	}
 	
+	private void saveOnts(List<InventarioOntsEntity> inventario) {
+		log.info(":::::::::::::::::::::::::: Inserta inventario  "+ ":::::::::::::::::::::::");
+		
+		try {
+			
+			
+			
+			List<CompletableFuture<GenericResponseDto>> thredOnts=new ArrayList<CompletableFuture<GenericResponseDto>>();
+			int ValMaxOlts = (inventario.size()/40) + 1;
+			
+			for (int i = 0; i < inventario.size(); i += ValMaxOlts) {
+				Integer limMax = i + ValMaxOlts;
+				
+				if (limMax >= inventario.size()) {
+					limMax = inventario.size();
+				}
+				List<InventarioOntsEntity> segmentOlts = new ArrayList<InventarioOntsEntity>(inventario.subList(i, limMax));
+				CompletableFuture<GenericResponseDto> executeProcess = asyncMethods.saveInventario(segmentOlts);
+				
+				thredOnts.add(executeProcess);
+			}
+			
+			CompletableFuture.allOf(thredOnts.toArray(new CompletableFuture[thredOnts.size()])).join();
+			
+		} catch (Exception e) {
+			log.info(e.toString());
+		}
+		
+	}
 	
 }

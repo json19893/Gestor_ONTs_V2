@@ -14,12 +14,9 @@ import totalplay.snmpv2.com.persistencia.entidades.inventarioOntsErroneas;
 @Data
 @NoArgsConstructor
 public class LimpiezaManualDto {
-	private List<DiferenciasEntity> onts;
-	private List<InventarioOntsEntity> errores;
-	private List<DiferenciasManualEntity> di;
-	private List<InventarioOntsAuxManualEntity> inve ;
-	
-	
-	
+	private List<DiferenciasEntity> duplicados;
+	private List<InventarioOntsEntity> eliminar;
+	private List<DiferenciasManualEntity> manual;
+	private List<InventarioOntsAuxManualEntity> inventarioAux ;
 	
 }

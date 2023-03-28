@@ -23,6 +23,7 @@ import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesEstatusRepository
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioAuxTransRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsAuxManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsAuxRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsPdmRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsRepository;
@@ -36,6 +37,7 @@ import totalplay.snmpv2.com.persistencia.entidades.FaltantesEstatusEntity;
 import totalplay.snmpv2.com.persistencia.entidades.FaltantesMetricasEntity;
 import totalplay.snmpv2.com.persistencia.entidades.FaltantesMetricasManualEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsPdmEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioPuertosEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosAliasEntity;
@@ -79,6 +81,8 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 	IfaltantesEstatusRepository faltantesEstatus;
 	@Autowired
 	IGenericMetrics genericMetrics;
+	@Autowired
+	IinventarioOntsAuxManualRepository inventarioAuxManual;
 	
 	@Async("taskExecutor2")
 	public CompletableFuture<GenericResponseDto> getFaltantes(List<CatOltsEntity> olts ){
@@ -108,7 +112,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 	
 	@Override
 	@Async("taskExecutor2")
-	public CompletableFuture<GenericResponseDto> getMetrica(List<CatOltsEntity> olts, int metrica ){
+	public CompletableFuture<GenericResponseDto> getMetrica(List<CatOltsEntity> olts, int metrica, boolean manual){
 		for(CatOltsEntity olt:olts) {
 			try {
 					List resultado;
@@ -120,19 +124,31 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 							auxiliarTrans.insert(resultado);
 						break;
 						case 2:
-							resultado = inventarioAux.getDescripcionAlarma(olt.getId_region(),  olt.getId_olt());
+							if(manual) 
+								resultado = inventarioAuxManual.getDescripcionAlarma(olt.getId_region(),  olt.getId_olt());
+							else 
+								resultado = inventarioAux.getDescripcionAlarma(olt.getId_region(),  olt.getId_olt());
 							auxiliarTrans.insert(resultado);
 						break;
 						case 4:
-							resultado = inventarioAux.getLastDownTime(olt.getId_region(),  olt.getId_olt());
+							if(manual) 
+								resultado = inventarioAuxManual.getLastDownTime(olt.getId_region(),  olt.getId_olt());
+							else
+								resultado = inventarioAux.getLastDownTime(olt.getId_region(),  olt.getId_olt());
 							auxiliarTrans.insert(resultado);
 						break;
 						case 14:
-							resultado = inventarioAux.getAlias(olt.getId_region(),  olt.getId_olt());
+							if(manual) 
+								resultado = inventarioAuxManual.getAlias(olt.getId_region(),  olt.getId_olt());
+							else
+								resultado = inventarioAux.getAlias(olt.getId_region(),  olt.getId_olt());
 							auxiliarTrans.insert(resultado);
 						break;
 						case 16:
-							resultado = inventarioAux.getFrameSlotPort(olt.getId_region(),  olt.getId_olt());
+							if(manual) 
+								resultado = inventarioAuxManual.getFrameSlotPort(olt.getId_region(),  olt.getId_olt());
+							else
+								resultado = inventarioAux.getFrameSlotPort(olt.getId_region(),  olt.getId_olt());
 							auxiliarTrans.insert(resultado);
 						break;
 					}
@@ -384,6 +400,30 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 		
 		return response;
 	}
+	
+	@Override
+	@Async("taskExecutor2")
+	public CompletableFuture<GenericResponseDto> saveInventario(List<InventarioOntsEntity> onts ){
+		
+		try {
+			
+				LocalDateTime now = LocalDateTime.now(); 
+				
+				inventario.saveAll(onts);
+				
+				int seconds = (int) ChronoUnit.SECONDS.between(now, LocalDateTime.now());
+				log.info("::::::::    onts empresariales guardas   :::::::::::::::  "+ seconds);			
+			
+			
+		} catch (Exception e) {
+			log.info("::::::::error onts empresariales "+ e );
+		}
+		
+		
+		return null;
+		
+	} 
+	
 	private void saveErrores(int idMetrica, List<GenericPoleosDto> onts) {
 		
 		
