@@ -31,6 +31,7 @@ import totalplay.snmpv2.com.configuracion.Constantes;
 import totalplay.snmpv2.com.configuracion.Utils;
 import totalplay.snmpv2.com.negocio.dto.DescubrimientoManualDto;
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
+import totalplay.snmpv2.com.negocio.services.IUpdateTotalOntsService;
 import totalplay.snmpv2.com.negocio.services.IdescubrimientoService;
 import totalplay.snmpv2.com.negocio.services.IlimpiezaOntsService;
 import totalplay.snmpv2.com.persistencia.entidades.BitacoraEventosEntity;
@@ -66,7 +67,8 @@ public class DescubrimientoController extends Constantes {
 	IBitacoraEventosRepository ibitacoraEventos;
 	@Autowired
 	ItblDescubrimientoManualRepositorio descubrimientoManual;
-
+	@Autowired
+    IUpdateTotalOntsService updateTotales;
 	private Integer valMaxOlts = 50;
 	String idProceso="";
 	Utils util =new Utils();
@@ -99,7 +101,7 @@ public class DescubrimientoController extends Constantes {
 			limpiezaOnts.updateDescripcion(monitorDescubrimiento, INICIO_DESC+"LIMPIEZA");
 			limpiezaOnts.getInventarioPuertos(monitorDescubrimiento, null);
 			limpiezaOnts.getInventarioaux(monitorDescubrimiento);
-			
+			updateTotales.updateTotalOntsFromOlts();
 			monitorDescubrimiento.setDescripcion(FINAL_EXITO+" DESCUBRIMIENTO & LIMPIEZA");
 			monitorDescubrimiento.setFecha_fin( LocalDateTime.now().toString());
 			monitor.save(monitorDescubrimiento);
@@ -159,6 +161,7 @@ public class DescubrimientoController extends Constantes {
 			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
 			//Limpieza de datos para inventario final
 			limpiezaOnts.LimpiezaManual(olts, null);
+			updateTotales.updateTotalOntsFromOlts();
 		} catch (Exception e) {
 			return new GenericResponseDto(EJECUCION_ERROR, 1);
 		}
