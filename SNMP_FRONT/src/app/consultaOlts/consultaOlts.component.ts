@@ -70,10 +70,8 @@ export class ConsultaOltsComponent implements OnInit {
 
   }
   /** Whether the number of selected elements matches the total number of rows. */
-
-
- 
   ngOnInit() {
+ 
     this.spinner.show();
     this.getDataTable();
     this.valmaximo();
@@ -119,11 +117,11 @@ saveAsExcelFile(buffer: any, fileName: string) {
 EXCEL_EXTENSION);
 }
 
-  selec(evento: any, idOlt: any) {
+  selec(evento: any, ip: any) {
     if (!evento) {
-      this.descubrimiento.push(idOlt);
+      this.descubrimiento.push(ip);
     }else{
-      this.descubrimiento = this.descubrimiento.filter((item: string) => item !== idOlt)
+      this.descubrimiento = this.descubrimiento.filter((item: string) => item !== ip)
     }
     /*this.service.validaMaximo().subscribe(
       res => {
@@ -181,6 +179,7 @@ EXCEL_EXTENSION);
       })
   }
 
+ 
   actaulizaOlts() {
     const dialogRef = this.dialog.open(ActualizaOntsDialog, { disableClose: true });
 

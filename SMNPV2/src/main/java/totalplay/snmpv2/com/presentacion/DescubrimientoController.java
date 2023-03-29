@@ -152,11 +152,8 @@ public class DescubrimientoController extends Constantes {
 			}
 			inventarioTmp.deleteAll();
 			List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();
-			List<CatOltsEntity> olts=new ArrayList<CatOltsEntity>();
-			for (Integer d : datos.getOlts()) {
-				CatOltsEntity olt=catOltRepository.getOlt(d);
-				olts.add(olt);
-			}
+			List<CatOltsEntity> olts=catOltRepository.getOltsByIp(datos.getOlts());
+		
 			thredOlts  = getProceso(olts,idProceso,true,datos.getUsuario());
 			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
 			//Limpieza de datos para inventario final

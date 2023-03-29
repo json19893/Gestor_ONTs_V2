@@ -352,22 +352,22 @@ public class Utils extends Constantes {
 	}
 
 	public boolean vaidaPin(String ip) throws IOException, InterruptedException {
-		String s;
+	
 		boolean response = false;
 		InetAddress ping;
 
 		try {
 			ping = InetAddress.getByName(ip);
 			if (ping.isReachable(5000)) {
-				System.out.println(ip + " - responde!");
+				log.info(ip + " - responde!");
 				response = true;
 			} else {
-				System.out.println(ip + " - no responde!");
+				log.info(ip + " - no responde!");
 				response = false;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			log.error("error:" + e);
+			log.info("error:" + e);
 		}
 		return response;
 	}
