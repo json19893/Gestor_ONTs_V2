@@ -305,9 +305,10 @@ public class MetricasController extends Constantes {
 
 			try {
 				
-				monitorPoleo.findFirstByOrderByIdDesc();
+				//monitorPoleo.findFirstByOrderByIdDesc();
 				//Se crea un nuevo registro para el monitor
-				idMonitorPoleo = monitorPoleo.getLastFinishId().getId();
+				//idMonitorPoleo = monitorPoleo.getLastFinishId().getId();
+				idMonitorPoleo = monitorPoleo.findFirstByOrderByIdDesc().getId();
 				idMonitorPoleoManual = monitorPoleoManual.save(new MonitorPoleoManualEntity(LocalDateTime.now().toString(), null,INICIO_DESC+"POLEO" , INICIO, bloque, idMonitorPoleo )).getId();
 				
 				
