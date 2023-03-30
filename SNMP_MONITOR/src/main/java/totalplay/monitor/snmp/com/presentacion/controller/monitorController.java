@@ -24,6 +24,7 @@ import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
 import totalplay.monitor.snmp.com.negocio.util.constantes;
 import totalplay.monitor.snmp.com.persistencia.entidad.catConfiguracionEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.catOltsEntidad;
+import totalplay.monitor.snmp.com.persistencia.entidad.detalleActualizacionesEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.estatusPoleoManualEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.tblBitacoraEventosEntidad;
@@ -31,6 +32,7 @@ import totalplay.monitor.snmp.com.persistencia.entidad.usuariosEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.vwActualizacionEntidad;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatConfiguracionRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
+import totalplay.monitor.snmp.com.persistencia.repository.IdetalleActualizacionRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsPdmRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.ImonitorPoleoManualRepository;
@@ -80,6 +82,8 @@ public class monitorController extends constantes {
     IvwTotalOntsRepositorio vwOnts;
     @Autowired
     ImonitorPoleoManualRepository monitorPoleoManual;
+    @Autowired
+    IdetalleActualizacionRepositorio detalleAct;
 
     @Autowired
     IBlockMetricService BlockMetricService;
@@ -590,4 +594,22 @@ public class monitorController extends constantes {
     public List<responseMonitorMetricasManualInfoDto> getMonitorInfo() {
         return monitorPoleoManual.getMonitorData();
     }
+    
+    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/getDetalleActuacionData/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<detalleActualizacionesEntidad> getActualizacionData(@PathVariable("tipo") String tipo) throws Exception {
+        List<detalleActualizacionesEntidad> response = new ArrayList<detalleActualizacionesEntidad>();
+        try {
+            if (tipo.equals("E")) {
+            	return detalleAct.getDetalleEmpresariales(7);
+            } else {
+            	return detalleAct.getDetalle(7);
+            }
+        } catch (Exception e) {
+            System.out.println("Error:: " + e);
+        }
+
+        return response;
+    }
+    
 }
