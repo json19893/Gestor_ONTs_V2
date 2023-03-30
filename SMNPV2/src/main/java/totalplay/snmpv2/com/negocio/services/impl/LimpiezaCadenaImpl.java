@@ -59,7 +59,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                 try {
                 	if(proces.isErrorOlt() || proces.isSinOid()) {
                         if(manual){
-                        util.crearArchivos(ruta,false,proces.isSinOid() ? "No se cuenta con Oid para polear para la olt: "+idOlt:"Problemas al polear la olt: "+idOlt);
+                        util.escribirArchivos(ruta,proces.isSinOid() ? "No se cuenta con Oid para polear para la olt: "+idOlt:"Problemas al polear la olt: "+idOlt);
                         }
                 		T metrica = entidad.getConstructor().newInstance();
                         metrica.setOid(proces.getOid());
@@ -84,7 +84,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                     while ((s = proces.getBuffer().readLine()) != null) {
                         //log.info("descubrimiento valores :" + s);
                         if(manual){
-                            util.crearArchivos(ruta,false,s);
+                            util.escribirArchivos(ruta,s);
                             }
                         T metrica = entidad.getConstructor().newInstance();
                         String value = s.replaceAll(replace.get(0), "");
@@ -294,7 +294,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                     
                     proces.getProceso().destroy();
                     if(manual){
-                        util.crearArchivos(ruta,false,DESC_FIN+idOlt);
+                        util.escribirArchivos(ruta,DESC_FIN+idOlt);
                         }
                 } catch (Exception e) {
                     if (idmetrica==0){
@@ -333,7 +333,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
 						// TODO: handle exception
 					}
                     if(manual){
-                        util.crearArchivos(ruta,false,proces.getComando() + " ::: " + ERROR_LIMPIAR_CADENA+":: "+ e);
+                        util.escribirArchivos(ruta,proces.getComando() + " ::: " + ERROR_LIMPIAR_CADENA+":: "+ e);
                         }
                     log.error(proces.getComando() + ":::" + ERROR_LIMPIAR_CADENA, e);
                 }

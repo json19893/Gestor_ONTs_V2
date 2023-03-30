@@ -143,6 +143,21 @@ public class Utils extends Constantes {
 		return true;
 
 	}
+
+	public boolean escribirArchivos(String ruta,String escribir){
+
+		try {
+			FileWriter archivo = new FileWriter(ruta, true);
+           
+                archivo.write(escribir+"\n");
+          
+            archivo.close();
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+
+	}
 	
 	public  List<String> getReplace(Integer idMetrica, String tecnologia) {
 		List<String> response = new ArrayList<String>();
