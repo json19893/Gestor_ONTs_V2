@@ -39,13 +39,13 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
     @Autowired
     IhistoricoConteoOltRepository historicoOlt;
     Utils util=new Utils();
-    
+    private String ruta="/home/implementacion/ecosistema/manual/descubrimiento.txt";
     
     @Override
     public <T extends GenericPoleosDto> List<T> getMetricasBypoleo(EjecucionDto proces, Integer idmetrica,
-            Integer idOlt, Integer idRegion, String IdEjecucion, String tecnologia, Class<T> entidad, CadenasMetricasDto cadenas, boolean saveErroneos, int intentos )
+            Integer idOlt, Integer idRegion, String IdEjecucion, String tecnologia, Class<T> entidad, CadenasMetricasDto cadenas, boolean saveErroneos, int intentos,boolean manual )
             throws IOException {
-                
+               
     			List<T> response = new ArrayList<T>();
     			String s = "";
                 List<String> replace = util.getReplace(idmetrica, tecnologia);
@@ -54,9 +54,13 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                 Integer exito=0;
                 
                 log.info("######################## inicio de la limpieza para OLTS: "+idOlt+" ##########################");
-                
+                if(manual)
+                    util.crearArchivos(ruta,true,DESC+idOlt);
                 try {
                 	if(proces.isErrorOlt() || proces.isSinOid()) {
+                        if(manual){
+                        util.crearArchivos(ruta,false,proces.isSinOid() ? "No se cuenta con Oid para polear para la olt: "+idOlt:"Problemas al polear la olt: "+idOlt);
+                        }
                 		T metrica = entidad.getConstructor().newInstance();
                         metrica.setOid(proces.getOid());
                         metrica.setError(true);
@@ -79,6 +83,9 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                 	}
                     while ((s = proces.getBuffer().readLine()) != null) {
                         //log.info("descubrimiento valores :" + s);
+                        if(manual){
+                            util.crearArchivos(ruta,false,s);
+                            }
                         T metrica = entidad.getConstructor().newInstance();
                         String value = s.replaceAll(replace.get(0), "");
                         String[] val = value.split(replace.get(1));
@@ -242,37 +249,6 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                     	if(saveErroneos)
                     		erroneasRepositori.saveAll(erroneasList);
                     	
-//                    	if(s==null) {
-//                    		try (final BufferedReader b = new BufferedReader(new InputStreamReader(
-//                        			proces.getProceso().getErrorStream()))) {
-//                               
-//                        		String line;
-//                                if ((line = b.readLine()) != null) {
-//                                	T metrica = entidad.getConstructor().newInstance();
-//    		                        metrica.setOid(proces.getOid());
-//    		                        metrica.setError(true);
-//    		                        metrica.setFecha_poleo( Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS)) );
-//    		                        metrica.setId_olt(idOlt);
-//    		                        metrica.setValor(line + " || " + proces.getComando());
-//    		                        metrica.setId_metrica(idmetrica);
-//    		                        metrica.setId_ejecucion(IdEjecucion);
-//    		                        metrica.setId_region(idRegion);
-//    		                        metrica.setTecnologia(tecnologia);
-//    		                        if(idmetrica.intValue() == 16)
-//    		                        	metrica.setIndexFSP(idOlt+"-"+metrica.getOid());
-//    		                        else {
-//    		                        	metrica.setIndex(idOlt+"-"+metrica.getOid());
-//    		                        }
-//    		                        
-//    		                        response.add(metrica);
-//                                	
-//                                }
-//                                   
-//                            
-//                        	} catch (final IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                    	}
                     }if(intentos==3 && !proces.getOid().equals("")) {
                     	try (final BufferedReader b = new BufferedReader(new InputStreamReader(
                     			proces.getProceso().getErrorStream()))) {
@@ -317,6 +293,9 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                     }
                     
                     proces.getProceso().destroy();
+                    if(manual){
+                        util.crearArchivos(ruta,false,DESC_FIN+idOlt);
+                        }
                 } catch (Exception e) {
                     if (idmetrica==0){
 	                    CatOltsEntity olt=catOltRepository.getOlt(idOlt);
@@ -353,7 +332,9 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                 	}catch (Exception e2) {
 						// TODO: handle exception
 					}
-                    
+                    if(manual){
+                        util.crearArchivos(ruta,false,proces.getComando() + " ::: " + ERROR_LIMPIAR_CADENA+":: "+ e);
+                        }
                     log.error(proces.getComando() + ":::" + ERROR_LIMPIAR_CADENA, e);
                 }
                 return response;

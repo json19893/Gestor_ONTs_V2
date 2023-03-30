@@ -10,6 +10,10 @@ public class Constantes {
 	public static final String NO_PIN = "No es pineable ";
 	public static final String ERROR_LIMPIAR_CADENA = "Ocurrio un error al limpiar la cadena ";
 	public static final String SIN_METRICA = "Sin metrica";
+
+	public static final String DESC = "INICIO DE PROCESO DE DESCUBRIMIENTO PARA LA OLT:  ";
+
+	public static final String DESC_FIN = "FIN DE PROCESO DE DESCUBRIMIENTO PARA LA OLT:  ";
 	
 	/* Constantes de ejecucion de SNMP */
 	public static final String SNMP_BULK = "snmpbulkwalk ";

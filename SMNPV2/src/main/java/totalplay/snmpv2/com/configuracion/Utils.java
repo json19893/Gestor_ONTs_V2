@@ -121,6 +121,28 @@ public class Utils extends Constantes {
 		return response;
 
 	}
+
+	public boolean crearArchivos(String ruta,boolean crear,String escribir){
+
+		try {
+			File file = new File(ruta);
+			if (!file.exists()) {
+				if(crear){
+					file.delete();
+				}
+				file.createNewFile();
+			}
+	
+			FileWriter fw = new FileWriter(file);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(escribir);
+			bw.close();
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+
+	}
 	
 	public  List<String> getReplace(Integer idMetrica, String tecnologia) {
 		List<String> response = new ArrayList<String>();
