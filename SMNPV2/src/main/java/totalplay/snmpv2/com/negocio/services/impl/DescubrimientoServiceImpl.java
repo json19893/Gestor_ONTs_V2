@@ -80,13 +80,13 @@ public class DescubrimientoServiceImpl extends Constantes implements Idescubrimi
 
 			configuracionDto configuracion = Utils.getConfiguracion(out.getMappedResults());
 			//oid= Utils.getMetrica(configuracion.getTecnologia(), 0);
-			log.info("Tecnologia:::: "+oid);
+			
 			if(manual){
 				idDescubrimientoManual=	descubrimientoManual.save(new EstatusPoleoManualEntidad(configuracion.getIdOlt(),configuracion.getIp(),
 				configuracion.getNombreOlt(),LocalDate.now().toString(),0,INICIO_PROCESO_MANUAL,null,usuario)).getId();
 				registro=descubrimientoManual.findByid(idDescubrimientoManual);
 			}
-			CompletableFuture<GenericResponseDto> descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpEntity.class, true, "", false);
+			CompletableFuture<GenericResponseDto> descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpEntity.class, true, "", false,manual);
 			CompletableFuture.allOf(descubrimiento);
 			if(manual){
 				if(descubrimiento.get().getCod()==0){

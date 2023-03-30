@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 public class DescubrimientoManualDto {
-    private List<Integer> olts;
+    private List<String> olts;
 	private String usuario;
 	private Integer bloque;
     

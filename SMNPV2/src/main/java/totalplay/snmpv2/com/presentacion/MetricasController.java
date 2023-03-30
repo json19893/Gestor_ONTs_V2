@@ -314,7 +314,7 @@ public class MetricasController extends Constantes {
 				
 				
 				//List<CatOltsEntity> olts = catOlts.findByEstatus(1);
-				List<CatOltsEntity> olts = catOlts.getOltsById(datos.getOlts());
+				List<CatOltsEntity> olts = catOlts.getOltsByIp(datos.getOlts());
 				
 				List<CompletableFuture<String>> regionSegmentOnts;
 				List<CompletableFuture<String>> regionSegmentOntsEmpresariales;
