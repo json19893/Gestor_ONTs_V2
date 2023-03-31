@@ -1,5 +1,6 @@
 package totalplay.snmpv2.com.presentacion;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -72,6 +73,7 @@ public class DescubrimientoController extends Constantes {
 	private Integer valMaxOlts = 50;
 	String idProceso="";
 	Utils util =new Utils();
+	private String ruta="/home/implementacion/ecosistema/manual/descubrimiento.txt";
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@GetMapping("/descubrimiento")
 	public GenericResponseDto getDescubrimientoOnts() throws IOException {
@@ -151,6 +153,10 @@ public class DescubrimientoController extends Constantes {
 				return new GenericResponseDto(PROCESANDO, 1);
 			}
 			inventarioTmp.deleteAll();
+			File file = new File(ruta);
+			if(file.exists()){
+				file.delete();
+			}
 			List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();
 			List<CatOltsEntity> olts=catOltRepository.getOltsByIp(datos.getOlts());
 		

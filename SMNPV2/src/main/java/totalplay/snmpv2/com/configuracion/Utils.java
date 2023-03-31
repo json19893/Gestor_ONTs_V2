@@ -122,20 +122,18 @@ public class Utils extends Constantes {
 
 	}
 
-	public boolean crearArchivos(String ruta,boolean crear,String escribir){
+	public boolean crearArchivos(String ruta,String escribir){
 
 		try {
 			File file = new File(ruta);
 			if (!file.exists()) {
-				if(crear){
-					file.delete();
-				}
 				file.createNewFile();
 			}
 	
-			FileWriter fw = new FileWriter(file);
+			FileWriter fw = new FileWriter(file,true);
 			BufferedWriter bw = new BufferedWriter(fw);
 			bw.write(escribir);
+			bw.newLine();
 			bw.close();
 		} catch (Exception e) {
 			return false;
@@ -144,20 +142,7 @@ public class Utils extends Constantes {
 
 	}
 
-	public boolean escribirArchivos(String ruta,String escribir){
 
-		try {
-			FileWriter archivo = new FileWriter(ruta, true);
-           
-                archivo.write(escribir+"\n");
-          
-            archivo.close();
-		} catch (Exception e) {
-			return false;
-		}
-		return true;
-
-	}
 	
 	public  List<String> getReplace(Integer idMetrica, String tecnologia) {
 		List<String> response = new ArrayList<String>();

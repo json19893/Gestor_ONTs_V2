@@ -17,5 +17,6 @@ public class EjecucionDto extends GenericResponseDto {
 	private String oid;
 	private boolean errorOlt;
 	private boolean sinOid;
+	private String ip;
 	
 }
