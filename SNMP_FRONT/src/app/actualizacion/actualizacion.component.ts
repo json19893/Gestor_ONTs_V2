@@ -8,17 +8,20 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { pointService } from '../services/poinst.service';
 import { ActualizacionDetalle } from '../model/actualizacion.detalle';
 import { MatSnackBar } from "@angular/material/snack-bar";
+import { MatDialog } from "@angular/material/dialog";
 export interface clasificacion {
-  tip: string;
+  ip: string;
   numeroSerie: string;
-  region: string;
-  estatus: string;
-  desActualizacion:string;
-  fechaDescubrimiento:string;
+  frame: number;
+  slot: number;
+  port:number;
+  fechaActualizacion:Date;
+  descripcionAlarma:string;
+  causa:string;
 }
 
 
-const ELEMENT_DATA: clasificacion[] = []
+
 
 
 @Component({
@@ -29,33 +32,36 @@ const ELEMENT_DATA: clasificacion[] = []
   })
 
 export class ActualizacionComponent  implements OnInit{ 
-  displayedColumns: string[] = ['tipo', 'numeroSerie', 'region', 'estatus','fechaDescubrimiento','desActualizacion'];
- public dataSource:any;
-  //dataSource = new MatTableDataSource<clasificacion>(ELEMENT_DATA);
+  //displayedColumns: string[] = ['tipo', 'numeroSerie', 'region', 'estatus','fechaDescubrimiento','desActualizacion'];
+  displayedColumns: string[] = ['ip', 'numeroSerie', 'frame', 'slot','port','uid','fechaActualizacion','descripcionAlarma','causa','accion'];
+  ELEMENT_DATA: clasificacion[] = []
+  dataSource = new MatTableDataSource<clasificacion>;
   //public dataSource :any;
-  //@ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort: MatSort | undefined;
   public mostrar:any;
-  public skip:any;
+   /*public skip:any;
   public limit:any;
   length = 0;
-  pageSize = 10;
+ pageSize = 10;
   pageIndex = 0;
   pageSizeOptions = [10];
   public serieOnts:any
   hidePageSize = false;
   showPageSizeOptions = false;
   showFirstLastButtons = false;
+  */
   disabled = false;
   form1: FormGroup | any;
-  pageEvent!: PageEvent;
+  //pageEvent!: PageEvent;
   optionsSerieOnts: ActualizacionDetalle[] = [];
   constructor(
     private router: Router,
     private spinner: NgxSpinnerService,
     private service: pointService,
     private fb: FormBuilder,
-    private _snackbar2: MatSnackBar) {
+    private _snackbar2: MatSnackBar,
+    public dialog: MatDialog,) {
       this.form1 = this.fb.group(
         {
           numeroSerie: [null],
@@ -70,22 +76,16 @@ export class ActualizacionComponent  implements OnInit{
     if(this.mostrar==null||this.mostrar==undefined){
       this.mostrar='E';
      }
-    this.limit=10;
-    this.skip=0;
+   // this.limit=10;
+   // this.skip=0;
 
-    this.getDetalleActualizacion(this.mostrar,this.skip,this.limit);
+    //this.getDetalleActualizacion(this.mostrar,this.skip,this.limit);
+    this.getDetalleActualizacionData( this.mostrar);
   }
 
 
-  ngAfterViewInit() {
-    //this.paginator.pageIndex = this.page;
-    //this.dataSource.paginator = this.paginator;
-    //this.dataSource.sort = this.sort!;
-    //this.dataSource.paginator=this.paginator;
-  
-  }
    
-  getDetalleActualizacion(mostrar:any,skip:any,limit:any) {
+ /* getDetalleActualizacion(mostrar:any,skip:any,limit:any) {
     this.spinner.show();
     this.mostrar = localStorage.getItem('mostrar');
     if(this.mostrar==undefined){
@@ -118,9 +118,28 @@ export class ActualizacionComponent  implements OnInit{
       },
       err => console.error(err)
     );
+  }*/
+  getDetalleActualizacionData(mostrar:any) {
+    this.spinner.show();
+    this.mostrar = localStorage.getItem('mostrar');
+    if(this.mostrar==undefined){
+      this.mostrar="E"
+    }
+
+    this.service.getDetalleActuacionData(mostrar).subscribe(
+      data => {
+        let dat
+        this.ELEMENT_DATA = data;
+        this.dataSource = new MatTableDataSource<clasificacion>(this.ELEMENT_DATA);
+        this.dataSource!.paginator = this.paginator!;
+        this.spinner.hide();
+      },
+      err => console.error(err)
+    );
+    console.log(this.dataSource)
   }
 
-  applyFilter() {
+  /*applyFilter() {
     this.spinner.show();
     this.mostrar = localStorage.getItem('mostrar');
     if(this.mostrar==undefined){
@@ -164,8 +183,8 @@ export class ActualizacionComponent  implements OnInit{
       horizontalPosition: 'center',
       verticalPosition: 'bottom'
     })
-  }
-  findSerieOnts() {
+  }*/
+  /*findSerieOnts() {
     this.mostrar = localStorage.getItem('mostrar');
     if(this.mostrar==undefined){
       this.mostrar="E"
@@ -202,8 +221,61 @@ console.log("e.limit ::: "+this.limit);
 console.log("e.skip ::: "+this.skip);
         this.getDetalleActualizacion(this.mostrar,this.skip,this.limit);  
      
+  }*/
+
+  getDetalle(ns:any){
+    localStorage.setItem("serial",ns)
+    this.dialog.open(detalleActualizacionDialog);
   }
 
 }
+@Component({
+  selector: 'detalleActualizacion',
+  templateUrl: './detalleActualizacion.html',
+  styleUrls: ['./actualizacion.component.css']
+})
 
-
+export class detalleActualizacionDialog implements OnInit {
+  displayedColumns: string[] = ['ip', 'numeroSerie', 'frame', 'slot','port','uid','fechaActualizacion','descripcionAlarma','causa','accion'];
+  ELEMENT_DATA: clasificacion[] = []
+  dataSource = new MatTableDataSource<clasificacion>;
+  ns:any
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  public mostrar:any;
+    constructor(
+  
+      private service: pointService,
+      private spinner: NgxSpinnerService,
+      private _snackbar: MatSnackBar
+    ) {
+     
+  
+    }
+    ngOnInit() {
+      this.mostrar = localStorage.getItem('mostrar');
+      this.ns = localStorage.getItem('serial');
+      if(this.mostrar==null||this.mostrar==undefined){
+        this.mostrar='E';
+       }
+     this.getDetalleActuacionSerie( this.mostrar,this.ns);
+    }
+    getDetalleActuacionSerie(mostrar:any,ns:any) {
+      this.spinner.show();
+      this.ELEMENT_DATA.length = this.ELEMENT_DATA.length -this.ELEMENT_DATA.length
+      this.mostrar = localStorage.getItem('mostrar');
+      if(this.mostrar==undefined){
+        this.mostrar="E"
+      }
+  
+      this.service.getDetalleActuacionSerie(mostrar,ns).subscribe(
+        data => {
+          this.ELEMENT_DATA = data;
+          this.dataSource = new MatTableDataSource<clasificacion>(this.ELEMENT_DATA);
+          this.dataSource!.paginator = this.paginator!;
+          this.spinner.hide();
+        },
+        err => console.error(err)
+      );
+      console.log(this.dataSource)
+    }
+  }

@@ -145,9 +145,21 @@ export class pointService {
     return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.GET_DETALLE_ACTUALIZACION + tipo + "/" + skip + "/" + limit);
 
   }
+  getDetalleActuacionData(tipo: any): Observable<any> {
+    /*var headers = new HttpHeaders({
+      'Authorization': token,
+      'mode':'no-cors'});*/
+    return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.GET_DETALLE_ACTUALIZACION_DATA + tipo);
 
+  }
 
+  getDetalleActuacionSerie(tipo: any,ns:any): Observable<any> {
+    /*var headers = new HttpHeaders({
+      'Authorization': token,
+      'mode':'no-cors'});*/
+    return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.GET_DETALLE_ACTUALIZACION_SERIE + tipo+"/"+ns);
 
+  }
 
   getMetricas(oid: String, id_olt: number): Observable<any> {
     /*var headers = new HttpHeaders({
