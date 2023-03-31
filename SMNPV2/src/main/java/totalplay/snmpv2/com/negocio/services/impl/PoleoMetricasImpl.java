@@ -30,6 +30,8 @@ import totalplay.snmpv2.com.persistencia.entidades.*;
 import totalplay.snmpv2.com.persistencia.repositorio.*;
 
 import org.springframework.scheduling.annotation.Async;
+import totalplay.snmpv2.com.presentacion.MetricaController;
+
 
 @Slf4j
 @Service
@@ -527,20 +529,20 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
      * @return
      */
     @Override
-    public PostMetricaResponse getPoleoOntMetrica(RequestPostMetrica request) {
+    public PostMetricaResponse getPoleoOntMetrica(RequestPostMetrica request) throws IOException, InterruptedException {
+
+        //Parametros de entrada:
+        String num_serie = request.getNumero_serie();
+        Integer idMetrica = request.getIdMetrica();
+
         PostMetricaResponse response = new PostMetricaResponse();
         response.setCod(1);
         response.setSms("");
 
         //String ruta = "/home/implementacion/ecosistema/comandos/";
-        String ruta;
-
+        String OID_METRICA = "";
+        String ruta_sistema;
         Utils utilerias;
-
-        final int RUN_STATUS = 1;
-        String OID_RUN_STATUS = "";
-        String num_serie = request.getNumero_serie();
-        Integer idMetrica = new Integer(1);
 
         InventarioOntsEntity ont;
         CatOltsEntity olt;
@@ -549,8 +551,9 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
 
         //Supuesto: se recupero el id: 60;
         if (ont == null) {
-            //Retorna
-
+            response.setCod(MetricaController.RESOURCE_NOT_FOUND);
+            response.setSms("El recurso no existe");
+            return response;
         }
 
         if (ont.getEstatus().equals("0")) {
@@ -560,24 +563,26 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
         olt = catOltRepository.getOlt(ont.getId_olt());
 
         Query query = new Query();
-        query.addCriteria(Criteria.where("id_metrica").is(RUN_STATUS));
-        ConfiguracionMetricaEntity configMetrica = mongoTemplate.findOne(query, ConfiguracionMetricaEntity.class, "tb_configuracion_metricas");
+        query.addCriteria(Criteria.where("id_metrica").is(idMetrica.intValue()));
+        ConfiguracionMetricaEntity configMetrica = mongoTemplate
+                .findOne(query, ConfiguracionMetricaEntity.class, "tb_configuracion_metricas");
 
+        //esto va en funcion de la metrica
         if (configMetrica.isActivo()) {
             if (ont.getTecnologia().equalsIgnoreCase("HUAWEI")) {
-                configMetrica.getHUAWEI();
-                OID_RUN_STATUS = ".1.3.6.1.4.1.2011.6.128.1.1.2.46.1.15.";
+                OID_METRICA = configMetrica.getHUAWEI().getOid() + "." + ont.getOid();
             }
 
             if (ont.getTecnologia().equalsIgnoreCase("ZTE")) {
-                configMetrica.getZTE().getOid();
+                OID_METRICA = configMetrica.getZTE().getOid() + "." + ont.getOid();
             }
 
             if (ont.getTecnologia().equalsIgnoreCase("FH")) {
-                configMetrica.getFH();
+                OID_METRICA = configMetrica.getFH().getOid() + "." + ont.getOid();
             }
         } else {
             // return: No esta activada la metrica para este dispositivo
+            System.out.println("No hay soporte para dispositivos tecnologia");
         }
 
         AggregationOperation match
@@ -598,55 +603,28 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
                 + configuracion.getPassword() + PROTOCOL_PRIV + configuracion.getProtPriv()
                 + PROTOCOL_PHRASE + configuracion.getPhrase() + SPACE + IR + olt.getIp();
 
-        ruta = "/home/ubuntu/bash/comandos/";
+        ruta_sistema = "/home/ubuntu/bash/comandos/";
+        String execute = comando + SPACE + OID_METRICA;
 
-        //Crea el string para consultar la metrica
-        HUAWEI_METRICAS METRICA = HUAWEI_METRICAS.SPLIT_RUN_STATUS_CADENA_HUAWEI;
-        switch (METRICA) {
-            case SPLIT_RUN_STATUS_CADENA_HUAWEI:
-                String OIDs = Constantes.OID_LASTDOWNCAUSE_HUAWEI;
-                System.out.println("OIDs: " + OIDs);
-                break;
-            case OID_LASTDOWNCAUSE_HUAWEI:
-                System.out.println("metrica 2");
-                break;
+        BufferedReader buffer;
+        EjecucionDto ejecucionDto = utilerias.execBash(execute, ruta_sistema);
+        ejecucionDto.getProceso().waitFor();
+
+        if (ejecucionDto.getProceso().exitValue() == 1) {
+            response.setCod(1);
+            response.setSms("Error de servidor");
+            return response;
         }
+        //Lee la respuesta del comando:
+        InputStream inputStream = ejecucionDto.getProceso().getInputStream();
+        buffer = new BufferedReader(new InputStreamReader(inputStream));
+        String readLine = "";
 
-        String OID = OID_RUN_STATUS + ont.getOid();
-        String execute = comando + SPACE + OID;
-
-
-        System.out.println(execute);
-
-
-        try {
-            BufferedReader buffer;
-            EjecucionDto ejecucionDto = utilerias.execBash(execute, ruta);
-            ejecucionDto.getProceso().waitFor();
-
-            if (ejecucionDto.getProceso().exitValue() != 0) {
-                return response;
-            }
-            InputStream inputStream = ejecucionDto.getProceso().getInputStream();
-            System.out.println("Informacion: " + ejecucionDto.getProceso().exitValue());
-
-            buffer = new BufferedReader(new InputStreamReader(inputStream));
-            String readLine = "";
-
-            while ((readLine = buffer.readLine()) != null) {
-                System.out.println(readLine);
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+        //Llenar la metrica:
+        while ((readLine = buffer.readLine()) != null) {
+            readLine += readLine;
+            response.setPoleometrica(readLine);
         }
         return response;
-    }
-
-    enum HUAWEI_METRICAS {
-        SPLIT_RUN_STATUS_CADENA_HUAWEI,
-        OID_LASTDOWNCAUSE_HUAWEI
     }
 }

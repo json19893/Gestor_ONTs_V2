@@ -10,5 +10,5 @@ import java.io.Serializable;
 @ToString
 public class RequestPostMetrica implements Serializable {
     private String numero_serie;
-    private String idMetrica;
+    private Integer idMetrica;
 }

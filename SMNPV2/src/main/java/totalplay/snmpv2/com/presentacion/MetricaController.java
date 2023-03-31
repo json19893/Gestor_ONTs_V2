@@ -13,28 +13,40 @@ import totalplay.snmpv2.com.negocio.services.IpoleoMetricasService;
 @RestController
 @Slf4j
 public class MetricaController {
+    public static final int RESOURCE_NOT_FOUND = 5;
+    public static final int SNMP_COMMAND_ERROR = 1;
     @Autowired
     IpoleoMetricasService service;
 
     /**
-     * Este metodo exponse un punto de acceso para consultar el poleo de una metrica especifica indicada por el cliente
+     * Este metodo expone un punto de acceso para polear una metrica asociada a una ont.
      *
      * @param request
-     * @return ResponseEntity<?> Respuesta del servidor hacia el cliente
+     * @return ResponseEntity<?> Respuesta: Es una envoltura donde contiene un codigo de estatus http junto con la respuesta del servidor
      */
     @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
     @GetMapping(value = "/metrica/poleo", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getMetricaByNum_serial(@RequestBody RequestPostMetrica request) {
-        PostMetricaResponse responseProcess = service.getPoleoOntMetrica(request);
-        ResponseEntity<PostMetricaResponse> responseServer;
+        ResponseEntity<PostMetricaResponse> responseWrapperServer = null;
+        PostMetricaResponse response = null;
+        try {
+            response = service.getPoleoOntMetrica(request);
+            if (response.getCod().intValue() == 0) {
+                return responseWrapperServer = new ResponseEntity(response, HttpStatus.OK);
+            } else {
+                //Errores del negocio
+                //Errores del cliente
+                if (response.getCod().intValue() == RESOURCE_NOT_FOUND) {
+                    return responseWrapperServer = new ResponseEntity(response, HttpStatus.NOT_FOUND);
+                }
 
-        if (responseProcess.getCod() == 0) {
-            responseServer = new ResponseEntity("Success: la metrica ha sido consultada exitosamente", HttpStatus.OK);
-        } else {
-            //Errores del negocio
-            //Errores del cliente
-            responseServer = new ResponseEntity("INTERNAL SERVER ERROR", HttpStatus.INTERNAL_SERVER_ERROR);
+                if (response.getCod().intValue() == SNMP_COMMAND_ERROR) {
+                    return responseWrapperServer = new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+        } catch (Exception e) {
+            return responseWrapperServer = new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return responseServer;
+        return responseWrapperServer;
     }
 }

@@ -7,5 +7,5 @@ import java.io.Serializable;
 
 @Data
 public class PostMetricaResponse extends GenericResponseDto implements Serializable {
-    private PoleosEstatusEntity poleometrica;
+    private String poleometrica;
 }
