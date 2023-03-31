@@ -236,7 +236,7 @@ console.log("e.skip ::: "+this.skip);
 })
 
 export class detalleActualizacionDialog implements OnInit {
-  displayedColumns: string[] = ['ip', 'numeroSerie', 'frame', 'slot','port','uid','fechaActualizacion','descripcionAlarma','causa','accion'];
+  displayedColumns: string[] = ['ip', 'numeroSerie', 'frame', 'slot','port','uid','fechaActualizacion','descripcionAlarma','causa'];
   ELEMENT_DATA: clasificacion[] = []
   dataSource = new MatTableDataSource<clasificacion>;
   ns:any
