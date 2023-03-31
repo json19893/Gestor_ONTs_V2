@@ -1,9 +1,12 @@
 package totalplay.monitor.snmp.com.presentacion.controller;
 
+
 import java.io.File;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +28,7 @@ import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
 import totalplay.monitor.snmp.com.negocio.util.constantes;
 import totalplay.monitor.snmp.com.persistencia.entidad.catConfiguracionEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.catOltsEntidad;
+import totalplay.monitor.snmp.com.persistencia.entidad.detalleActualizacionesEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.estatusPoleoManualEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.tblBitacoraEventosEntidad;
@@ -32,6 +36,7 @@ import totalplay.monitor.snmp.com.persistencia.entidad.usuariosEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.vwActualizacionEntidad;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatConfiguracionRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
+import totalplay.monitor.snmp.com.persistencia.repository.IdetalleActualizacionRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsPdmRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.ImonitorPoleoManualRepository;
@@ -80,6 +85,8 @@ public class monitorController extends constantes {
     IvwTotalOntsRepositorio vwOnts;
     @Autowired
     ImonitorPoleoManualRepository monitorPoleoManual;
+    @Autowired
+    IdetalleActualizacionRepositorio detalleAct;
 
     @Autowired
     IBlockMetricService BlockMetricService;
@@ -593,9 +600,52 @@ public class monitorController extends constantes {
         return monitorPoleoManual.getMonitorData();
     }
 
+
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getArchivo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<String> getArchivo() {
         return consulta.getArchivo();
     }
+    
+    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/getDetalleActuacionData/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<detalleActualizacionesEntidad> getActualizacionData(@PathVariable("tipo") String tipo) throws Exception {
+        List<detalleActualizacionesEntidad> response = new ArrayList<detalleActualizacionesEntidad>();
+        try {
+        	 
+        	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+			Date fecha = format.parse( "2023-02-02T15:00:00.000Z");//LocalDateTime.now().minusHours(1).toString() + "Z");
+        	
+            if (tipo.equals("E")) {
+            	return detalleAct.getDetalleEmpresariales(fecha);
+            } else {
+            	return detalleAct.getDetalle(fecha);
+            }
+        } catch (Exception e) {
+            System.out.println("Error:: " + e);
+        }
+
+        return response;
+    }
+    
+    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/getDetalleActuacionSerie/{tipo}/{serie}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<detalleActualizacionesEntidad> getDetalleActuacionSerie(@PathVariable("tipo") String tipo,@PathVariable("serie") String serie) throws Exception {
+        List<detalleActualizacionesEntidad> response = new ArrayList<detalleActualizacionesEntidad>();
+        try {
+        	        	
+            if (tipo.equals("E")) {
+            	return detalleAct.getDetalleBySerieEmp(serie);
+            } else {
+            	return detalleAct.getDetalleBySerie(serie);
+            }
+        } catch (Exception e) {
+            System.out.println("Error:: " + e);
+        }
+
+        return response;
+    }
+    
+    
+
 }
