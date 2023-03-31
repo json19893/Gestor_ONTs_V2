@@ -1,5 +1,6 @@
 package totalplay.monitor.snmp.com.negocio.service;
 
+
 import java.util.List;
 import java.util.Map;
 
@@ -20,4 +21,5 @@ public interface IconsultaService {
 	List<catOltsEntidad> obtenerOLTsActivas();
 	responseFindOntDto getOnt(String tipo, String data, boolean serie);
 	responseMetricasDto getMetrics(Integer idOlt, String oid);
+	List<String> getArchivo();
 }

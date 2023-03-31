@@ -451,7 +451,7 @@ export interface data {
 })
 
 export class detalleEjecucionDialog implements OnInit {
-
+archivo:any;
   dataSource = new MatTableDataSource<data>;
   displayedColumns: string[] = ['ip', 'nombre', 'fecha', 'descripcion', 'usuario','totalOnts','estatus'];
   ELEMENT_DATA: data[] = [];
@@ -462,9 +462,11 @@ export class detalleEjecucionDialog implements OnInit {
     private _snackbar: MatSnackBar
   ) {
     setInterval(() => this.getDetalle(), 1000);
+    setInterval(() => this.getaArchivo(), 1000);
 
   }
   ngOnInit() {
+    this.getaArchivo();
     this.getDetalle();
   }
   getDetalle() {
@@ -472,6 +474,13 @@ export class detalleEjecucionDialog implements OnInit {
       res => {
         this.ELEMENT_DATA = res;
         this.dataSource = new MatTableDataSource<data>(this.ELEMENT_DATA);
+      })
+
+  }
+  getaArchivo() {
+    this.service.getArchivo().subscribe(
+      res => {
+        this.archivo=res;
       })
 
   }
