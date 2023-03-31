@@ -8,10 +8,9 @@ import totalplay.monitor.snmp.com.negocio.dto.requestEstatusDto;
 import totalplay.monitor.snmp.com.negocio.dto.responseFindDto;
 import totalplay.monitor.snmp.com.negocio.dto.responseFindOntDto;
 import totalplay.monitor.snmp.com.negocio.dto.responseMetricasDto;
-import totalplay.monitor.snmp.com.negocio.dto.respuestaCambioEstatusDto;
 import totalplay.monitor.snmp.com.negocio.dto.respuestaStatusDto;
 import totalplay.monitor.snmp.com.persistencia.entidad.catOltsEntidad;
-import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
+
 
 public interface IconsultaService {
 

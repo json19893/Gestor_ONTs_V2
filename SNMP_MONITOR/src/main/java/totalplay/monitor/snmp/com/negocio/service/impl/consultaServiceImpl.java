@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import totalplay.monitor.snmp.com.negocio.dto.requestEstatusDto;
@@ -104,8 +105,8 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 	IdetalleActualizacionRepositorio detalleRepositorio;
 	@Autowired
 	IinventarioOntsPdmRepositorio ontsPdm;
-
-	private String ruta="/home/jsalgadom/Documentos/descubrimiento.txt";
+	@Value("${ruta.archivo.txt}")
+	private String ruta;
 	@Override
 	public Map<String, Object> consultaNumeroSerie(String oid, String ip) {
 		HashMap<String, Object> response = new HashMap();

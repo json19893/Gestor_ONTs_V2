@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,6 @@ import totalplay.snmpv2.com.negocio.dto.GenericPoleosDto;
 import totalplay.snmpv2.com.negocio.services.IlimpiezaCadena;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsErroneas;
 import totalplay.snmpv2.com.persistencia.entidades.inventarioOntsErroneas;
-import org.springframework.scheduling.annotation.Async;
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.IhistoricoConteoOltRepository;
@@ -39,8 +39,8 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
     @Autowired
     IhistoricoConteoOltRepository historicoOlt;
     Utils util=new Utils();
-    private String ruta="/home/implementacion/ecosistema/manual/descubrimiento.txt";
-    
+    @Value("${ruta.archivo.txt}")
+    private String ruta;    
     @Override
     public <T extends GenericPoleosDto> List<T> getMetricasBypoleo(EjecucionDto proces, Integer idmetrica,
             Integer idOlt, Integer idRegion, String IdEjecucion, String tecnologia, Class<T> entidad, CadenasMetricasDto cadenas, boolean saveErroneos, int intentos,boolean manual )

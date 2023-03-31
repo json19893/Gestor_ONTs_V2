@@ -1,7 +1,6 @@
 package totalplay.monitor.snmp.com.presentacion.controller;
 
 
-import java.io.File;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -614,7 +613,7 @@ public class monitorController extends constantes {
         try {
         	 
         	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-			Date fecha = format.parse( "2023-02-02T15:00:00.000Z");//LocalDateTime.now().minusHours(1).toString() + "Z");
+			Date fecha = format.parse( "2023-02-03T15:00:00.000Z");//LocalDateTime.now().minusHours(1).toString() + "Z"); --pro
         	
             if (tipo.equals("E")) {
             	return detalleAct.getDetalleEmpresariales(fecha);
