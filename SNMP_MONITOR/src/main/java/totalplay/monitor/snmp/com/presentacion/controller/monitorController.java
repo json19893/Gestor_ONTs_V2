@@ -1,8 +1,10 @@
 package totalplay.monitor.snmp.com.presentacion.controller;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -600,10 +602,14 @@ public class monitorController extends constantes {
     public List<detalleActualizacionesEntidad> getActualizacionData(@PathVariable("tipo") String tipo) throws Exception {
         List<detalleActualizacionesEntidad> response = new ArrayList<detalleActualizacionesEntidad>();
         try {
+        	 
+        	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+			Date fecha = format.parse( "2023-02-02T15:00:00.000Z");//LocalDateTime.now().minusHours(1).toString() + "Z");
+        	
             if (tipo.equals("E")) {
-            	return detalleAct.getDetalleEmpresariales(7);
+            	return detalleAct.getDetalleEmpresariales(fecha);
             } else {
-            	return detalleAct.getDetalle(7);
+            	return detalleAct.getDetalle(fecha);
             }
         } catch (Exception e) {
             System.out.println("Error:: " + e);
@@ -611,5 +617,24 @@ public class monitorController extends constantes {
 
         return response;
     }
+    
+    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/getDetalleActuacionSerie/{tipo}/{serie}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<detalleActualizacionesEntidad> getDetalleActuacionSerie(@PathVariable("tipo") String tipo,@PathVariable("serie") String serie) throws Exception {
+        List<detalleActualizacionesEntidad> response = new ArrayList<detalleActualizacionesEntidad>();
+        try {
+        	        	
+            if (tipo.equals("E")) {
+            	return detalleAct.getDetalleBySerieEmp(serie);
+            } else {
+            	return detalleAct.getDetalleBySerie(serie);
+            }
+        } catch (Exception e) {
+            System.out.println("Error:: " + e);
+        }
+
+        return response;
+    }
+    
     
 }
