@@ -2,36 +2,23 @@
 <br><br>
 <mat-divider></mat-divider>
 <br>
-<mat-accordion class="mat-elevation-z8"  >
+<mat-accordion>
   <mat-expansion-panel hideToggle>
     <mat-expansion-panel-header class="panelTitle">
       <mat-panel-title >
           <img  class="icon-avata" src="./assets/img/search.SVG"/>
-
+        
       </mat-panel-title>
       <mat-panel-description>
-        Criterios de búsqueda
+          Criterios de búsqueda
       </mat-panel-description>
     </mat-expansion-panel-header>
-    <!--form [formGroup]="form1" id="form1" (ngSubmit)="applyFilter()" novalidate class="mt-4 mb-1">
-      <mat-form-field appearance="legacy">
-        <mat-label>Número de serie</mat-label>
-        <input matInput formControlName="numeroSerie"  [matAutocomplete]="autoSerie"  (input)="findSerieOnts()" [matAutocompletePosition]="'below'">
-        <mat-autocomplete #autoSerie="matAutocomplete">
-          <mat-option *ngFor="let item of optionsSerieOnts" [value]="item.numero_serie" style="font-size:10px; padding:2px">
-            {{item.numero_serie}}
-          </mat-option>          
-        </mat-autocomplete>
-      </mat-form-field>
-
-      <button mat-raised-button type="submit" style="margin-left: 55px;" color="primary">Buscar</button>
-
-    </form-->
-
+    <mat-form-field >
+      <input matInput (keyup)="applyFilter($event)" placeholder="Búscar" #input>
+    </mat-form-field>    
   </mat-expansion-panel>
-  <br>
 </mat-accordion>
-
+<br>
 <table mat-table [dataSource]="dataSource"  class="mat-elevation-z8">
 
     <!--- Note that these columns can be defined in any order.

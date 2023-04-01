@@ -228,6 +228,16 @@ console.log("e.skip ::: "+this.skip);
     this.dialog.open(detalleActualizacionDialog);
   }
 
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+    this.dataSource.paginator = this.paginator;
+  }
+
 }
 @Component({
   selector: 'detalleActualizacion',
