@@ -539,7 +539,7 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
         //Mensaje del happy path
         PostMetricaResponse response = new PostMetricaResponse();
         response.setCod(0);
-        response.setSms("Correcto: La consulta de metrica se realizó correctamente");
+        response.setSms("Exito: La consulta de metrica se realizó correctamente");
         response.setMetrica(new MetricaController.MetricaPoleo());
 
         //String ruta_sistema = "/home/implementacion/ecosistema/comandos/";
