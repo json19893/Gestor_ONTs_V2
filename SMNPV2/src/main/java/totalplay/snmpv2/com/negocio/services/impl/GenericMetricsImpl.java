@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -84,10 +85,11 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 	
 	
 	Utils utls=new Utils();
-    //private String ruta="/dev/ecosistema/comandos/bash";
-	//private String ruta="/home/daniel/Documentos/comandos/";
-	private String ruta="/home/implementacion/ecosistema/comandos/";
-	private String ruta2="/home/implementacion/ecosistema/manual/descubrimiento.txt";
+	@Value("${ruta.archivo.shell}")
+	private String ruta;
+	@Value("${ruta.archivo.txt}")
+	private String ruta2;
+
 	@Override																					
 	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error,boolean manual) throws IOException {
 

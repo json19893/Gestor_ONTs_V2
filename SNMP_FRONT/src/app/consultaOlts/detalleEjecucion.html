@@ -1,6 +1,13 @@
 <h1 mat-dialog-title>Detalle de descubrimientos diarios</h1>
 <div mat-dialog-content>
 
+
+  <mat-tab-group>
+    <mat-tab label="Log de ejecución">   
+      <div *ngFor="let a of archivo">
+      <span>{{a}}</span>
+        </div></mat-tab>
+    <mat-tab label="Tabla de detalle de olt"> 
     <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
         <ng-container matColumnDef="ip">
@@ -46,7 +53,11 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"
             >
         </tr>
-      </table>
+      </table>  
+    </mat-tab>
+  
+  </mat-tab-group>
+    
 </div>
 
 <div mat-dialog-actions>

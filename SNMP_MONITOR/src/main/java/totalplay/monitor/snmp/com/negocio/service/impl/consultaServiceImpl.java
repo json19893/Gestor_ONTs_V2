@@ -1,5 +1,8 @@
 package totalplay.monitor.snmp.com.negocio.service.impl;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import totalplay.monitor.snmp.com.negocio.dto.requestEstatusDto;
@@ -101,8 +105,8 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 	IdetalleActualizacionRepositorio detalleRepositorio;
 	@Autowired
 	IinventarioOntsPdmRepositorio ontsPdm;
-
-
+	@Value("${ruta.archivo.txt}")
+	private String ruta;
 	@Override
 	public Map<String, Object> consultaNumeroSerie(String oid, String ip) {
 		HashMap<String, Object> response = new HashMap();
@@ -443,6 +447,24 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 		}
 		
 		return response;
+	}
+
+	@Override
+	public List<String> getArchivo() {
+		List<String> archivo =new ArrayList<>();
+		try {
+			BufferedReader lector = new BufferedReader(new FileReader(ruta));
+			String linea = lector.readLine();
+			while (linea != null) {
+				archivo.add(linea);
+			   linea = lector.readLine();
+			   
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+	return archivo;
 	}
 
 }
