@@ -18,10 +18,10 @@ public interface IinventarioOntsPdmRepositorio extends MongoRepository<inventari
 	@Query(value = " {}",count = true)
 	Integer finOntsByTotalT();
 	
-	@Query(value = " {'id_olts': ?0 }",count = true)
+	@Query(value = " {'id_olt': ?0 }",count = true)
 	Integer finOntsByTotalOlt(@Param("idOlt") Integer idOlt);
 	
-	@Query(value = " {'id_olts': ?0, 'estatus': ?1 }",count = true)
+	@Query(value = " {'id_olt': ?0, 'estatus': ?1 }",count = true)
 	Integer finOntsByTotalEstatus(@Param("idOlt") Integer idOlt,@Param("estatus") Integer estatus);
 	
 	@Aggregation(pipeline = { "{'$match':{'numero_serie':?0}}" })

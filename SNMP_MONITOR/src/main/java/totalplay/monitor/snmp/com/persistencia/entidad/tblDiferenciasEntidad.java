@@ -17,7 +17,7 @@ public class tblDiferenciasEntidad {
 	private String numero_serie;
 	private String oid;
 	private String fecha_descubrimiento;
-	private Integer id_olts;
+	private Integer id_olt;
 	private String id_ejecucion;
 	private Integer estatus;
 
@@ -61,12 +61,12 @@ public class tblDiferenciasEntidad {
 		this.fecha_descubrimiento = fecha_descubrimiento;
 	}
 
-	public Integer getId_olts() {
-		return id_olts;
+	public Integer getid_olt() {
+		return id_olt;
 	}
 
-	public void setId_olts(Integer id_olts) {
-		this.id_olts = id_olts;
+	public void setid_olt(Integer id_olt) {
+		this.id_olt = id_olt;
 	}
 
 	public String getId_ejecucion() {

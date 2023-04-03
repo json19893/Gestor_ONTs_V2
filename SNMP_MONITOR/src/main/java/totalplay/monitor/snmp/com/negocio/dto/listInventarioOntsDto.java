@@ -6,7 +6,7 @@ public class listInventarioOntsDto {
 	private String numero_serie;
 	private String oid;
 	private String fecha_descubrimiento;
-	private String id_olts;
+	private String id_olt;
 	private Integer estatus;
 	private String id_ejecucion;
 	private String alias;
@@ -44,11 +44,11 @@ public class listInventarioOntsDto {
 	public void setFecha_descubrimiento(String fecha_descubrimiento) {
 		this.fecha_descubrimiento = fecha_descubrimiento;
 	}
-	public String getId_olts() {
-		return id_olts;
+	public String getid_olt() {
+		return id_olt;
 	}
-	public void setId_olts(String id_olts) {
-		this.id_olts = id_olts;
+	public void setid_olt(String id_olt) {
+		this.id_olt = id_olt;
 	}
 	public Integer getEstatus() {
 		return estatus;

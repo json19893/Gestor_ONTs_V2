@@ -22,4 +22,5 @@ public interface IasyncMethodsService {
 	CompletableFuture<GenericResponseDto> joinUpdateStatus(List<CatOltsEntity> olts);
 	CompletableFuture<GenericResponseDto> getFaltantesMetricas(List<CatOltsEntity> olts, String tabla, String joinField, int tipo, String idEjecucion, int idMetrica);
 	CompletableFuture<GenericResponseDto> saveInventario(List<InventarioOntsEntity> onts );
+	CompletableFuture<GenericResponseDto> putConfiguracion(List<CatOltsEntity> olts) throws Exception;
 }

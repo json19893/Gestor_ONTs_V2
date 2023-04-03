@@ -394,6 +394,48 @@ public class Utils extends Constantes {
 		return response;
 	}
 	
+	public boolean validaConfiguracion(String comando, int configuracion) throws IOException, InterruptedException {
+
+		boolean response = false;
+		String ruta="/home/implementacion/ecosistema/comandos/";
+		EjecucionDto proces = new EjecucionDto();
+		
+		try {
+			proces = proces= execBash(comando, ruta);
+			String s;
+			if (proces.getBuffer() != null) {
+				while ((s = proces.getBuffer().readLine()) != null && !response) {
+					response = true;
+					System.out.println("valor proceso:: " + s);
+					if (!s.contains(
+							"HUAWEI-XPON-MIB::hwGponDeviceOntControlRunStatus = No Such Instance currently exists at this OID")
+							&& !s.contains("snmpbulkwalk: Decryption error (Sub-id not found: (top) -> sysName)")
+							&& !s.contains("snmpbulkwalk: Unknown user name")
+							&& !s.contains("snmpbulkwalk: Decryption error")) {
+						response = true;
+					} else {
+						if (configuracion == 7 && s.contains(
+								"HUAWEI-XPON-MIB::hwGponDeviceOntControlRunStatus = No Such Instance currently exists at this OID"))
+							response = true;
+					}
+
+				}
+				proces.getProceso().destroy();
+				Thread.sleep(100);
+				System.out.println("p.exitValue()::: " + proces.getProceso().exitValue());
+			}
+			// System.out.println("codigo de proceso:: "+proces.getProceso().exitValue());
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			log.error("error:" + e);
+
+		}
+		
+		return response;
+	}
+
+	
 	
 	
 

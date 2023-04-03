@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import totalplay.snmpv2.com.configuracion.Constantes;
+import totalplay.snmpv2.com.configuracion.Utils;
 import totalplay.snmpv2.com.negocio.dto.FaltantesDto;
 import totalplay.snmpv2.com.negocio.dto.GenericPoleosDto;
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
@@ -19,6 +20,7 @@ import totalplay.snmpv2.com.negocio.dto.OntsConfiguracionDto;
 import totalplay.snmpv2.com.negocio.services.IGenericMetrics;
 import totalplay.snmpv2.com.negocio.services.IasyncMethodsService;
 import totalplay.snmpv2.com.persistencia.repositorio.IauxiliarJoinEstatusRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesEstatusRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasRepository;
@@ -83,6 +85,10 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 	IGenericMetrics genericMetrics;
 	@Autowired
 	IinventarioOntsAuxManualRepository inventarioAuxManual;
+	@Autowired
+	IcatOltsRepository catOlts;
+	
+	Utils util=new Utils();
 	
 	@Async("taskExecutor2")
 	public CompletableFuture<GenericResponseDto> getFaltantes(List<CatOltsEntity> olts ){
@@ -423,6 +429,99 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 		return null;
 		
 	} 
+	
+	@Override
+	@Async("taskExecutor2")
+	public CompletableFuture<GenericResponseDto> putConfiguracion(List<CatOltsEntity> olts) throws Exception {
+		
+		Integer configu = 0;
+		String tecnologia = "";
+		
+		for(CatOltsEntity olt: olts) {
+			try {
+				boolean pin=util.vaidaPin(olt.getIp());				
+				Integer estatus = 0;
+				boolean proceso = false;
+				String descripcion = "---";
+				
+				if (pin) {
+					proceso = util.validaConfiguracion(comando1 + olt.getIp() + SPACE + OID_SYSTNAME, 1);
+					if (proceso) {
+						configu = 1;
+						tecnologia = "HUAWEI";
+						estatus = 1;
+					} else {
+						proceso = util.validaConfiguracion(comando2 + olt.getIp() + SPACE + OID_SYSTNAME, 3);
+						if (proceso) {
+							configu = 3;
+							tecnologia = "ZTE";
+							estatus = 1;
+						} else {
+							proceso = util.validaConfiguracion(comando4 + olt.getIp() + SPACE + OID_SYSTNAME, 4);
+							if (proceso) {
+								configu = 4;
+								tecnologia = "ZTE";
+								estatus = 1;
+							} else {
+								proceso = util.validaConfiguracion(comando5 + olt.getIp() + SPACE + OID_SYSTNAME, 5);
+								if (proceso) {
+									configu = 5;
+									tecnologia = "FIBER HOME";
+									estatus = 1;
+
+								} else {
+									proceso = util.validaConfiguracion(comando6 + olt.getIp() + SPACE + OID_RUN_STATUS_HUAWEI,
+											6);
+									if (proceso) {
+										configu = 6;
+										tecnologia = "HUAWEI";
+										estatus = 1;
+									} else {
+										proceso = util.validaConfiguracion(
+												comando6 + olt.getIp() + SPACE + OID_RUN_STATUS_HUAWEI, 7);
+										if (proceso) {
+											configu = 7;
+											tecnologia = "HUAWEI";
+											estatus = 0;
+											descripcion = "No reconoce los mibs de las metricas";
+										} else {
+											configu = 0;
+											tecnologia = olt.getTecnologia();
+											estatus = 0;
+											descripcion = "No reconoce las credenciales de acceso";
+										}
+									}
+
+								}
+							}
+						}
+					}
+					System.out.println("configu :" + configu);
+					System.out.println("tecnologia :" + tecnologia);
+					
+					olt.setDescripcion( configu != olt.getId_configuracion() ? "Cambio configuracion, antes:" + olt.getId_configuracion() : "Sin cambio " );
+					olt.setId_configuracion(configu);
+					olt.setTecnologia(tecnologia);
+					olt.setPin(1);
+					olt.setEstatus(estatus);
+					//olt.setDescripcion(descripcion);
+				}else {
+					olt.setPin(0);
+					olt.setEstatus(0);
+					olt.setDescripcion("No es pineable");
+				}
+				catOlts.save(olt);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			
+			
+		}
+		
+		return null;
+		
+	}
+	
 	
 	private void saveErrores(int idMetrica, List<GenericPoleosDto> onts) {
 		

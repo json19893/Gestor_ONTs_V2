@@ -72,7 +72,7 @@ public class snmpServiceImpl extends constantes implements IsnmpService {
 					}
 					de.setEstatus(1);
 					de.setOid(valOid[0].trim());
-					de.setId_olts(Integer.parseInt(configuracion.getIdOlt()));
+					de.setid_olt(Integer.parseInt(configuracion.getIdOlt()));
 					de.setFecha_descubrimiento(LocalDateTime.now().toString());
 					de.setId_ejecucion(IdMonitoreoEjecucion);
 					de.setId_region(Integer.parseInt(configuracion.getIdRegion()));

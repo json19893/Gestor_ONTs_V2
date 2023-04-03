@@ -38,11 +38,11 @@ System.out.println("------------------------INICIO DEL PROCESO DE DIFERENCIA----
 								.append("datos", new Document("$push", new Document("id_ont", "$_id")
 										.append("numero_serie", "$numero_serie").append("oid", "$oid")
 										.append("fecha_descubrimiento", "$fecha_descubrimiento")
-										.append("id_ejecucion", "$id_ejecucion").append("id_olts", "$id_olts")))),
+										.append("id_ejecucion", "$id_ejecucion").append("id_olt", "$id_olt")))),
 						new Document("$match", new Document("count", new Document("$gt", 1L))),
 						new Document("$unwind", "$datos"),
 						new Document("$lookup", new Document("from", "tb_poleos_metricas_onts")
-								.append("let", new Document("oid", "$datos.oid").append("olt", "$datos.id_olts"))
+								.append("let", new Document("oid", "$datos.oid").append("olt", "$datos.id_olt"))
 								.append("pipeline",
 										Arrays.asList(new Document("$match", new Document("$expr", new Document("$and",
 												Arrays.asList(new Document("$eq", Arrays.asList("$oid", "$$oid")),
@@ -55,7 +55,7 @@ System.out.println("------------------------INICIO DEL PROCESO DE DIFERENCIA----
 								new Document("id_ont", "$datos.id_ont").append("numero_serie", "$datos.numero_serie")
 										.append("oid", "$datos.oid")
 										.append("fecha_descubrimiento", "$datos.fecha_descubrimiento")
-										.append("id_olts", "$datos.id_olts")
+										.append("id_olt", "$datos.id_olt")
 										.append("id_ejecucion", "$datos.id_ejecucion").append("estatus",
 												new Document("$ifNull",
 														Arrays.asList("$metricas.estatus", 0L, false)))),
@@ -90,7 +90,7 @@ System.out.println("------------------------INICIO DEL PROCESO DE DIFERENCIA----
 							            .append("numero_serie", "$inventario.numero_serie")
 							            .append("oid", "$inventario.oid")
 							            .append("fecha_descubrimiento", "$inventario.fecha_descubrimiento")
-							            .append("id_olts", "$inventario.id_olts")
+							            .append("id_olt", "$inventario.id_olt")
 							            .append("estatus", "$estatus")
 							            .append("id_ejecucion", "$id_ejecucion")
 							            .append("_class", "$inventario._class")), 
@@ -174,7 +174,7 @@ System.out.println("------------------------INICIO DEL PROCESO DE DIFERENCIA----
 					            .append("let", 
 					    new Document("oid", "$oid")
 					                .append("id_metrica", "$id_metrica"))
-					            .append("localField", "id_olts")
+					            .append("localField", "id_olt")
 					            .append("foreignField", "id_olt")
 					            .append("pipeline", Arrays.asList(new Document("$match", 
 					                new Document("$expr", 
@@ -209,7 +209,7 @@ System.out.println("------------------------INICIO DEL PROCESO DE DIFERENCIA----
 					    new Document("$group", 
 					    new Document("_id", 
 					    new Document("numero_serie", "$numero_serie")
-					                .append("id_olts", "$id_olts"))
+					                .append("id_olt", "$id_olt"))
 					            .append("datos", 
 					    new Document("$push", 
 					    new Document("estatus", "$estatus")
@@ -237,7 +237,7 @@ System.out.println("------------------------INICIO DEL PROCESO DE DIFERENCIA----
 					    new Document("$arrayElemAt", Arrays.asList("$datos.id_ejecucion", 1L)))
 					            .append("numero_serie", 
 					    new Document("$arrayElemAt", Arrays.asList("$datos.numero_serie", 1L)))
-					            .append("id_olt", "$_id.id_olts")
+					            .append("id_olt", "$_id.id_olt")
 					            .append("estatus", 
 					    new Document("$switch", 
 					    new Document("branches", Arrays.asList(new Document("case", 

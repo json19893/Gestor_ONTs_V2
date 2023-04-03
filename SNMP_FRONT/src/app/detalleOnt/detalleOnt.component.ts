@@ -14,7 +14,7 @@ export interface up {
     numero_serie:string;
     oid:string;
     fecha_descubrimiento: string;
-    id_olts:number;
+    id_olt:number;
     estatus: string;
     id_ejecucion:string; 
     tipoCambio:string;   
@@ -175,7 +175,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                 numero_serie:res[d].numero_serie,
                 oid:res[d].oid,
                 fecha_descubrimiento: res[d].fecha_descubrimiento,
-                id_olts:res[d].id_olts,
+                id_olt:res[d].id_olt,
                 estatus: res[d].estatus==1? "UP":res[d].estatus==0?"DISCONNECT":"DOWN",
                 id_ejecucion:res[d].id_ejecucion,    
                 tipoCambio:"--",
@@ -224,7 +224,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                 numero_serie:res.listOnts[d].numero_serie,
                 oid:res.listOnts[d].oid,
                 fecha_descubrimiento: res.listOnts[d].fecha_descubrimiento,
-                id_olts:res.listOnts[d].id_olts,
+                id_olt:res.listOnts[d].id_olt,
                 estatus: res[d].estatus==1? "UP":res[d].estatus==0?"DISCONNECT":"DOWN",
                 id_ejecucion:res.listOnts[d].id_ejecucion,    
                 tipoCambio:"--",
@@ -286,7 +286,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
             numero_serie:res[d].numero_serie,
             oid:res[d].oid,
             fecha_descubrimiento: res[d].fecha_descubrimiento,
-            id_olts:res[d].id_olts,
+            id_olt:res[d].id_olt,
             estatus: res[d].estatus==1? "UP":res[d].estatus==0?"DISCONNECT":"DOWN",
             id_ejecucion:res[d].id_ejecucion,    
             tipoCambio:"--",
@@ -335,7 +335,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                 numero_serie:res[d].numero_serie,
                 oid:res[d].oid,
                 fecha_descubrimiento:  res[d].fecha_descubrimiento=='0-0-0,0:0:0.0,.0:0'?'1 ':res[d].fecha_descubrimiento,
-                id_olts:res[d].id_olts,
+                id_olt:res[d].id_olt,
                 estatus: res[d].estatus==1? "UP":res[d].estatus==0?"DISCONNECT":"DOWN",
                 id_ejecucion:res[d].id_ejecucion,    
                 tipoCambio:res[d].tipoCambio,
@@ -387,7 +387,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                 numero_serie:res[d].numero_serie,
                 oid:res[d].oid,
                 fecha_descubrimiento: res[d].fecha_descubrimiento,
-                id_olts:res[d].id_olts,
+                id_olt:res[d].id_olt,
                 estatus: res[d].estatus==1? "UP":res[d].estatus==2?"DOWN":"DISCONNECT",
                 id_ejecucion:res[d].id_ejecucion,    
                 tipoCambio:"--",
@@ -477,9 +477,9 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
       }
     }
 
-    getData(oid:string,id_olts:number){
+    getData(oid:string,id_olt:number){
       this.spinner.show();
-      this.service.getMetricas(oid,id_olts).subscribe(
+      this.service.getMetricas(oid,id_olt).subscribe(
         resp=>{
 
           this.lastUpTime=resp.lastUpTime

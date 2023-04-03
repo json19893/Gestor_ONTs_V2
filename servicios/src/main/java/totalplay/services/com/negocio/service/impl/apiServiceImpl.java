@@ -342,7 +342,7 @@ public class apiServiceImpl implements IapiService {
 					}
 					res2.setId_region(olt.getId_region());
 					res2.setNumero_serie(datos.getNumSerie());
-					res2.setId_olts(olt.getId_olt());
+					res2.setid_olt(olt.getId_olt());
 					res2.setTipo(tipo);
 					res2.setEstatus(estatus);
 					res2.setSlot(Integer.parseInt(slot));
