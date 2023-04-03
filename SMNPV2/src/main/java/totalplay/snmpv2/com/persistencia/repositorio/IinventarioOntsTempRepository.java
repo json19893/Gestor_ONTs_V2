@@ -120,7 +120,7 @@ public interface IinventarioOntsTempRepository extends MongoRepository<Inventari
 	@Meta(allowDiskUse = true)
 	List<InventarioOntsTmpEntity> sendTbDiferencias();
 
-	@Query(value = "{'id_olts': ?0}", count = true)
+	@Query(value = "{'id_olt': ?0}", count = true)
 	Integer finOnts(@Param("idOlts") Integer idOlts);
 	
 	@Aggregation(pipeline = { 

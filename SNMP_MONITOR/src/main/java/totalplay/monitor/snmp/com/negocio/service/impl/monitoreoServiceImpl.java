@@ -274,8 +274,8 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 				String cadena = "";
 				for (diferenciasDto f : h.getDiferencias()) {
 
-					if (f.getId_olts() != h.getId_olt()) {
-						cadena = cadena + " " + f.getId_olts();
+					if (f.getid_olt() != h.getId_olt()) {
+						cadena = cadena + " " + f.getid_olt();
 
 					}
 				}

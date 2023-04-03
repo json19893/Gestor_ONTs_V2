@@ -12,30 +12,30 @@ import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsEntidad;
 
 @Repository
 public interface IinventarioOltsReposirorio extends MongoRepository<inventarioOntsEntidad, String> {
-	@Aggregation(pipeline = { "{$unionWith: 'tb_inventario_onts_pdm'}","{'$match':{'$and':[{'id_olts':?0},{'estatus':?1}]}}" })
+	@Aggregation(pipeline = { "{$unionWith: 'tb_inventario_onts_pdm'}","{'$match':{'$and':[{'id_olt':?0},{'estatus':?1}]}}" })
 	List<inventarioOntsEntidad> finOntsByIdOlts(@Param("idOlts") Integer idOlts, @Param("status") Integer status);
 	
-	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}", "{'$match':{'id_olts':?0}}" })
+	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}", "{'$match':{'id_olt':?0}}" })
 	List<inventarioOntsEntidad> finOntsByIdAll(@Param("idOlts") Integer idOlts);
 	
-	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}", "{'$match':{'id_olts':?0}}" })
+	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}", "{'$match':{'id_olt':?0}}" })
 	List<listInventarioOntsDto> finOntsByIdAllService(@Param("idOlts") Integer idOlts);
 	
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olts':?0},{'tipo': 'E'}]} }" })
+	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olt':?0},{'tipo': 'E'}]} }" })
 	List<inventarioOntsEntidad> finOntsByIdAllEmp(@Param("idOlts") Integer idOlts);
 	
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olts':?0},{'vip': 1}]} }" })
+	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olt':?0},{'vip': 1}]} }" })
 	List<inventarioOntsEntidad> finOntsByIdAllVips(@Param("idOlts") Integer idOlts);
 	
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olts':?0},{'tipo': 'E'}]} }" })
+	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olt':?0},{'tipo': 'E'}]} }" })
 	List<listInventarioOntsDto> finOntsByIdAllEmpService(@Param("idOlts") Integer idOlts);
 	
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olts':?0},{'estatus':?1}]}}" })
+	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olt':?0},{'estatus':?1}]}}" })
 	List<inventarioOntsEntidad> totalByEstatus(@Param("idOlts") Integer idOlts,@Param("estatus") Integer estatus);
 
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olts':?0},{'estatus':?1},{'tipo':'E'}]}}" })
+	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olt':?0},{'estatus':?1},{'tipo':'E'}]}}" })
 	List<inventarioOntsEntidad> finOntsByIdOltsEmp(@Param("idOlts") Integer idOlts, @Param("status") Integer status);
 	
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olts':?0},{'estatus':?1},{'vip':1}]}}" })
+	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olt':?0},{'estatus':?1},{'vip':1}]}}" })
 	List<inventarioOntsEntidad> finOntsByIdOltsVips(@Param("idOlts") Integer idOlts, @Param("status") Integer status);
 }

@@ -224,7 +224,7 @@
                         <th mat-header-cell *matHeaderCellDef aria-label="row actions">Metricas</th>
                         <td mat-cell *matCellDef="let row">
                           <button mat-icon-button aria-label="expand row" (click)="(expandedElement = expandedElement === row ? null : row); $event.stopPropagation()">
-                            <mat-icon  (click)="getData(row.oid,row.id_olts);"  matTooltip="Mostrar" *ngIf="expandedElement !== row">keyboard_arrow_down</mat-icon>
+                            <mat-icon  (click)="getData(row.oid,row.id_olt);"  matTooltip="Mostrar" *ngIf="expandedElement !== row">keyboard_arrow_down</mat-icon>
                             <mat-icon  matTooltip="Ocultar"*ngIf="expandedElement === row">keyboard_arrow_up</mat-icon>
                           </button>
                         </td>

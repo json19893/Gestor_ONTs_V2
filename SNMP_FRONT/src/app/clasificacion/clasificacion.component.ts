@@ -92,6 +92,7 @@ export class ClasificacionComponent implements OnInit {
   width = "76vw";
   displayedColumns: string[] = ['region', 'totalOlt', 'totales', 'totalOnts', 'arriba', 'abajo', 'cambios', 'acciones'];
   public div2: any;
+  
   constructor(private fb: FormBuilder, private _snackbar: MatSnackBar,
     private router: Router,
     private spinner: NgxSpinnerService,
