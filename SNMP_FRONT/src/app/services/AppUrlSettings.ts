@@ -5,7 +5,7 @@ export class AppUrlSettings{
     //public static BASE_API_LOGIN = 'http://localhost:9084/';
     //public static BASE_API_DESCUBRIMIENTO = 'http://localhost:9080/';
     //public static BASE_API = 'http://10.180.199.75:9081/';
-    public static BASE_API_DESCUBRIMIENTO = 'http://10.180.199.74:9080/';
+    public static BASE_API_DESCUBRIMIENTO = 'http://10.180.199.74:9082/';
     public static BASE_API_LOGIN = 'http://10.180.199.75:9084/';
     //public static BASE_API = 'http://10.180.251.83:9081/';
     //public static BASE_API_DESCUBRIMIENTO = 'http://10.180.251.83:9080/';
@@ -27,6 +27,8 @@ export class AppUrlSettings{
     public static FIND_OLT= 'findOlt';
     public static FIND_ONT= 'findOnt';
     public static GET_DETALLE_ACTUALIZACION= 'getDetalleActualizacion/';
+    public static GET_DETALLE_ACTUALIZACION_DATA= 'getDetalleActuacionData/'
+    public static GET_DETALLE_ACTUALIZACION_SERIE= 'getDetalleActuacionSerie/'
     public static GET_METRICAS= 'getMetrics/';
     public static GET_OLTS= 'getOlts/';
     public static UPDATE_STATUS="actualizaEstatus/";
@@ -40,6 +42,7 @@ export class AppUrlSettings{
     public static DETALLES_METRICAS ="configmetric"
     public static CAMBIA_BLOQUE_METRICA="changeMetricBlock/"
     public static DESASIGNA_BLOQUE_METRICA="removeMetricBlock/"
+    public static GET_ARCHIVO="getArchivo";
    
     
 }

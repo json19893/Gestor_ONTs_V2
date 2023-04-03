@@ -18,6 +18,7 @@ import { getDutchPaginatorIntl } from './PaginatorI18n';
 import { LoginComponent } from './login/login.component';
 import { pointService } from './services/poinst.service';
 import { DetalleOntComponent } from './detalleOnt/detalleOnt.component';
+import {detalleActualizacionDialog} from './actualizacion/actualizacion.component'
 import {ClasificacionComponent} from './clasificacion/clasificacion.component';
 import { BottomSheetOverviewExampleSheet} from'./menu/menu.component';
 import { DialogContentExampleDialog } from './menu/menu.component';
@@ -42,7 +43,8 @@ import { FileSaverModule } from 'ngx-filesaver';
     ConsultaOltsComponent,
     ActualizaOntsDialog,
     detalleEjecucionDialog,
-    DialogElementsExampleDialog
+    DialogElementsExampleDialog,
+    detalleActualizacionDialog
 
    
 

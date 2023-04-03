@@ -5,6 +5,7 @@ import totalplay.snmpv2.com.negocio.dto.GenericPoleosDto;
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsPdmEntity;
 
 import java.io.IOException;
@@ -14,10 +15,12 @@ import java.util.concurrent.CompletableFuture;
 public interface IasyncMethodsService {
    
 	CompletableFuture<GenericResponseDto> getFaltantes(List<CatOltsEntity> olts );
-	CompletableFuture<GenericResponseDto> getMetrica(List<CatOltsEntity> olts, int metrica );
+	CompletableFuture<GenericResponseDto> getMetrica(List<CatOltsEntity> olts, int metrica, boolean manual );
 	CompletableFuture<GenericResponseDto> getFaltatesInv(List<CatOltsEntity> olts );
 	CompletableFuture<GenericResponseDto> saveEmpresariales(List<InventarioOntsAuxEntity> onts );
 	CompletableFuture<GenericResponseDto> deletePdm(List<InventarioOntsPdmEntity> onts );
 	CompletableFuture<GenericResponseDto> joinUpdateStatus(List<CatOltsEntity> olts);
 	CompletableFuture<GenericResponseDto> getFaltantesMetricas(List<CatOltsEntity> olts, String tabla, String joinField, int tipo, String idEjecucion, int idMetrica);
+	CompletableFuture<GenericResponseDto> saveInventario(List<InventarioOntsEntity> onts );
+	CompletableFuture<GenericResponseDto> putConfiguracion(List<CatOltsEntity> olts) throws Exception;
 }

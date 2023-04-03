@@ -3,7 +3,7 @@ export interface Onts {
     numero_serie:         string;
     oid:                  string;
     fecha_descubrimiento: Date;
-    id_olts:              string;
+    id_olt:              string;
     estatus:              number;
     id_ejecucion:         string;
     alias:                string;

@@ -17,7 +17,7 @@ public interface IcatOltsRepository extends MongoRepository<CatOltsEntity, Strin
 	List<CatOltsEntity> findByEstatusAndDescubrio(Integer estatus,boolean descubrio);
 	
 	@Aggregation(pipeline = {
-			"{'$match':{id_olt: {$in : ?0} } }"
+			"{'$match':{ip: {$in : ?0} } }"
 			})
-	List<CatOltsEntity> getOltsById(@Param("idOLts") List<Integer> idOLts);
+	List<CatOltsEntity> getOltsByIp(@Param("idOLts") List<String> idOLts);
 }

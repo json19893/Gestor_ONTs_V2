@@ -121,6 +121,28 @@ public class Utils extends Constantes {
 		return response;
 
 	}
+
+	public boolean crearArchivos(String ruta,String escribir){
+
+		try {
+			File file = new File(ruta);
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+	
+			FileWriter fw = new FileWriter(file,true);
+			BufferedWriter bw = new BufferedWriter(fw);
+			bw.write(escribir);
+			bw.newLine();
+			bw.close();
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
+
+	}
+
+
 	
 	public  List<String> getReplace(Integer idMetrica, String tecnologia) {
 		List<String> response = new ArrayList<String>();
@@ -352,25 +374,67 @@ public class Utils extends Constantes {
 	}
 
 	public boolean vaidaPin(String ip) throws IOException, InterruptedException {
-		String s;
+	
 		boolean response = false;
 		InetAddress ping;
 
 		try {
 			ping = InetAddress.getByName(ip);
 			if (ping.isReachable(5000)) {
-				System.out.println(ip + " - responde!");
+				log.info(ip + " - responde!");
 				response = true;
 			} else {
-				System.out.println(ip + " - no responde!");
+				log.info(ip + " - no responde!");
 				response = false;
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
-			log.error("error:" + e);
+			log.info("error:" + e);
 		}
 		return response;
 	}
+	
+	public boolean validaConfiguracion(String comando, int configuracion) throws IOException, InterruptedException {
+
+		boolean response = false;
+		String ruta="/home/implementacion/ecosistema/comandos/";
+		EjecucionDto proces = new EjecucionDto();
+		
+		try {
+			proces = proces= execBash(comando, ruta);
+			String s;
+			if (proces.getBuffer() != null) {
+				while ((s = proces.getBuffer().readLine()) != null && !response) {
+					response = true;
+					System.out.println("valor proceso:: " + s);
+					if (!s.contains(
+							"HUAWEI-XPON-MIB::hwGponDeviceOntControlRunStatus = No Such Instance currently exists at this OID")
+							&& !s.contains("snmpbulkwalk: Decryption error (Sub-id not found: (top) -> sysName)")
+							&& !s.contains("snmpbulkwalk: Unknown user name")
+							&& !s.contains("snmpbulkwalk: Decryption error")) {
+						response = true;
+					} else {
+						if (configuracion == 7 && s.contains(
+								"HUAWEI-XPON-MIB::hwGponDeviceOntControlRunStatus = No Such Instance currently exists at this OID"))
+							response = true;
+					}
+
+				}
+				proces.getProceso().destroy();
+				Thread.sleep(100);
+				System.out.println("p.exitValue()::: " + proces.getProceso().exitValue());
+			}
+			// System.out.println("codigo de proceso:: "+proces.getProceso().exitValue());
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			log.error("error:" + e);
+
+		}
+		
+		return response;
+	}
+
 	
 	
 	

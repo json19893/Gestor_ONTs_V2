@@ -19,9 +19,9 @@ import totalplay.monitor.snmp.com.persistencia.entidad.vwActualizacionEntidad;
 
 @Repository
 public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOntsEntidad, String> {
-	//inventarioOntsEntidad findByOidAndIdOlts(String oid, Integer id_olts);
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'oid':?0},{'id_olts':?1}]}}" })
-	inventarioOntsEntidad finOntsByOidAndIdOlts(@Param("oid") String oid, @Param("id_olts") Integer id_olts);
+	//inventarioOntsEntidad findByOidAndIdOlts(String oid, Integer id_olt);
+	@Aggregation(pipeline = { "{'$match':{'$and':[{'oid':?0},{'id_olt':?1}]}}" })
+	inventarioOntsEntidad finOntsByOidAndIdOlts(@Param("oid") String oid, @Param("id_olt") Integer id_olt);
 	
 	@Aggregation(pipeline = { "{'$match':{'numero_serie':?0}}" })
 	inventarioOntsEntidad getOntBySerie(@Param("serie") String serie);
@@ -36,10 +36,10 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 	@Query(value = " {'id_region': ?0 }",count = true)
 	Integer finOntsByTotalRegion(@Param("idRegion") Integer idRegion);
 	
-	@Query(value = " {'id_olts': ?0 }",count = true)
+	@Query(value = " {'id_olt': ?0 }",count = true)
 	Integer finOntsByTotalOlt(@Param("idOlt") Integer idOlt);
 	
-	@Query(value = " {'id_olts': ?0, 'estatus': ?1 }",count = true)
+	@Query(value = " {'id_olt': ?0, 'estatus': ?1 }",count = true)
 	Integer finOntsByTotalEstatus(@Param("idOlt") Integer idOlt,@Param("estatus") Integer estatus);
 	
 	@Query(value = " {}",count = true)
@@ -63,16 +63,16 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 	@Query(value = " { 'tecnologia': ?0, 'estatus': ?1, 'tipo': ?2}",count = true)
 	Integer totalByTecnologiaEstatusCount(@Param("tecnologia") String tecnologia, @Param("estatus") Integer estatus, @Param("tipo") String tipo);
 
-	@Query(value = " {'id_olts': ?0, 'tipo': 'E' }",count = true)
+	@Query(value = " {'id_olt': ?0, 'tipo': 'E' }",count = true)
 	Integer finOntsByTotalOltEmp(@Param("idOlt") Integer idOlt);
 	
-	@Query(value = " {'id_olts': ?0, 'estatus': ?1, 'tipo': 'E' }",count = true)
+	@Query(value = " {'id_olt': ?0, 'estatus': ?1, 'tipo': 'E' }",count = true)
 	Integer finOntsByTotalEstatusEmp(@Param("idOlt") Integer idOlt,@Param("estatus") Integer estatus);
 	
-	@Query(value = " {'id_olts': ?0, 'vip': 1 }",count = true)
+	@Query(value = " {'id_olt': ?0, 'vip': 1 }",count = true)
 	Integer finOntsByTotalOltVip(@Param("idOlt") Integer idOlt);
 	
-	@Query(value = " {'id_olts': ?0, 'estatus': ?1, 'vip': 1 }",count = true)
+	@Query(value = " {'id_olt': ?0, 'estatus': ?1, 'vip': 1 }",count = true)
 	Integer finOntsByTotalEstatusVip(@Param("idOlt") Integer idOlt,@Param("estatus") Integer estatus);
 	
 	@Aggregation(pipeline = { "{$unionWith: 'tb_inventario_onts_pdm'}"
@@ -220,7 +220,7 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 					+ "  'let': {region: '$_id'},\n"
 					+ "  pipeline: [\n"
 					+ "	{$match: {tipo: 'E'}},\n"
-					+ "	{$group: {_id: {id_olt: '$id_olts',region: '$id_region'}}},\n"
+					+ "	{$group: {_id: {id_olt: '$id_olt',region: '$id_region'}}},\n"
 					+ "    {$lookup: {\n"
 					+ "     from: 'cat_olts',\n"
 					+ "     localField: '_id.id_olt',\n"
@@ -320,7 +320,7 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 			+ "                 { '$group': {\n"
 			+ "                    '_id': {\n"
 			+ "                        'id_region': '$id_region',\n"
-			+ "                        'olts':'$id_olts'\n"
+			+ "                        'olts':'$id_olt'\n"
 			+ "                    },        \n"
 			+ "                }},\n"
 			+ "                \n"
@@ -442,7 +442,7 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 					+ "  'let': {region: '$_id'},\n"
 					+ "  pipeline: [\n"
 					+ "	{$match: {vip: 1}},\n"
-					+ "	{$group: {_id: {id_olt: '$id_olts',region: '$id_region'}}},\n"
+					+ "	{$group: {_id: {id_olt: '$id_olt',region: '$id_region'}}},\n"
 					+ "    {$lookup: {\n"
 					+ "     from: 'cat_olts',\n"
 					+ "     localField: '_id.id_olt',\n"

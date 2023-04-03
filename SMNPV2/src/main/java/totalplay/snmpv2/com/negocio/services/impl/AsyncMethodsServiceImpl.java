@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import totalplay.snmpv2.com.configuracion.Constantes;
+import totalplay.snmpv2.com.configuracion.Utils;
 import totalplay.snmpv2.com.negocio.dto.FaltantesDto;
 import totalplay.snmpv2.com.negocio.dto.GenericPoleosDto;
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
@@ -19,10 +20,12 @@ import totalplay.snmpv2.com.negocio.dto.OntsConfiguracionDto;
 import totalplay.snmpv2.com.negocio.services.IGenericMetrics;
 import totalplay.snmpv2.com.negocio.services.IasyncMethodsService;
 import totalplay.snmpv2.com.persistencia.repositorio.IauxiliarJoinEstatusRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesEstatusRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioAuxTransRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsAuxManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsAuxRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsPdmRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsRepository;
@@ -36,6 +39,7 @@ import totalplay.snmpv2.com.persistencia.entidades.FaltantesEstatusEntity;
 import totalplay.snmpv2.com.persistencia.entidades.FaltantesMetricasEntity;
 import totalplay.snmpv2.com.persistencia.entidades.FaltantesMetricasManualEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsPdmEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioPuertosEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosAliasEntity;
@@ -79,6 +83,12 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 	IfaltantesEstatusRepository faltantesEstatus;
 	@Autowired
 	IGenericMetrics genericMetrics;
+	@Autowired
+	IinventarioOntsAuxManualRepository inventarioAuxManual;
+	@Autowired
+	IcatOltsRepository catOlts;
+	
+	Utils util=new Utils();
 	
 	@Async("taskExecutor2")
 	public CompletableFuture<GenericResponseDto> getFaltantes(List<CatOltsEntity> olts ){
@@ -108,7 +118,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 	
 	@Override
 	@Async("taskExecutor2")
-	public CompletableFuture<GenericResponseDto> getMetrica(List<CatOltsEntity> olts, int metrica ){
+	public CompletableFuture<GenericResponseDto> getMetrica(List<CatOltsEntity> olts, int metrica, boolean manual){
 		for(CatOltsEntity olt:olts) {
 			try {
 					List resultado;
@@ -120,19 +130,31 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 							auxiliarTrans.insert(resultado);
 						break;
 						case 2:
-							resultado = inventarioAux.getDescripcionAlarma(olt.getId_region(),  olt.getId_olt());
+							if(manual) 
+								resultado = inventarioAuxManual.getDescripcionAlarma(olt.getId_region(),  olt.getId_olt());
+							else 
+								resultado = inventarioAux.getDescripcionAlarma(olt.getId_region(),  olt.getId_olt());
 							auxiliarTrans.insert(resultado);
 						break;
 						case 4:
-							resultado = inventarioAux.getLastDownTime(olt.getId_region(),  olt.getId_olt());
+							if(manual) 
+								resultado = inventarioAuxManual.getLastDownTime(olt.getId_region(),  olt.getId_olt());
+							else
+								resultado = inventarioAux.getLastDownTime(olt.getId_region(),  olt.getId_olt());
 							auxiliarTrans.insert(resultado);
 						break;
 						case 14:
-							resultado = inventarioAux.getAlias(olt.getId_region(),  olt.getId_olt());
+							if(manual) 
+								resultado = inventarioAuxManual.getAlias(olt.getId_region(),  olt.getId_olt());
+							else
+								resultado = inventarioAux.getAlias(olt.getId_region(),  olt.getId_olt());
 							auxiliarTrans.insert(resultado);
 						break;
 						case 16:
-							resultado = inventarioAux.getFrameSlotPort(olt.getId_region(),  olt.getId_olt());
+							if(manual) 
+								resultado = inventarioAuxManual.getFrameSlotPort(olt.getId_region(),  olt.getId_olt());
+							else
+								resultado = inventarioAux.getFrameSlotPort(olt.getId_region(),  olt.getId_olt());
 							auxiliarTrans.insert(resultado);
 						break;
 					}
@@ -384,6 +406,123 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 		
 		return response;
 	}
+	
+	@Override
+	@Async("taskExecutor2")
+	public CompletableFuture<GenericResponseDto> saveInventario(List<InventarioOntsEntity> onts ){
+		
+		try {
+			
+				LocalDateTime now = LocalDateTime.now(); 
+				
+				inventario.saveAll(onts);
+				
+				int seconds = (int) ChronoUnit.SECONDS.between(now, LocalDateTime.now());
+				log.info("::::::::    onts empresariales guardas   :::::::::::::::  "+ seconds);			
+			
+			
+		} catch (Exception e) {
+			log.info("::::::::error onts empresariales "+ e );
+		}
+		
+		
+		return null;
+		
+	} 
+	
+	@Override
+	@Async("taskExecutor2")
+	public CompletableFuture<GenericResponseDto> putConfiguracion(List<CatOltsEntity> olts) throws Exception {
+		
+		Integer configu = 0;
+		String tecnologia = "";
+		
+		for(CatOltsEntity olt: olts) {
+			try {
+				boolean pin=util.vaidaPin(olt.getIp());				
+				Integer estatus = 0;
+				boolean proceso = false;
+				String descripcion = "---";
+				
+				if (pin) {
+					proceso = util.validaConfiguracion(comando1 + olt.getIp() + SPACE + OID_SYSTNAME, 1);
+					if (proceso) {
+						configu = 1;
+						tecnologia = "HUAWEI";
+						estatus = 1;
+					} else {
+						proceso = util.validaConfiguracion(comando2 + olt.getIp() + SPACE + OID_SYSTNAME, 3);
+						if (proceso) {
+							configu = 3;
+							tecnologia = "ZTE";
+							estatus = 1;
+						} else {
+							proceso = util.validaConfiguracion(comando4 + olt.getIp() + SPACE + OID_SYSTNAME, 4);
+							if (proceso) {
+								configu = 4;
+								tecnologia = "ZTE";
+								estatus = 1;
+							} else {
+								proceso = util.validaConfiguracion(comando5 + olt.getIp() + SPACE + OID_SYSTNAME, 5);
+								if (proceso) {
+									configu = 5;
+									tecnologia = "FIBER HOME";
+									estatus = 1;
+
+								} else {
+									proceso = util.validaConfiguracion(comando6 + olt.getIp() + SPACE + OID_RUN_STATUS_HUAWEI,
+											6);
+									if (proceso) {
+										configu = 6;
+										tecnologia = "HUAWEI";
+										estatus = 1;
+									} else {
+										proceso = util.validaConfiguracion(
+												comando6 + olt.getIp() + SPACE + OID_RUN_STATUS_HUAWEI, 7);
+										if (proceso) {
+											configu = 7;
+											tecnologia = "HUAWEI";
+											estatus = 0;
+											descripcion = "No reconoce los mibs de las metricas";
+										} else {
+											configu = 0;
+											tecnologia = olt.getTecnologia();
+											estatus = 0;
+											descripcion = "No reconoce las credenciales de acceso";
+										}
+									}
+
+								}
+							}
+						}
+					}
+					System.out.println("configu :" + configu);
+					System.out.println("tecnologia :" + tecnologia);
+					
+					olt.setDescripcion( configu != olt.getId_configuracion() ? "Cambio configuracion, antes:" + olt.getId_configuracion() : "Sin cambio " );
+					olt.setId_configuracion(configu);
+					olt.setTecnologia(tecnologia);
+					olt.setPin(1);
+					olt.setEstatus(estatus);
+					//olt.setDescripcion(descripcion);
+				}else {
+					olt.setPin(0);
+					olt.setEstatus(0);
+					olt.setDescripcion("No es pineable");
+				}
+				catOlts.save(olt);
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			
+			
+		}
+		
+		return null;
+		
+	}
+	
+	
 	private void saveErrores(int idMetrica, List<GenericPoleosDto> onts) {
 		
 		

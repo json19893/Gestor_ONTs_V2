@@ -1,5 +1,6 @@
 package totalplay.snmpv2.com.presentacion;
 
+import java.io.File;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -22,15 +23,18 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import lombok.extern.slf4j.Slf4j;
-
+import totalplay.snmpv2.com.helper.EncryptorHelper;
 import totalplay.snmpv2.com.configuracion.Constantes;
 import totalplay.snmpv2.com.configuracion.Utils;
 import totalplay.snmpv2.com.negocio.dto.DescubrimientoManualDto;
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
+import totalplay.snmpv2.com.negocio.services.IUpdateTotalOntsService;
+import totalplay.snmpv2.com.negocio.services.IasyncMethodsService;
 import totalplay.snmpv2.com.negocio.services.IdescubrimientoService;
 import totalplay.snmpv2.com.negocio.services.IlimpiezaOntsService;
 import totalplay.snmpv2.com.persistencia.entidades.BitacoraEventosEntity;
@@ -66,10 +70,18 @@ public class DescubrimientoController extends Constantes {
 	IBitacoraEventosRepository ibitacoraEventos;
 	@Autowired
 	ItblDescubrimientoManualRepositorio descubrimientoManual;
-
+	@Autowired
+    IUpdateTotalOntsService updateTotales;
+	@Autowired
+	IasyncMethodsService asyncMethods;
+	
+	
 	private Integer valMaxOlts = 50;
 	String idProceso="";
 	Utils util =new Utils();
+	
+	private String ruta="/home/implementacion/ecosistema/manual/descubrimiento.txt";
+	
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@GetMapping("/descubrimiento")
 	public GenericResponseDto getDescubrimientoOnts() throws IOException {
@@ -97,9 +109,9 @@ public class DescubrimientoController extends Constantes {
 			}
 
 			limpiezaOnts.updateDescripcion(monitorDescubrimiento, INICIO_DESC+"LIMPIEZA");
-			limpiezaOnts.getInventarioPuertos(monitorDescubrimiento);
+			limpiezaOnts.getInventarioPuertos(monitorDescubrimiento, null);
 			limpiezaOnts.getInventarioaux(monitorDescubrimiento);
-			
+			updateTotales.updateTotalOntsFromOlts();
 			monitorDescubrimiento.setDescripcion(FINAL_EXITO+" DESCUBRIMIENTO & LIMPIEZA");
 			monitorDescubrimiento.setFecha_fin( LocalDateTime.now().toString());
 			monitor.save(monitorDescubrimiento);
@@ -148,20 +160,67 @@ public class DescubrimientoController extends Constantes {
 			if(desc.getFecha_fin()==null){
 				return new GenericResponseDto(PROCESANDO, 1);
 			}
-			List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();
-			List<CatOltsEntity> olts=new ArrayList<CatOltsEntity>();
-			for (Integer d : datos.getOlts()) {
-				CatOltsEntity olt=catOltRepository.getOlt(d);
-				olts.add(olt);
+			inventarioTmp.deleteAll();
+			File file = new File(ruta);
+			if(file.exists()){
+				file.delete();
 			}
+			List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();
+			List<CatOltsEntity> olts=catOltRepository.getOltsByIp(datos.getOlts());
+		
 			thredOlts  = getProceso(olts,idProceso,true,datos.getUsuario());
 			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
-		//Limpieza de datos para inventario final
+			//Limpieza de datos para inventario final
+			limpiezaOnts.LimpiezaManual(olts, null);
+			updateTotales.updateTotalOntsFromOlts();
+		} catch (Exception e) {
+			return new GenericResponseDto(EJECUCION_ERROR, 1);
+		}
+		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
+	}
+	
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@GetMapping("/updateConfiguration")
+	public GenericResponseDto updateConfiguration() throws Exception {
+
+		try {			
+			List<CatOltsEntity> olts=new ArrayList<CatOltsEntity>();
+			olts= catOltRepository.findAll();
+			
+			Integer MaxOlts = (olts.size() /40) + 1;
+			List<CompletableFuture<GenericResponseDto>> thredOlts = new ArrayList<CompletableFuture<GenericResponseDto>>();
+			
+			for (int i = 0; i < olts.size(); i += valMaxOlts) {
+				Integer limMax = i + valMaxOlts;
+				if (limMax >= olts.size()) {
+					limMax = olts.size();
+				}
+				List<CatOltsEntity> segmentOlts = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
+				CompletableFuture<GenericResponseDto> executeProcess = asyncMethods.putConfiguracion(segmentOlts);
+				thredOlts.add(executeProcess);
+			}
+			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
+			
 		} catch (Exception e) {
 			return new GenericResponseDto(EJECUCION_ERROR, 1);
 		}
 		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
 	}
 
+	
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@GetMapping("/desencriptar/{cadena}")
+	public String desencriptar(@PathVariable("cadena") String cadena) throws Exception {
 
+		try {			
+			EncryptorHelper encryptorHelper = EncryptorHelper.getINSTANCE();
+	       return encryptorHelper.deencryptString(cadena);
+			
+		} catch (Exception e) {
+			
+		}
+		return "";
+	}
+	
+	
 }

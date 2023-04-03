@@ -35,7 +35,7 @@ export interface up {
   numero_serie: string;
   oid: string;
   fecha_descubrimiento: string;
-  id_olts: number;
+  id_olt: number;
   estatus: string;
   id_ejecucion: string;
   tipoCambio: string;
@@ -350,7 +350,7 @@ export class DialogContentExampleDialog implements OnInit {
               numero_serie: res.listOnts[d].numero_serie,
               oid: res.listOnts[d].oid,
               fecha_descubrimiento: res.listOnts[d].fecha_descubrimiento,
-              id_olts: res.listOnts[d].id_olts,
+              id_olt: res.listOnts[d].id_olt,
               estatus: res.listOnts[d].estatus,
               id_ejecucion: res.listOnts[d].id_ejecucion,
               tipoCambio: "--",

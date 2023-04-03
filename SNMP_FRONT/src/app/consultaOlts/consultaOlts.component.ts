@@ -70,10 +70,8 @@ export class ConsultaOltsComponent implements OnInit {
 
   }
   /** Whether the number of selected elements matches the total number of rows. */
-
-
- 
   ngOnInit() {
+ 
     this.spinner.show();
     this.getDataTable();
     this.valmaximo();
@@ -119,11 +117,11 @@ saveAsExcelFile(buffer: any, fileName: string) {
 EXCEL_EXTENSION);
 }
 
-  selec(evento: any, idOlt: any) {
+  selec(evento: any, ip: any) {
     if (!evento) {
-      this.descubrimiento.push(idOlt);
+      this.descubrimiento.push(ip);
     }else{
-      this.descubrimiento = this.descubrimiento.filter((item: string) => item !== idOlt)
+      this.descubrimiento = this.descubrimiento.filter((item: string) => item !== ip)
     }
     /*this.service.validaMaximo().subscribe(
       res => {
@@ -181,6 +179,7 @@ EXCEL_EXTENSION);
       })
   }
 
+ 
   actaulizaOlts() {
     const dialogRef = this.dialog.open(ActualizaOntsDialog, { disableClose: true });
 
@@ -452,7 +451,7 @@ export interface data {
 })
 
 export class detalleEjecucionDialog implements OnInit {
-
+archivo:any;
   dataSource = new MatTableDataSource<data>;
   displayedColumns: string[] = ['ip', 'nombre', 'fecha', 'descripcion', 'usuario','totalOnts','estatus'];
   ELEMENT_DATA: data[] = [];
@@ -463,9 +462,11 @@ export class detalleEjecucionDialog implements OnInit {
     private _snackbar: MatSnackBar
   ) {
     setInterval(() => this.getDetalle(), 1000);
+    setInterval(() => this.getaArchivo(), 1000);
 
   }
   ngOnInit() {
+    this.getaArchivo();
     this.getDetalle();
   }
   getDetalle() {
@@ -473,6 +474,13 @@ export class detalleEjecucionDialog implements OnInit {
       res => {
         this.ELEMENT_DATA = res;
         this.dataSource = new MatTableDataSource<data>(this.ELEMENT_DATA);
+      })
+
+  }
+  getaArchivo() {
+    this.service.getArchivo().subscribe(
+      res => {
+        this.archivo=res;
       })
 
   }

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -84,12 +85,13 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 	
 	
 	Utils utls=new Utils();
-    //private String ruta="/dev/ecosistema/comandos/bash";
-	//private String ruta="/home/daniel/Documentos/comandos/";
-	private String ruta="/home/implementacion/ecosistema/comandos/";
-	
+	@Value("${ruta.archivo.shell}")
+	private String ruta;
+	@Value("${ruta.archivo.txt}")
+	private String ruta2;
+
 	@Override																					
-	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error) throws IOException {
+	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error,boolean manual) throws IOException {
 
 		EjecucionDto proces = new EjecucionDto();
 		List data = new ArrayList<T>();
@@ -144,11 +146,12 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
     			proces.setOid(referencia);
     			proces.setErrorOlt(error);
     			proces.setSinOid(sinOid);
+				proces.setIp(configuracion.getIp());
     			
     			
     			data= limpiezaCadena.getMetricasBypoleo(proces, metrica, idOlt,
-    					configuracion.getIdRegion(), idProceso, configuracion.getTecnologia(),entidad, cadenasMetrica, saveErroneos, contador);
-				
+    					configuracion.getIdRegion(), idProceso, configuracion.getTecnologia(),entidad, cadenasMetrica, saveErroneos, contador,manual);
+					
     			log.info("count data "+data.size());
     			
     			if(error)
@@ -174,7 +177,10 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 			}
 		}while (contador <= 3 && exitValue != 0);
     	
-    			
+		if(manual){
+			utls.crearArchivos(ruta2,"Total de onts : "+ data.size());
+			utls.crearArchivos(ruta,DESC_FIN+configuracion.getIp());
+			}
     	return CompletableFuture.completedFuture(new GenericResponseDto(String.valueOf(data.size()), exitValue));
 }
 	@Override

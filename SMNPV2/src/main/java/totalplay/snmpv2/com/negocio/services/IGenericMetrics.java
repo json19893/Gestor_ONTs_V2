@@ -10,6 +10,6 @@ import totalplay.snmpv2.com.negocio.dto.configuracionDto;
 
 public interface IGenericMetrics { 
     
-	<T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error) throws IOException;
+	<T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error,boolean manual) throws IOException;
 	void guardaInventario(Integer idMetrica, List list );
 }

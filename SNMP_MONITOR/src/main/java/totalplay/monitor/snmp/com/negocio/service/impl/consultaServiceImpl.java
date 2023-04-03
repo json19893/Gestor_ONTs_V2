@@ -1,5 +1,8 @@
 package totalplay.monitor.snmp.com.negocio.service.impl;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import totalplay.monitor.snmp.com.negocio.dto.requestEstatusDto;
@@ -101,8 +105,8 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 	IdetalleActualizacionRepositorio detalleRepositorio;
 	@Autowired
 	IinventarioOntsPdmRepositorio ontsPdm;
-
-
+	@Value("${ruta.archivo.txt}")
+	private String ruta;
 	@Override
 	public Map<String, Object> consultaNumeroSerie(String oid, String ip) {
 		HashMap<String, Object> response = new HashMap();
@@ -244,8 +248,8 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 						res.setActualizacion(6);
 						res.setTipo(d.getTipo());
 						
-						if(olt != null && olt.getId_olt().intValue() == res.getId_olts().intValue()) {
-							res.setId_olts(olt.getId_olt());
+						if(olt != null && olt.getId_olt().intValue() == res.getid_olt().intValue()) {
+							res.setid_olt(olt.getId_olt());
 							res.setFrame(d.getFrame());
 							res.setSlot(d.getSlot());
 							res.setPort(d.getPort());
@@ -270,8 +274,8 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 						resPdm.setActualizacion(6);
 						resPdm.setTipo(d.getTipo());
 						
-						if(olt !=null &&  olt.getId_olt().intValue() == resPdm.getId_olts().intValue()) {
-							resPdm.setId_olts(olt.getId_olt());
+						if(olt !=null &&  olt.getId_olt().intValue() == resPdm.getid_olt().intValue()) {
+							resPdm.setid_olt(olt.getId_olt());
 							resPdm.setFrame(d.getFrame());
 							resPdm.setSlot(d.getSlot());
 							resPdm.setPort(d.getPort());
@@ -367,7 +371,7 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 			if (!ontAllData.isEmpty()) {
 				data = ontAllData.get(0).getNumero_serie();
 				idRegion = ontAllData.get(0).getId_region();
-				idOlt = ontAllData.get(0).getId_olts();
+				idOlt = ontAllData.get(0).getid_olt();
 				oltAllData = catalogoOlts.findOltByIdolt(idOlt);
 
 				try {
@@ -443,6 +447,24 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 		}
 		
 		return response;
+	}
+
+	@Override
+	public List<String> getArchivo() {
+		List<String> archivo =new ArrayList<>();
+		try {
+			BufferedReader lector = new BufferedReader(new FileReader(ruta));
+			String linea = lector.readLine();
+			while (linea != null) {
+				archivo.add(linea);
+			   linea = lector.readLine();
+			   
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+
+	return archivo;
 	}
 
 }

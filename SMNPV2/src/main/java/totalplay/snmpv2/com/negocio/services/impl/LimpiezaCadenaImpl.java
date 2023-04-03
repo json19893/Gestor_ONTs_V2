@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -24,7 +25,6 @@ import totalplay.snmpv2.com.negocio.dto.GenericPoleosDto;
 import totalplay.snmpv2.com.negocio.services.IlimpiezaCadena;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsErroneas;
 import totalplay.snmpv2.com.persistencia.entidades.inventarioOntsErroneas;
-import org.springframework.scheduling.annotation.Async;
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.IhistoricoConteoOltRepository;
@@ -39,13 +39,13 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
     @Autowired
     IhistoricoConteoOltRepository historicoOlt;
     Utils util=new Utils();
-    
-    
+    @Value("${ruta.archivo.txt}")
+    private String ruta;    
     @Override
     public <T extends GenericPoleosDto> List<T> getMetricasBypoleo(EjecucionDto proces, Integer idmetrica,
-            Integer idOlt, Integer idRegion, String IdEjecucion, String tecnologia, Class<T> entidad, CadenasMetricasDto cadenas, boolean saveErroneos, int intentos )
+            Integer idOlt, Integer idRegion, String IdEjecucion, String tecnologia, Class<T> entidad, CadenasMetricasDto cadenas, boolean saveErroneos, int intentos,boolean manual )
             throws IOException {
-                
+               
     			List<T> response = new ArrayList<T>();
     			String s = "";
                 List<String> replace = util.getReplace(idmetrica, tecnologia);
@@ -54,9 +54,13 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                 Integer exito=0;
                 
                 log.info("######################## inicio de la limpieza para OLTS: "+idOlt+" ##########################");
-                
+                if(manual)
+                    util.crearArchivos(ruta,DESC+proces.getIp());
                 try {
                 	if(proces.isErrorOlt() || proces.isSinOid()) {
+                        if(manual){
+                        util.crearArchivos(ruta,proces.isSinOid() ? "No se cuenta con Oid para polear para la olt: "+idOlt:"Problemas al polear la olt: "+idOlt);
+                        }
                 		T metrica = entidad.getConstructor().newInstance();
                         metrica.setOid(proces.getOid());
                         metrica.setError(true);
@@ -79,6 +83,9 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                 	}
                     while ((s = proces.getBuffer().readLine()) != null) {
                         //log.info("descubrimiento valores :" + s);
+                        if(manual){
+                            util.crearArchivos(ruta,s);
+                            }
                         T metrica = entidad.getConstructor().newInstance();
                         String value = s.replaceAll(replace.get(0), "");
                         String[] val = value.split(replace.get(1));
@@ -242,37 +249,6 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                     	if(saveErroneos)
                     		erroneasRepositori.saveAll(erroneasList);
                     	
-//                    	if(s==null) {
-//                    		try (final BufferedReader b = new BufferedReader(new InputStreamReader(
-//                        			proces.getProceso().getErrorStream()))) {
-//                               
-//                        		String line;
-//                                if ((line = b.readLine()) != null) {
-//                                	T metrica = entidad.getConstructor().newInstance();
-//    		                        metrica.setOid(proces.getOid());
-//    		                        metrica.setError(true);
-//    		                        metrica.setFecha_poleo( Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS)) );
-//    		                        metrica.setId_olt(idOlt);
-//    		                        metrica.setValor(line + " || " + proces.getComando());
-//    		                        metrica.setId_metrica(idmetrica);
-//    		                        metrica.setId_ejecucion(IdEjecucion);
-//    		                        metrica.setId_region(idRegion);
-//    		                        metrica.setTecnologia(tecnologia);
-//    		                        if(idmetrica.intValue() == 16)
-//    		                        	metrica.setIndexFSP(idOlt+"-"+metrica.getOid());
-//    		                        else {
-//    		                        	metrica.setIndex(idOlt+"-"+metrica.getOid());
-//    		                        }
-//    		                        
-//    		                        response.add(metrica);
-//                                	
-//                                }
-//                                   
-//                            
-//                        	} catch (final IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                    	}
                     }if(intentos==3 && !proces.getOid().equals("")) {
                     	try (final BufferedReader b = new BufferedReader(new InputStreamReader(
                     			proces.getProceso().getErrorStream()))) {
@@ -317,6 +293,9 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                     }
                     
                     proces.getProceso().destroy();
+                   
+                       
+                        
                 } catch (Exception e) {
                     if (idmetrica==0){
 	                    CatOltsEntity olt=catOltRepository.getOlt(idOlt);
@@ -353,7 +332,9 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                 	}catch (Exception e2) {
 						// TODO: handle exception
 					}
-                    
+                    if(manual){
+                        util.crearArchivos(ruta,proces.getComando() + " ::: " + ERROR_LIMPIAR_CADENA+":: "+ e);
+                        }
                     log.error(proces.getComando() + ":::" + ERROR_LIMPIAR_CADENA, e);
                 }
                 return response;

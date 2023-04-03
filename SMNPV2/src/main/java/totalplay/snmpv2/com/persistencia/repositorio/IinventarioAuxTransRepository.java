@@ -21,6 +21,11 @@ public interface IinventarioAuxTransRepository extends MongoRepository<Inventari
 	  		})
 	void outToInvAux();
 	
+	@Aggregation(pipeline = { 
+		      "{$out:'tb_inventario_onts_aux_manual'}"
+	  		})
+	void outToInvAuxManual();
+	
 
 
 }

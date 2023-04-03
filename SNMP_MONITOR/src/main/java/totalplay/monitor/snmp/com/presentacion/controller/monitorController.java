@@ -1,8 +1,11 @@
 package totalplay.monitor.snmp.com.presentacion.controller;
 
+
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +27,7 @@ import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
 import totalplay.monitor.snmp.com.negocio.util.constantes;
 import totalplay.monitor.snmp.com.persistencia.entidad.catConfiguracionEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.catOltsEntidad;
+import totalplay.monitor.snmp.com.persistencia.entidad.detalleActualizacionesEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.estatusPoleoManualEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.tblBitacoraEventosEntidad;
@@ -31,6 +35,7 @@ import totalplay.monitor.snmp.com.persistencia.entidad.usuariosEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.vwActualizacionEntidad;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatConfiguracionRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
+import totalplay.monitor.snmp.com.persistencia.repository.IdetalleActualizacionRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsPdmRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.ImonitorPoleoManualRepository;
@@ -40,7 +45,6 @@ import totalplay.monitor.snmp.com.persistencia.repository.IusuariosRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IvwActualizacionRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IvwTotalOntsRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.bitacoraEventosRepository;
-
 
 @Controller
 @RestController
@@ -80,6 +84,8 @@ public class monitorController extends constantes {
     IvwTotalOntsRepositorio vwOnts;
     @Autowired
     ImonitorPoleoManualRepository monitorPoleoManual;
+    @Autowired
+    IdetalleActualizacionRepositorio detalleAct;
 
     @Autowired
     IBlockMetricService BlockMetricService;
@@ -92,10 +98,10 @@ public class monitorController extends constantes {
      * @return retorna una estructura getOltsByRegion
      **/
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getOltsByRegion/{idRegion}/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public responseRegionDto getOltsByRegion(@PathVariable("idRegion") Integer idRegion,
-                                             @PathVariable("tipo") String tipo) throws Exception {
+            @PathVariable("tipo") String tipo) throws Exception {
         responseRegionDto response = new responseRegionDto();
 
         if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
@@ -111,7 +117,7 @@ public class monitorController extends constantes {
         return null;
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getRegion", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<catRegionDto> getRegion() throws Exception {
         List<catRegionDto> response = new ArrayList<catRegionDto>();
@@ -123,10 +129,10 @@ public class monitorController extends constantes {
         return response;
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getOntsByOltsUp/{idOlt}/{estatus}/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<inventarioOntsEntidad> getOntsByOlts(@PathVariable("idOlt") Integer idOlt,
-                                                     @PathVariable("estatus") Integer estatus, @PathVariable("tipo") String tipo) throws Exception {
+            @PathVariable("estatus") Integer estatus, @PathVariable("tipo") String tipo) throws Exception {
 
         if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
             return monitorServicio.getOntsByOlts(idOlt, estatus, tipo);
@@ -136,7 +142,7 @@ public class monitorController extends constantes {
 
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getTotalesByOlt/{idOlt}/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public totalesOltsDto getTotalesByOlt(@PathVariable("idOlt") Integer idOlt, @PathVariable("tipo") String tipo)
             throws Exception {
@@ -155,10 +161,10 @@ public class monitorController extends constantes {
      * @param tipo: T (totales), E (Empresariales), V (Vips)
      * @return devuelve una lista de inventarioOntsEntidad
      **/
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/finOntsByIdAll/{idOlt}/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<inventarioOntsEntidad> finOntsByIdAll(@PathVariable("idOlt") Integer idOlt,
-                                                      @PathVariable("tipo") String tipo) throws Exception {
+            @PathVariable("tipo") String tipo) throws Exception {
         if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
             return monitorServicio.finOntsByIdAll(idOlt, tipo);
         } else {
@@ -173,10 +179,10 @@ public class monitorController extends constantes {
      * @param tipo: T (totales), E (Empresariales), V (Vips)
      * @return devuelve una lista de tbHistoricoDto
      **/
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getHistoricoCambios/{idOlt}/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<tbHistoricoDto> getHistoricoCambios(@PathVariable("idOlt") Integer idOlt,
-                                                    @PathVariable("tipo") String tipo) throws Exception {
+            @PathVariable("tipo") String tipo) throws Exception {
 
         if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
             return monitorServicio.getHistoricoCambios(idOlt, tipo);
@@ -193,7 +199,7 @@ public class monitorController extends constantes {
      * @param tipo: T (totales), E (Empresariales), V (Vips)
      * @return devuelve una lista de datosRegionDto
      **/
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getTotalesByTecnologia/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<datosRegionDto> getTotalesByTecnologia(@PathVariable("tipo") String tipo) throws Exception {
 
@@ -211,7 +217,7 @@ public class monitorController extends constantes {
      * @param tipo: T (totales), E (Empresariales), V (Vips)
      * @return retorna una estructura totalesActivoDto
      **/
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getTotalesActivo/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public totalesActivoDto getTotalesActivo(@PathVariable("tipo") String tipo) throws Exception {
 
@@ -224,7 +230,7 @@ public class monitorController extends constantes {
 
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getDatosMonitoreo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public responseMonitoreo getDatosMonitoreo() throws Exception {
 
@@ -232,7 +238,7 @@ public class monitorController extends constantes {
 
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getSerie/{oid}/{ip}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Map<String, Object> getSerie(@PathVariable("oid") String oid, @PathVariable("ip") String ip)
             throws Exception {
@@ -258,7 +264,7 @@ public class monitorController extends constantes {
 
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/findOlt", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public responseFindDto findOlt(@RequestBody requestOltDto oltData) {
 
@@ -284,7 +290,7 @@ public class monitorController extends constantes {
         return response;
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/actualizaEstatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public respuestaStatusDto cambiarEstatusOnt(@RequestBody requestEstatusUserDto datos) {
         tblBitacoraEventosEntidad bt = new tblBitacoraEventosEntidad();
@@ -302,7 +308,7 @@ public class monitorController extends constantes {
         return response;
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/consultaOLTs", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<catOltsEntidad> obtenerOLTsActivas() {
 
@@ -315,7 +321,7 @@ public class monitorController extends constantes {
         return response;
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/findOnt", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public responseFindOntDto findOnt(@RequestBody requestOntDto ontData) {
 
@@ -341,37 +347,37 @@ public class monitorController extends constantes {
         return response;
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getNombreByRegex/{regex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<catOltsEntidad> getNombreByRegex(@PathVariable("regex") String regex) throws Exception {
         return catalogoOlt.findNombreByRegex("^" + regex);
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getAliasByRegex/{regex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<inventarioOntsEntidad> getAliasByRegex(@PathVariable("regex") String regex) throws Exception {
 
         return inventario.findAliasByRegex(regex);
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getIpByRegex/{regex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<catOltsEntidad> getIpByRegex(@PathVariable("regex") String regex) throws Exception {
 
         return catalogoOlt.findIpByRegex("^" + regex);
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getSerieByRegex/{regex}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<inventarioOntsEntidad> getSerieByRegex(@PathVariable("regex") String regex) throws Exception {
 
         return inventario.findSerieByRegex("^" + regex);
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getDetalleActualizacion/{tipo}/{skip}/{limit}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public detalleActualizadasDto getDetalleActualizacion(@PathVariable("tipo") String tipo,
-                                                          @PathVariable("skip") Integer skip, @PathVariable("limit") Integer limit) throws Exception {
+            @PathVariable("skip") Integer skip, @PathVariable("limit") Integer limit) throws Exception {
         detalleActualizadasDto response = new detalleActualizadasDto();
         try {
             if (tipo.equals("E")) {
@@ -399,10 +405,10 @@ public class monitorController extends constantes {
         return response;
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getRegexActualizacion/{tipo}/{numeroSerie}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<vwActualizacionEntidad> getRegexActualizacion(@PathVariable("tipo") String tipo,
-                                                              @PathVariable("numeroSerie") String numeroSerie) throws Exception {
+            @PathVariable("numeroSerie") String numeroSerie) throws Exception {
         List<vwActualizacionEntidad> response = new ArrayList<vwActualizacionEntidad>();
         try {
             if (tipo.equals("E")) {
@@ -418,7 +424,7 @@ public class monitorController extends constantes {
     }
 
     // Servicio obtener las mètricas de una ont
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getMetrics/{idOlt}/{oid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public responseMetricasDto getMetrics(@PathVariable("idOlt") Integer idOlt, @PathVariable("oid") String oid)
             throws Exception {
@@ -430,12 +436,12 @@ public class monitorController extends constantes {
         return null;
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getOlts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<catOltsEntidad> getOlts() throws Exception {
 
         try {
-            //List<vwTotalOntsEntidad> lista = vwOnts.findAll();
+            // List<vwTotalOntsEntidad> lista = vwOnts.findAll();
             List<catOltsEntidad> lista = catalogoOlt.findAll();
             return lista;
         } catch (Exception e) {
@@ -445,10 +451,10 @@ public class monitorController extends constantes {
 
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getOntDetalleAc/{tipo}/{numeroSerie}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<vwActualizacionEntidad> getOntDetalleAc(@PathVariable("tipo") String tipo,
-                                                        @PathVariable("numeroSerie") String numeroSerie) throws Exception {
+            @PathVariable("numeroSerie") String numeroSerie) throws Exception {
         List<vwActualizacionEntidad> response = new ArrayList<vwActualizacionEntidad>();
         try {
             if (tipo.equals("E")) {
@@ -463,7 +469,7 @@ public class monitorController extends constantes {
         return response;
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/validaUser", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public responseValidaUsuarioDto validaUser(@RequestBody usuariosEntidad data) {
 
@@ -483,22 +489,22 @@ public class monitorController extends constantes {
         return response;
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/updateStatusOlt/{idOlt}/{estatus}/{usuario}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public responseValidaUsuarioDto updateStatusOlt(@PathVariable("idOlt") Integer idOlt,
-                                                    @PathVariable("estatus") Integer estatus, @PathVariable("usuario") String usuario) {
+            @PathVariable("estatus") Integer estatus, @PathVariable("usuario") String usuario) {
 
         responseValidaUsuarioDto response = new responseValidaUsuarioDto();
 
         try {
             tblBitacoraEventosEntidad bt = new tblBitacoraEventosEntidad();
 
-
             catOltsEntidad olt = catOlts.findOltByIdolt(idOlt);
             bt.setFecha(LocalDateTime.now().toString());
             bt.setModulo(DES_ACTUALIZACION_E);
             bt.setUsuario(usuario);
-            bt.setDescripcion(DESC_EVENTO_CAMBIO_ESTATUS + olt.getIp() + " nombre: " + olt.getNombre() + " a estatus: " + estatus);
+            bt.setDescripcion(DESC_EVENTO_CAMBIO_ESTATUS + olt.getIp() + " nombre: " + olt.getNombre() + " a estatus: "
+                    + estatus);
             bitacoraEventos.save(bt);
             olt.setEstatus(estatus);
             catOlts.save(olt);
@@ -513,7 +519,7 @@ public class monitorController extends constantes {
     }
 
     @SuppressWarnings("unused")
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/validaMaximoDescunbrimiento", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public Integer validaMaximoDescunbrimiento() {
 
@@ -546,7 +552,7 @@ public class monitorController extends constantes {
         return response;
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getDetalleDescubrimiento", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<estatusPoleoManualEntidad> getDetalleDescubrimiento() {
 
@@ -561,33 +567,84 @@ public class monitorController extends constantes {
         return response;
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/changeMetricBlock/{idconfigmetric}/block/{idblock}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public responseDto MetricBlock(@PathVariable("idconfigmetric") int id_metrica, @PathVariable("idblock") int id_bloque) {
+    public responseDto MetricBlock(@PathVariable("idconfigmetric") int id_metrica,
+            @PathVariable("idblock") int id_bloque) {
         return BlockMetricService.changeMetricBlock(id_metrica, id_bloque);
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/configmetric", produces = MediaType.APPLICATION_JSON_VALUE)
     public responseDto getAllConfigMetric() {
         return BlockMetricService.getAllConfigMetrics();
     }
 
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/removeMetricBlock/{idconfigmetric}/block/{idblock}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public responseDto removeMetricfromBlock(@PathVariable("idconfigmetric") int id_metrica, @PathVariable("idblock") int id_bloque) {
+    public responseDto removeMetricfromBlock(@PathVariable("idconfigmetric") int id_metrica,
+            @PathVariable("idblock") int id_bloque) {
         return BlockMetricService.removeMetricBlock(id_metrica, id_bloque);
     }
-    
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getOltsOnts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<responseOltsOntsDto> getOltsOnts() {
         return inventario.getOltsOnts();
     }
-    
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getMonitorInfo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<responseMonitorMetricasManualInfoDto> getMonitorInfo() {
         return monitorPoleoManual.getMonitorData();
     }
+
+
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "/getArchivo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<String> getArchivo() {
+        return consulta.getArchivo();
+    }
+    
+    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/getDetalleActuacionData/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<detalleActualizacionesEntidad> getActualizacionData(@PathVariable("tipo") String tipo) throws Exception {
+        List<detalleActualizacionesEntidad> response = new ArrayList<detalleActualizacionesEntidad>();
+        try {
+        	 
+        	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+			Date fecha = format.parse( "2023-02-03T15:00:00.000Z");//LocalDateTime.now().minusHours(1).toString() + "Z"); --pro
+        	
+            if (tipo.equals("E")) {
+            	return detalleAct.getDetalleEmpresariales(fecha);
+            } else {
+            	return detalleAct.getDetalle(fecha);
+            }
+        } catch (Exception e) {
+            System.out.println("Error:: " + e);
+        }
+
+        return response;
+    }
+    
+    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/getDetalleActuacionSerie/{tipo}/{serie}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<detalleActualizacionesEntidad> getDetalleActuacionSerie(@PathVariable("tipo") String tipo,@PathVariable("serie") String serie) throws Exception {
+        List<detalleActualizacionesEntidad> response = new ArrayList<detalleActualizacionesEntidad>();
+        try {
+        	        	
+            if (tipo.equals("E")) {
+            	return detalleAct.getDetalleBySerieEmp(serie);
+            } else {
+            	return detalleAct.getDetalleBySerie(serie);
+            }
+        } catch (Exception e) {
+            System.out.println("Error:: " + e);
+        }
+
+        return response;
+    }
+    
+    
+
 }

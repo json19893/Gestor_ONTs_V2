@@ -305,15 +305,16 @@ public class MetricasController extends Constantes {
 
 			try {
 				
-				monitorPoleo.findFirstByOrderByIdDesc();
+				//monitorPoleo.findFirstByOrderByIdDesc();
 				//Se crea un nuevo registro para el monitor
-				idMonitorPoleo = monitorPoleo.getLastFinishId().getId();
+				//idMonitorPoleo = monitorPoleo.getLastFinishId().getId();
+				idMonitorPoleo = monitorPoleo.findFirstByOrderByIdDesc().getId();
 				idMonitorPoleoManual = monitorPoleoManual.save(new MonitorPoleoManualEntity(LocalDateTime.now().toString(), null,INICIO_DESC+"POLEO" , INICIO, bloque, idMonitorPoleo )).getId();
 				
 				
 				
 				//List<CatOltsEntity> olts = catOlts.findByEstatus(1);
-				List<CatOltsEntity> olts = catOlts.getOltsById(datos.getOlts());
+				List<CatOltsEntity> olts = catOlts.getOltsByIp(datos.getOlts());
 				
 				List<CompletableFuture<String>> regionSegmentOnts;
 				List<CompletableFuture<String>> regionSegmentOntsEmpresariales;
