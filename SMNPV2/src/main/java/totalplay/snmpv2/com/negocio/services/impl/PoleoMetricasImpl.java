@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -31,7 +33,6 @@ import totalplay.snmpv2.com.persistencia.repositorio.*;
 
 import org.springframework.scheduling.annotation.Async;
 import totalplay.snmpv2.com.presentacion.MetricaController;
-
 
 @Slf4j
 @Service
@@ -535,39 +536,58 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
         String num_serie = request.getNumero_serie();
         Integer idMetrica = request.getIdMetrica();
 
+        //Mensaje del happy path
         PostMetricaResponse response = new PostMetricaResponse();
-        response.setCod(1);
-        response.setSms("");
+        response.setCod(0);
+        response.setSms("Correcto: La consulta de metrica se realizó correctamente");
+        response.setMetrica(new MetricaController.MetricaPoleo());
 
-        //String ruta = "/home/implementacion/ecosistema/comandos/";
+        //String ruta_sistema = "/home/implementacion/ecosistema/comandos/";
         String OID_METRICA = "";
         String ruta_sistema;
         Utils utilerias;
 
         InventarioOntsEntity ont;
         CatOltsEntity olt;
+        configuracionDto configuracion;
 
         ont = inventario.getOntBySerialNumber(num_serie);
-
-        //Supuesto: se recupero el id: 60;
         if (ont == null) {
             response.setCod(MetricaController.RESOURCE_NOT_FOUND);
-            response.setSms("El recurso no existe");
+            response.setSms("Error: recurso no encontrado");
             return response;
         }
 
         if (ont.getEstatus().equals("0")) {
-            //Retorna
+            response.setCod(MetricaController.RESOURCE_NOT_AVAILABLE);
+            response.setSms("Error: recurso no disponible");
+            return response;
         }
 
         olt = catOltRepository.getOlt(ont.getId_olt());
+        if (olt == null) {
+            response.setCod(MetricaController.RESOURCE_NOT_FOUND);
+            response.setSms("Error: recurso no encontrado");
+            return response;
+        }
+
+        if (olt.getEstatus().equals("0")) {
+            response.setCod(MetricaController.RESOURCE_NOT_AVAILABLE);
+            response.setSms("Error: recurso no disponible");
+            return response;
+        }
 
         Query query = new Query();
         query.addCriteria(Criteria.where("id_metrica").is(idMetrica.intValue()));
         ConfiguracionMetricaEntity configMetrica = mongoTemplate
                 .findOne(query, ConfiguracionMetricaEntity.class, "tb_configuracion_metricas");
+        if (configMetrica == null) {
+            response.setCod(MetricaController.METRIC_NOT_SUPPORTED);
+            response.setSms("Error: Metrica no soportada por esta version");
+            return response;
+        }
 
-        //esto va en funcion de la metrica
+        //En este bloque se settea el oid de la metrica en funcion de la tecnologia de la ont
         if (configMetrica.isActivo()) {
             if (ont.getTecnologia().equalsIgnoreCase("HUAWEI")) {
                 OID_METRICA = configMetrica.getHUAWEI().getOid() + "." + ont.getOid();
@@ -581,8 +601,10 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
                 OID_METRICA = configMetrica.getFH().getOid() + "." + ont.getOid();
             }
         } else {
-            // return: No esta activada la metrica para este dispositivo
-            System.out.println("No hay soporte para dispositivos tecnologia");
+            //No esta activada la metrica para este dispositivo
+            response.setCod(MetricaController.TECHNOLOGY_NOT_SUPPORTED);
+            response.setSms("Error: Tecnologia no soportada por esta version");
+            return response;
         }
 
         AggregationOperation match
@@ -595,35 +617,53 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
                 = mongoTemplate.aggregate(aggregation, "cat_olts", CatOltsEntity.class);
 
         utilerias = new Utils();
-        configuracionDto configuracion = utilerias.getConfiguracion(out.getMappedResults());
+        configuracion = utilerias.getConfiguracion(out.getMappedResults());
 
-        String comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + TIME_OUT_VALUE
+        final String BASE_COMMAND = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + TIME_OUT_VALUE
                 + SPACE + configuracion.getVersion() + USER_NAME + configuracion.getUserName() + LEVEL
                 + configuracion.getLevel() + PROTOCOL_ENCR + configuracion.getProtEn() + PASSPHRASE
                 + configuracion.getPassword() + PROTOCOL_PRIV + configuracion.getProtPriv()
-                + PROTOCOL_PHRASE + configuracion.getPhrase() + SPACE + IR + olt.getIp();
+                + PROTOCOL_PHRASE + configuracion.getPhrase() + " -O v " + IR + olt.getIp();
 
         ruta_sistema = "/home/ubuntu/bash/comandos/";
-        String execute = comando + SPACE + OID_METRICA;
+        String command_to_execute = BASE_COMMAND + SPACE + OID_METRICA;
 
+        InputStream inputStream;
+        InputStream inputStreamError;
         BufferedReader buffer;
-        EjecucionDto ejecucionDto = utilerias.execBash(execute, ruta_sistema);
-        ejecucionDto.getProceso().waitFor();
-
-        if (ejecucionDto.getProceso().exitValue() == 1) {
-            response.setCod(1);
-            response.setSms("Error de servidor");
-            return response;
-        }
-        //Lee la respuesta del comando:
-        InputStream inputStream = ejecucionDto.getProceso().getInputStream();
-        buffer = new BufferedReader(new InputStreamReader(inputStream));
+        String aux;
         String readLine = "";
 
-        //Llenar la metrica:
-        while ((readLine = buffer.readLine()) != null) {
-            readLine += readLine;
-            response.setPoleometrica(readLine);
+        EjecucionDto ejecucionDto = utilerias.execBash(command_to_execute, ruta_sistema);
+        ejecucionDto.getProceso().waitFor();
+
+        response.setHoraPoleo(LocalTime.now((ZoneId.of("America/Mexico_City"))));
+        response.getMetrica().setNombre(configMetrica.getNombre());
+
+        if (ejecucionDto.getProceso().exitValue() == 1) {
+            //lee la salida del error por generada por la salida standar de error:
+            //Lee la respuesta del comando retornada por la salida estandar:
+            inputStreamError = ejecucionDto.getProceso().getErrorStream();
+            buffer = new BufferedReader(new InputStreamReader(inputStreamError));
+
+            while ((aux = buffer.readLine()) != null) {
+                readLine += aux;
+                response.getMetrica().setValor(readLine);
+            }
+
+            response.setCod(1);
+            response.setSms("Error: error en el servidor");
+            return response;
+        }
+
+        //Lee la respuesta del comando retornada por la salida estandar:
+        inputStream = ejecucionDto.getProceso().getInputStream();
+        buffer = new BufferedReader(new InputStreamReader(inputStream));
+        //Llenar el objeto response:
+        response.getMetrica().setNombre(configMetrica.getNombre());
+        while ((aux = buffer.readLine()) != null) {
+            readLine += aux;
+            response.getMetrica().setValor(readLine);
         }
         return response;
     }

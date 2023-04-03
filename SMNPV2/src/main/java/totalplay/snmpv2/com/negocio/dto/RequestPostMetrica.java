@@ -5,6 +5,9 @@ import lombok.Getter;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 
 @Data
 @ToString

@@ -1,11 +1,13 @@
 package totalplay.snmpv2.com.negocio.dto;
 
 import lombok.Data;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosEstatusEntity;
+import totalplay.snmpv2.com.presentacion.MetricaController;
 
 import java.io.Serializable;
+import java.time.LocalTime;
 
 @Data
 public class PostMetricaResponse extends GenericResponseDto implements Serializable {
-    private String poleometrica;
+    private LocalTime horaPoleo;
+    private MetricaController.MetricaPoleo metrica;
 }
