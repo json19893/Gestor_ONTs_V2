@@ -2,6 +2,7 @@ package totalplay.snmpv2.com.persistencia.repositorio;
 
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import totalplay.snmpv2.com.negocio.dto.FaltantesDto;
@@ -18,6 +19,7 @@ import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsTmpEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioPuertosEntity;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IinventarioOntsRepository extends MongoRepository<InventarioOntsEntity, String> {
 	
@@ -513,6 +515,6 @@ List<FaltantesMetricasEntity> getFaltantesMetricas2(@Param("idRegion") Integer i
 		  , " {$unset: ['_id', \"ont.olt\"]}"})
 List<FaltantesMetricasManualEntity> getFaltantesMetricasManual(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt, @Param("table") String table, @Param("join") String join);
 
-	
-	
+	@Query("{numero_serie: ?0}")
+	InventarioOntsEntity getOntBySerialNumber(String numSerie);
 }
