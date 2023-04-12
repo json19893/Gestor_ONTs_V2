@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.negocio.dto.OntsConfiguracionDto;
 import totalplay.snmpv2.com.negocio.dto.PostMetricaResponse;
 import totalplay.snmpv2.com.negocio.dto.RequestPostMetrica;
@@ -14,5 +15,5 @@ public interface IpoleoMetricasService {
 	CompletableFuture<String> getMetricaEmpresarialesByMetrica(List<OntsConfiguracionDto> ontsEmpresariales, String idPoleo, int idMetrica);
 	List<OntsConfiguracionDto> getOntsFaltantes(int idMetrica, String idEjecucion, boolean resultado, boolean empresariales, String tabla, int tipo, List<CatOltsEntity> olts );
 	void joinUpdateStatus(String idMonitorPoleo);
-    PostMetricaResponse getPoleoOntMetrica(RequestPostMetrica request) throws IOException,InterruptedException;
+	GenericResponseDto getPoleoOntMetrica(RequestPostMetrica request) throws Exception;
 }
