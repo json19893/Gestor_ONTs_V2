@@ -13,6 +13,7 @@ import totalplay.snmpv2.com.persistencia.entidades.FaltantesMetricasEntity;
 import totalplay.snmpv2.com.persistencia.entidades.FaltantesMetricasManualEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioAuxTransEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxManualEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsTmpEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioPuertosEntity;
@@ -239,7 +240,7 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 	  		, " {\n"
 	  		+ "        $set:{\n"
 	  		+ "            fecha_modificacion:{$ifNull:[{$arrayElemAt : ['$metrica.fecha_poleo',0]}, {$dateSubtract:{ startDate: new Date(), unit: \"hour\", amount: 6}} ]},\n"
-	  		+ "            estatus:{$ifNull:[{$arrayElemAt : ['$metrica.estatus',0]}, 0]}\n"
+	  		+ "            estatus:{$ifNull:[{$cond: [ { $eq: [ {$arrayElemAt : ['$metrica.estatus',0]}, 0 ] },null, {$arrayElemAt : ['$metrica.estatus',0]} ]}, '$estatus', 0]}\n"
 	  		+ "        }\n"
 	  		+ "}\n"
 	  		, "{$unset:[\"metrica\", '_id']}\n"
@@ -513,6 +514,27 @@ List<FaltantesMetricasEntity> getFaltantesMetricas2(@Param("idRegion") Integer i
 		  , " {$unset: ['_id', \"ont.olt\"]}"})
 List<FaltantesMetricasManualEntity> getFaltantesMetricasManual(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt, @Param("table") String table, @Param("join") String join);
 
-	
+	@Aggregation(pipeline = { 
+	        "{ $match:{$or:[{tipo:'E'}, {vip:1}]} }\n"
+	      , "{\n"
+	      + "		\"$lookup\":{\n"
+	      + "			from: \"tb_inventario_onts_aux_manual\",\n"
+	      + "			localField:\"numero_serie\",\n"
+	      + "			foreignField:\"numero_serie\",\n"
+	      + "			as: \"onts\",\n"
+	      + "		}\n"
+	      + "}\n"
+	      , "{\n"
+	      + "        $unwind: \"$onts\"\n"
+	      + "}\n"
+	      , "{\n"
+	      + "        $set:{\n"
+	      + "            'onts.tipo':'$tipo',\n"
+	      + "            'onts.vip':'$vip'\n"
+	      + "        }\n"
+	      + " }\n"
+	      , "{ $replaceRoot: { newRoot: \"$onts\" } }"
+		})
+	List<InventarioOntsAuxManualEntity> getEmpresarialesVipsManuales();
 	
 }
