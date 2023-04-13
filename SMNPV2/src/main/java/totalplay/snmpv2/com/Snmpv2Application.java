@@ -5,10 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import lombok.extern.slf4j.Slf4j;
-@EnableScheduling
+//@EnableScheduling
 @SpringBootApplication
 @Slf4j
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 public class Snmpv2Application {
 
 	public static void main(String[] args) {

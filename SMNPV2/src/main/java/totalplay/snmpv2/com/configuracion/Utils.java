@@ -443,11 +443,10 @@ public class Utils extends Constantes {
     }
 
     public void deleteLogFile(String ruta) {
-        File myObj = new File(ruta);
-        if (myObj.delete()) {
-            System.out.println("Deleted the file: " + myObj.getName());
-        } else {
-            System.out.println("Failed to delete the file.");
+        File file = new File(ruta);
+        if (file.exists()) {
+            file.delete();
+            System.out.println("Deleted the file: " + file.getName());
         }
     }
 }

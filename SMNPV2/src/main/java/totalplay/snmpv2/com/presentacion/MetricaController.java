@@ -67,7 +67,7 @@ public class MetricaController {
             }
         } catch (Exception e) {
             response.setCod(1);
-            response.setSms("Internal Server Error");
+            response.setSms("Internal Server Error::: "+e);
             return responseWrapperServer = new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return responseWrapperServer;

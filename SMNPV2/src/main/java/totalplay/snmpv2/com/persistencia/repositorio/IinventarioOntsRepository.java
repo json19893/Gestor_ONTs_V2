@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface IinventarioOntsRepository extends MongoRepository<InventarioOntsEntity, String> {
-	
-	@Aggregation(pipeline = { 
+
+	@Aggregation(pipeline = {
 			 " {$match:{tipo:\"E\"}}\n"
 			  , "{\n"
 			  + "        $lookup:{\n"
@@ -69,7 +69,7 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 			  , " {$unset: ['_id', \"ont.olt\"]}"})
 	List<OntsConfiguracionDto> findOntsEmpresarialesMetricas(@Param("table") String table);
 
-	@Aggregation(pipeline = { 
+	@Aggregation(pipeline = {
 			 " {$match:{tipo:\"E\"}}\n"
 			  , "{\n"
 			  + "        $lookup:{\n"
@@ -113,9 +113,9 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 			  + " }\n"
 			  , " {$unset: ['_id', \"ont.olt\"]}"})
 	List<OntsConfiguracionDto> findOntsEmpresarialesMetricasFrameSlotPort(@Param("table") String table);
-	
-	
-	@Aggregation(pipeline = { 
+
+
+	@Aggregation(pipeline = {
 			    " {$match:{tipo:\"E\"}}\n"
 			  , "{\n"
 			  + "        $lookup:{\n"
@@ -159,8 +159,8 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 			  + " }\n"
 			  , " {$unset: ['_id', \"ont.olt\"]}"})
 	List<OntsConfiguracionDto> findOntsEmpresarialesMetricasEstatus(@Param("table") String table);
-	
-	@Aggregation(pipeline = { 
+
+	@Aggregation(pipeline = {
 			    "{\n"
 			  + "        \"$group\": {\n"
 			  + "                \"_id\": \"$id_olt\", \n"
@@ -180,9 +180,9 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 			  + "}\n"
 			  , "{ $replaceRoot: { newRoot: \"$olts\" } }"})
 	List<CatOltsEntity> getOlts();
-	
 
-	@Aggregation(pipeline = { 
+
+	@Aggregation(pipeline = {
 		      "{$match:{$and:[{id_region:?0},{id_olt:?1}]}}\n"
 			, "{\n"
 			+ "        $lookup:{\n"
@@ -197,9 +197,9 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 			, " {$unset: ['_id']}"
 			})
 	List<InventarioOntsAuxEntity> getOntsfaltantes(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt);
-	
-	
-	@Aggregation(pipeline = { 
+
+
+	@Aggregation(pipeline = {
 		        "{ $match:{$or:[{tipo:'E'}, {vip:1}]} }\n"
 		      , "{\n"
 		      + "		\"$lookup\":{\n"
@@ -221,14 +221,14 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 		      , "{ $replaceRoot: { newRoot: \"$onts\" } }"
 			})
 	List<InventarioOntsAuxEntity> findEmpresarialesAndVips();
-	
-	@Aggregation(pipeline = { 
+
+	@Aggregation(pipeline = {
 	        "{$out:'tb_inventario_onts_resp'}"
 		})
 	void sentToResp();
-	
-	
-	@Aggregation(pipeline = { 
+
+
+	@Aggregation(pipeline = {
 		      "{$match:{$and:[{id_region:?0},{id_olt:?1}]}}\n"
 			, "{\n"
 	  		+ "        $lookup:{\n"
@@ -248,9 +248,9 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 	  		, "{$unset:[\"metrica\", '_id']}\n"
 	  		})
 	List<AuxiliarJoinEstatusEntity> updateEstatus(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt);
-	
 
-	@Aggregation(pipeline = { 
+
+	@Aggregation(pipeline = {
 				"{$match:{$and:[{id_region:?0},{id_olt:?1}]}}\n"
 			  ,	" {$match:{oid:{$ne:null} }}\n"
 			  , "{\n"
@@ -310,8 +310,8 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 			  , " {$unset: ['_id', \"ont.olt\"]}"})
 	List<FaltantesEstatusEntity> getFaltantesEstatus(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt, @Param("table") String table, @Param("join") String join, @Param("idEjecucion") String idEjecucion);
 
-	
-	@Aggregation(pipeline = { 
+
+	@Aggregation(pipeline = {
 			    "{$match:{$and:[{id_region:?0},{id_olt:?1}]}}\n"
 			  ,	" {$match:{oid:{$ne:null} }}\n"
 			  , "{\n"
@@ -404,8 +404,8 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 			, " {$unset: ['_id', \"onts.ont.olt\", \"onts.ont.monitor\", \"onts.ont.olts\", \"onts.ont.configuracion\", \"onts.ont.ont\", \"errores._id\"]}"})
 	List<FaltantesDto> getFaltantesMetricas(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt, @Param("table") String table, @Param("join") String join, @Param("idEjecucion") String  idEjecucion);
 
-	
-	@Aggregation(pipeline = { 
+
+	@Aggregation(pipeline = {
 		    "{$match:{$and:[{id_region:?0},{id_olt:?1}]}}\n"
 		  ,	" {$match:{oid:{$ne:null} }}\n"
 		  , "{\n"
@@ -466,8 +466,8 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 		  })
 List<FaltantesMetricasEntity> getFaltantesMetricas2(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt, @Param("table") String table, @Param("join") String join, @Param("idEjecucion") String  idEjecucion);
 
-	
-	@Aggregation(pipeline = { 
+
+	@Aggregation(pipeline = {
 			"{$match:{$and:[{id_region:?0},{id_olt:?1}]}}\n"
 		  ,	" {$match:{oid:{$ne:null} }}\n"
 		  , "{\n"
@@ -539,6 +539,19 @@ List<FaltantesMetricasManualEntity> getFaltantesMetricasManual(@Param("idRegion"
 		})
 	List<InventarioOntsAuxManualEntity> getEmpresarialesVipsManuales();
 	
+	/**
+	 * Obtiene una ont a traves de un numero de serie
+	 * @param numSerie
+	 * @return InventarioOntsEntity - Representa la ont filtrada por el numero de serie.
+	 */
 	@Query("{numero_serie: ?0}")
 	InventarioOntsEntity getOntBySerialNumber(String numSerie);
+
+	/**
+	 * Obtiene todas las onts asociadas a una olt.
+	 * @param idOlt
+	 * @return - List<InventarioOntsEntity> Es una lista de las onts pertenecientes a una olt.
+	 */
+	@Query("{id_olt: ?0}")
+	List<InventarioOntsEntity> getOntsListByIdOlt(Integer idOlt);
 }
