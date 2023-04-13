@@ -9,6 +9,9 @@ import totalplay.snmpv2.com.negocio.dto.OntsRepetidasPorOltPostRequest;
 import totalplay.snmpv2.com.negocio.dto.OntsRepetidasPorOltPostResponse;
 import totalplay.snmpv2.com.negocio.dto.PostMetricaResponse;
 import totalplay.snmpv2.com.negocio.services.IDiferenciaCargaManualService;
+import totalplay.snmpv2.com.negocio.services.impl.DiferenciaCargaManualServiceImpl;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v2")
@@ -25,13 +28,21 @@ public class OntController {
     @CrossOrigin(origins = "*", methods = RequestMethod.POST)
     @RequestMapping(value = "/limpieza/onts/repetidas", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public ResponseEntity<PostMetricaResponse> obtenerOntsRepetidas(@RequestBody OntsRepetidasPorOltPostRequest request) {
+        ResponseEntity wrapperServerHttp = new ResponseEntity("", HttpStatus.OK);
         OntsRepetidasPorOltPostResponse response = new OntsRepetidasPorOltPostResponse();
+        List<DiferenciaCargaManualServiceImpl.AuxOntsAdapter> coleccion;
         try {
-            response.setOnt(service.consultarOntsRepetidasPorOlt(request));
+            coleccion = service.consultarCatalogoOntsRepetidas(request);
+            response.setOnts(coleccion);
+            if (response.getOnts().isEmpty()) {
+                response.setOnts(coleccion);
+                wrapperServerHttp = new ResponseEntity(response, HttpStatus.NOT_FOUND);
+            } else {
+                wrapperServerHttp = new ResponseEntity(response, HttpStatus.OK);
+            }
         } catch (Exception e) {
-            e.printStackTrace();
-
+            wrapperServerHttp = new ResponseEntity("Error interno del servidor", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity(response, HttpStatus.OK);
+        return wrapperServerHttp;
     }
 }
