@@ -10,6 +10,8 @@ import {poleoMetricaOidRequest} from '../model/poleoMetricaOidRequest'
 import {getOnts}  from '../model/getOnts'
 import { CookieService } from 'ngx-cookie-service';
 import {animate, state, style, transition, trigger} from '@angular/animations';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 export interface up {
     _id: string;
     numero_serie:string;
@@ -83,6 +85,7 @@ export class DetalleOntComponent implements OnInit {
     public downBytes: any 
     public fechaPoleo: any
     public metrics:any
+ 
 
     columnsToDisplayWithExpand : string[] = [];
     dataUp = new MatTableDataSource<up>(ELEMENT_DATA);
@@ -97,7 +100,9 @@ export class DetalleOntComponent implements OnInit {
         private router:Router,
         private spinner:NgxSpinnerService,
         private service:pointService,
-        private cookieService: CookieService
+        private cookieService: CookieService,
+        private _snackBar: MatSnackBar,
+        public dialog: MatDialog,
         
         ){
     
@@ -155,7 +160,6 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
     }
 
     getMetricas (){
-  
       this.service.detalleMetricas().subscribe(
        res =>{
       this.metrics=res.entity;
@@ -163,10 +167,17 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
       )
     }
 
+    openDetalle() {
+      this.dialog.open(detalleEjecucionMetricaDialog);
+    }
     poleoMetrica(ns:any,idMetrica:any){
       this.requestPoleoOid=new poleoMetricaOidRequest(ns,idMetrica);
+      this.openDetalle()
       this.service.poleoMetricaOid(this.requestPoleoOid).subscribe(
         res =>{
+          this._snackBar.open(res.sms, "cerrar", {
+            duration: 4000
+          });
        }
        )
     }
@@ -533,4 +544,36 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
     }
   }
 
-   
+  @Component({
+    selector: 'detalleEjecucionMetrica',
+    templateUrl: './detalleEjecucionMetrica.html',
+    styleUrls: ['./detalleOnt.component.css']
+  })
+  
+  export class detalleEjecucionMetricaDialog implements OnInit {
+    archivo:any;
+    
+      constructor(
+
+        private service: pointService,
+        private spinner: NgxSpinnerService,
+        private _snackbar: MatSnackBar
+      ) {
+     
+        setInterval(() => this.getaArchivo(), 1000);
+    
+      }
+      ngOnInit() {
+        this.getaArchivo();
+      
+      }
+     
+    
+      getaArchivo() {
+        this.service.getArchivo(2).subscribe(
+          res => {
+            this.archivo=res;
+          })
+    
+      }
+    }

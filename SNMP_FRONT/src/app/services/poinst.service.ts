@@ -258,11 +258,11 @@ export class pointService {
     return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.DESASIGNA_BLOQUE_METRICA+idMetrica+"/block/"+idBloque);
   }
 
-  getArchivo(): Observable<any> {
+  getArchivo(archivo:any): Observable<any> {
     /*var headers = new HttpHeaders({
       'Authorization': token,
       'mode':'no-cors'});*/
-    return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.GET_ARCHIVO);
+    return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.GET_ARCHIVO+"/"+archivo);
   }
 
   
