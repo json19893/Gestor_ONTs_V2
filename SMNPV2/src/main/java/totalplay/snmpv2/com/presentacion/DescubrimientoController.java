@@ -90,6 +90,7 @@ public class DescubrimientoController extends Constantes {
 		MonitorEjecucionEntity monitorDescubrimiento;
 
 		try {
+//			monitorDescubrimiento = monitor.findFirstByOrderByIdDesc();
 			log.info("================== "+INICIO_DESC+" DESCUBRIMIENTO ====================================");
 			inventarioTmp.deleteAll();
 			inventarioErroneas.deleteAll();
@@ -180,6 +181,8 @@ public class DescubrimientoController extends Constantes {
 		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
 	}
 	
+	
+	
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@GetMapping("/updateConfiguration")
 	public GenericResponseDto updateConfiguration() throws Exception {
@@ -207,21 +210,5 @@ public class DescubrimientoController extends Constantes {
 		}
 		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
 	}
-
-	
-	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-	@GetMapping("/desencriptar/{cadena}")
-	public String desencriptar(@PathVariable("cadena") String cadena) throws Exception {
-
-		try {			
-			EncryptorHelper encryptorHelper = EncryptorHelper.getINSTANCE();
-	       return encryptorHelper.deencryptString(cadena);
-			
-		} catch (Exception e) {
-			
-		}
-		return "";
-	}
-	
 	
 }
