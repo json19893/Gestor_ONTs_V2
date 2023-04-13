@@ -5,7 +5,6 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 
 import totalplay.snmpv2.com.persistencia.entidades.MonitorActualizacionEstatusEntity;
-import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoEntity;
 import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoMetricaEntity;
 
 
@@ -17,11 +16,4 @@ public interface ImonitorActualizacionEstatusRepository extends MongoRepository<
 	
 	@Aggregation(pipeline = {"{'$match':{_id: ObjectId(?0)} } "})
 	MonitorActualizacionEstatusEntity  getMonitorEstatus(@Param("id") String id);
-	
-	@Aggregation(pipeline = {
-			  "{'$match': { fechaFin: { $ne: null } } } "
-			, "{$sort: {_id: -1}} "
-			, "{$limit:1}"})
-	MonitorActualizacionEstatusEntity  getLastFinishId();
-
 }
