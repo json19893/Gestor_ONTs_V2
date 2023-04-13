@@ -39,6 +39,8 @@ import totalplay.snmpv2.com.persistencia.repositorio.IpoleoTimeOutRepositorio;
 import totalplay.snmpv2.com.persistencia.repositorio.IpoleoUpBytesRepositorio;
 import totalplay.snmpv2.com.persistencia.repositorio.IpoleoUpPacketsRepositorio;
 
+import static totalplay.snmpv2.com.configuracion.Utils.getCurrentDateTime;
+
 @Service
 @Slf4j
 public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
@@ -90,6 +92,9 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 	@Value("${ruta.archivo.txt}")
 	private String ruta2;
 
+	@Value("${ruta.archivo.metrica}")
+	private String ruta3;
+
 	@Override																					
 	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error,boolean manual) throws IOException {
 
@@ -140,8 +145,12 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
     			
     			log.info(" COMANDO ------>"+comando);
     			
-    			if(!error || !sinOid)
-    				proces=utls.execBash(comando, ruta);
+    			if(!error || !sinOid) {
+					String logevent = configuracion.getTrazaEventos();
+					logevent += "[ " + getCurrentDateTime() + " ] "+ " INFO "+ " [Ejecutando el comando snmp]: snpmget procesando peticion..." + "\n";
+					configuracion.setTrazaEventos(logevent);
+					proces = utls.execBash(comando, ruta);
+				}
     			
     			proces.setOid(referencia);
     			proces.setErrorOlt(error);
@@ -151,7 +160,7 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
     			
     			data= limpiezaCadena.getMetricasBypoleo(proces, metrica, idOlt,
     					configuracion.getIdRegion(), idProceso, configuracion.getTecnologia(),entidad, cadenasMetrica, saveErroneos, contador,manual);
-					
+
     			log.info("count data "+data.size());
     			
     			if(error)
@@ -165,11 +174,20 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
     				}	
     			}
 				if(exitValue==0 || error || (contador==3 && !referencia.equals(""))){
-					guardaInventario(metrica,data);
+					//throw new RuntimeException("");
+					String logevent = configuracion.getTrazaEventos();
+					logevent += "[ " + getCurrentDateTime() + " ] "+ " INFO "+ " [Termino la Ejecuccion del Comando snmp]" + "\n";
+					configuracion.setTrazaEventos(logevent);
+					configuracion.getManejarResultadoComando().writterLogOnDiskMetrica(ruta3, configuracion, data, 0);
+					//guardaInventario(metrica,data);
 				}
 			
 			
 			} catch (Exception e) {
+				String logevent = configuracion.getTrazaEventos();
+				logevent += "[ " + getCurrentDateTime() + " ] "+ " ERROR "+ " [Hubo un error en el proceso SNMPGET]" + "\n";
+				configuracion.setTrazaEventos(logevent);
+				configuracion.getManejarResultadoComando().writterLogOnDiskMetrica(ruta3, configuracion, data,1);
 				log.error(EJECUCION_ERROR, e);
 				return CompletableFuture.completedFuture(new GenericResponseDto("error", 1));
 			}finally {
