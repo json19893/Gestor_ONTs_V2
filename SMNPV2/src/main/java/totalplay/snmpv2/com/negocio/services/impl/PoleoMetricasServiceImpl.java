@@ -66,8 +66,6 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
 	@Autowired
 	IinventarioOntsErroneas erroneasRepositori;
     @Autowired
-    IinventarioOntsErroneas erroneasRepositori;
-    @Autowired
     IcatOltsRepository catOltRepository;
     @Autowired
     IhistoricoConteoOltRepository historicoOlt;
