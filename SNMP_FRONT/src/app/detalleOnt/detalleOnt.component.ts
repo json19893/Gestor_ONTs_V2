@@ -167,8 +167,6 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
       this.requestPoleoOid=new poleoMetricaOidRequest(ns,idMetrica);
       this.service.poleoMetricaOid(this.requestPoleoOid).subscribe(
         res =>{
-         console.log("ddddd::: "+res)
-       this.metrics=res.entity;
        }
        )
     }
