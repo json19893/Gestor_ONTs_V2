@@ -175,7 +175,7 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
     			}
 				if(exitValue==0 || error || (contador==3 && !referencia.equals(""))){
 					String logevent = configuracion.getTrazaEventos();
-					logevent += "[ " + getCurrentDateTime() + " ] "+ " INFO "+ " [Termino la Ejecuccion del Comando snmp]" + "\n";
+					logevent += "[ " + getCurrentDateTime() + " ] "+ " INFO "+ " [Termino la Ejecuccion del Comando snmp]: " + cadenasMetrica.getOid() + "\n";
 					configuracion.setTrazaEventos(logevent);
 					configuracion.getManejarResultadoComando().writterLogOnDiskMetrica(ruta3, configuracion, data.get(0), 0,metrica,comando);
 					guardaInventario(metrica,data);
