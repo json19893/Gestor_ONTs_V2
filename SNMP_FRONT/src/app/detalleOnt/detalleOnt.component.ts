@@ -163,6 +163,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
       this.service.detalleMetricas().subscribe(
        res =>{
       this.metrics=res.entity;
+      this.metrics=this.metrics.filter((nombre: { nombre: any; }) => nombre.nombre != "SERIAL NUMBER")
       }
       )
     }
@@ -468,7 +469,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
             this.titulo="TOTAL";
             this.icono="./assets/img/network.png";
             this.tabla=true;
-            this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias', 'estatus','fecha','fechaUltimaCaida','desEstatus'];
+            this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias', 'estatus','fecha','fechaUltimaCaida','desEstatus','acciones'];
             this.columnsToDisplayWithExpand= [...this.displayedColumns, 'expand'];
             this.tipoCambio=false; 
                break;
@@ -478,7 +479,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
              this.titulo="ARRIBA";
              this.icono="./assets/img/up.png";
              this.tabla=true;
-             this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias', 'estatus','fecha','fechaUltimaCaida','desEstatus'];
+             this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias', 'estatus','fecha','fechaUltimaCaida','desEstatus','acciones'];
              this.columnsToDisplayWithExpand= [...this.displayedColumns, 'expand'];
              this.tipoCambio=false;
                break;
@@ -487,7 +488,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
               this.titulo="ABAJO";
               this.icono="./assets/img/down.png";
               this.tabla=true;
-              this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias',  'estatus','fecha', 'fechaUltimaCaida','desEstatus'];
+              this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias',  'estatus','fecha', 'fechaUltimaCaida','desEstatus','acciones'];
               this.columnsToDisplayWithExpand= [...this.displayedColumns, 'expand'];
               this.tipoCambio=false;
                break;          
@@ -496,7 +497,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
               this.icono="./assets/img/change.png";
               this.titulo="CAMBIOS";
               this.tabla=true;
-              this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias','estatus','fecha','fechaUltimaCaida','desEstatus','tipoCambio'];
+              this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias','estatus','fecha','fechaUltimaCaida','desEstatus','acciones','tipoCambio'];
               this.columnsToDisplayWithExpand= [...this.displayedColumns, 'expand'];
               this.tipoCambio=true;
                 break;
@@ -560,7 +561,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
         private _snackbar: MatSnackBar
       ) {
      
-        setInterval(() => this.getaArchivo(), 1000);
+        //setInterval(() => this.getaArchivo(), 1000);
     
       }
       ngOnInit() {

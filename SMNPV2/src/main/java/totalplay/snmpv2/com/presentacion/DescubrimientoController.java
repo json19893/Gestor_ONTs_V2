@@ -16,6 +16,7 @@ import java.util.TimeZone;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -79,8 +80,8 @@ public class DescubrimientoController extends Constantes {
 	private Integer valMaxOlts = 50;
 	String idProceso="";
 	Utils util =new Utils();
-	
-	private String ruta="/home/implementacion/ecosistema/manual/descubrimiento.txt";
+	@Value("${ruta.archivo.txt}")
+	private String ruta;
 	
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@GetMapping("/descubrimiento")
