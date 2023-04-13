@@ -7,6 +7,6 @@ import java.util.List;
 
 //Interface para definir listeners de eventos para las metricas
 public interface MetricaCallback {
-    void writterLogOnDiskMetrica(String path, configuracionDto logconfig, List<PoleosEstatusEntity> result, int status);
+    void writterLogOnDiskMetrica(String path, configuracionDto logconfig, Object entidad, int status, Integer metrica, String comando) throws NoSuchMethodException, NoSuchFieldException;
 
 }

@@ -96,7 +96,7 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 	private String ruta3;
 
 	@Override																					
-	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error,boolean manual) throws IOException {
+	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error,boolean manual) throws IOException, NoSuchFieldException, NoSuchMethodException {
 
 		EjecucionDto proces = new EjecucionDto();
 		List data = new ArrayList<T>();
@@ -174,20 +174,20 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
     				}	
     			}
 				if(exitValue==0 || error || (contador==3 && !referencia.equals(""))){
-					//throw new RuntimeException("");
 					String logevent = configuracion.getTrazaEventos();
 					logevent += "[ " + getCurrentDateTime() + " ] "+ " INFO "+ " [Termino la Ejecuccion del Comando snmp]" + "\n";
 					configuracion.setTrazaEventos(logevent);
-					configuracion.getManejarResultadoComando().writterLogOnDiskMetrica(ruta3, configuracion, data, 0);
-					//guardaInventario(metrica,data);
+					configuracion.getManejarResultadoComando().writterLogOnDiskMetrica(ruta3, configuracion, data.get(0), 0,metrica,comando);
+					guardaInventario(metrica,data);
 				}
 			
 			
 			} catch (Exception e) {
+				comando="";
 				String logevent = configuracion.getTrazaEventos();
 				logevent += "[ " + getCurrentDateTime() + " ] "+ " ERROR "+ " [Hubo un error en el proceso SNMPGET]" + "\n";
 				configuracion.setTrazaEventos(logevent);
-				configuracion.getManejarResultadoComando().writterLogOnDiskMetrica(ruta3, configuracion, data,1);
+				configuracion.getManejarResultadoComando().writterLogOnDiskMetrica(ruta3, configuracion, data.get(0),1,metrica,comando);
 				log.error(EJECUCION_ERROR, e);
 				return CompletableFuture.completedFuture(new GenericResponseDto("error", 1));
 			}finally {

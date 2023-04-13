@@ -667,21 +667,28 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
         String finalLogEventos = logEventos;
 
         //Escucha los eventos
-        configuracionPoleo.setManejarResultadoComando((ruta, c, result, status) -> {
+        configuracionPoleo.setManejarResultadoComando((ruta, c, result, status, metrica, comando) -> {
             util.deleteLogFile(ruta);
             String copyString = finalLogEventos;
-            PoleosEstatusEntity metrica = result.get(0);
+            String valor = "";
+            try{
+
+                valor = obtenerValor(metrica, result);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
             String tmp = c.getTrazaEventos();
-            if(status == 0){
-                    tmp += "[ " + util.getCurrentDateTime() + " ] " + " INFO " + " [Comando Ejecutado]: " + c.getComando() + "\n";
-                    tmp += "[ " + util.getCurrentDateTime() + " ] " + " INFO " + " [Resultado Ejecuccion]: " + metrica.getValor() + "\n";
-                    c.setTrazaEventos(tmp);
-                }else {
-                    tmp += "[ " + util.getCurrentDateTime() + " ] " + " ERROR " + " [Error en la ejecuccion del comando]: " + c.getComando() + "\n";
-                    c.setTrazaEventos(tmp);
-                }
+            if (status == 0) {
+                tmp += "[ " + util.getCurrentDateTime() + " ] " + " INFO " + " [Comando Ejecutado]: " + comando + "\n";
+                tmp += "[ " + util.getCurrentDateTime() + " ] " + " INFO " + " [Resultado Ejecuccion]: " + valor + "\n";
+                c.setTrazaEventos(tmp);
+            } else {
+                tmp += "[ " + util.getCurrentDateTime() + " ] " + " ERROR " + " [Error en la ejecuccion del comando]: " + comando + "\n";
+                c.setTrazaEventos(tmp);
+            }
             tmp += "[ " + util.getCurrentDateTime() + " ] " + " INFO " + " [Guardando en Disco]: " + ruta + "\n";
-            util.crearArchivos(ruta,c.getTrazaEventos());
+            util.crearArchivos(ruta, c.getTrazaEventos());
         });
 
 
@@ -737,5 +744,76 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
         res.setSms("Se ejecuto correctamente la metrica");
         res.setCod(0);
         return res;
+    }
+
+    private String obtenerValor(Integer metrica, Object result) {
+        String valor = "";
+        switch (metrica) {
+            case RUN_STATUS:
+                PoleosEstatusEntity me = (PoleosEstatusEntity) result;
+                valor = me.getValor();
+                break;
+            case LAST_DOWN_CASE:
+                PoleosLastDownCauseEntity me1 = (PoleosLastDownCauseEntity) result;
+                valor = me1.getValor();
+                break;
+            case LAST_UP_TIME:
+                PoleosLastUpTimeEntity me2 = (PoleosLastUpTimeEntity) result;
+                valor = me2.getValor();
+                break;
+            case LAST_DOWN_TIME:
+                PoleosLastDownTimeEntity me3 = (PoleosLastDownTimeEntity) result;
+                valor = me3.getValor();
+                break;
+            case UP_BYTES:
+                PoleosUpBytesEntity me4 = (PoleosUpBytesEntity) result;
+                valor = me4.getValor();
+                break;
+            case DOWN_BYTES:
+                PoleosDownBytesEntity me5 = (PoleosDownBytesEntity) result;
+                valor = me5.getValor();
+                break;
+            case TIMEOUT:
+                PoleosTimeOutEntity me6 = (PoleosTimeOutEntity) result;
+                valor = me6.getValor();
+                break;
+            case UP_PACKETS:
+                PoleosUpPacketsEntity me7 = (PoleosUpPacketsEntity) result;
+                valor = me7.getValor();
+                break;
+            case DOWN_PACKETS:
+                PoleosDownPacketsEntity me8 = (PoleosDownPacketsEntity) result;
+                valor = me8.getValor();
+                break;
+            case DROP_UP_PACKETS:
+                PoleosDropUpPacketsEntity me9 = (PoleosDropUpPacketsEntity) result;
+                valor = me9.getValor();
+                break;
+            case DROP_DOWN_PACKETS:
+                PoleosDropDownPacketsEntity me10 = (PoleosDropDownPacketsEntity) result;
+                valor = me10.getValor();
+                break;
+            case CPU:
+                PoleosCpuEntity me11 = (PoleosCpuEntity) result;
+                valor = me11.getValor();
+                break;
+            case MEMORY:
+                PoleosMemoryEntity me12 = (PoleosMemoryEntity) result;
+                valor = me12.getValor();
+                break;
+            case ALIAS_ONT:
+                PoleosAliasEntity me13 = (PoleosAliasEntity) result;
+                valor = me13.getValor();
+                break;
+            case PROF_NAME_ONT:
+                PoleosProfNameEntity me14 = (PoleosProfNameEntity) result;
+                valor = me14.getValor();
+                break;
+            case FRAME_SLOT_PORT:
+                PoleosFrameSlotPortEntity me15 = (PoleosFrameSlotPortEntity) result;
+                valor = me15.getValor();
+                break;
+        }
+        return valor;
     }
 }
