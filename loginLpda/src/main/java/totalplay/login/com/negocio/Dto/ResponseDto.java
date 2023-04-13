@@ -10,6 +10,7 @@ public class ResponseDto extends ResponseGenericoDto {
 	private String usuario;
 	private String nombreCompleto;
 	private String rol;
+	private String cadenaConexion;
 	
 
 }

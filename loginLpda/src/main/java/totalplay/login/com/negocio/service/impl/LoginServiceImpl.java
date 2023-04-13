@@ -2,6 +2,7 @@ package totalplay.login.com.negocio.service.impl;
 
 import java.time.LocalDateTime;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Optional;
 
 import javax.naming.AuthenticationException;
@@ -9,33 +10,37 @@ import javax.naming.Context;
 import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import totalplay.login.com.helper.Util;
 import totalplay.login.com.negocio.Dto.RequestDto;
 import totalplay.login.com.negocio.Dto.ResponseDto;
 import totalplay.login.com.negocio.Dto.ResponseGenericoDto;
 import totalplay.login.com.negocio.Dto.UsuariosRequestDto;
 import totalplay.login.com.negocio.service.IloginService;
 import totalplay.login.com.negocio.utils.NamingExceptionCode;
+
 import totalplay.login.com.persistencia.entidad.RolesEntity;
 import totalplay.login.com.persistencia.entidad.usuariosEntity;
 import totalplay.login.com.persistencia.repositorio.IRolesRepository;
 import totalplay.login.com.persistencia.repositorio.IUsuariosPermitidosRepository;
+@Slf4j
 @Service
-@EnableScheduling
 public class LoginServiceImpl implements IloginService {
 
 	@Autowired
 	IUsuariosPermitidosRepository usuarios;
 	@Autowired
 	IRolesRepository roles;
+	@Autowired
+	Util ult;
+
+
 	@Override
 	public ResponseDto loginLpda(RequestDto request) throws Exception {
 		ResponseDto response = new ResponseDto();
@@ -44,6 +49,7 @@ public class LoginServiceImpl implements IloginService {
 			if(exite>0) {
 				if(request.getUsuario().equals("amagos")||request.getUsuario().equals("jsalgadom")) {
 					usuariosEntity usuario=	usuarios.findByNombreUsuario(request.getUsuario());
+				
 					//if(usuario.getSesion()==0) {
 						Optional<RolesEntity>  rol= roles.findById(usuario.getRol());
 						response.setCod(0);
@@ -51,23 +57,33 @@ public class LoginServiceImpl implements IloginService {
 						response.setNombreCompleto(usuario.getNombreCompleto());
 						response.setUsuario(usuario.getNombreUsuario());
 						response.setRol(rol.get().getRol());
+						//response.setCadenaConexion(ult.getJWTToken(request.getUsuario()));
 						usuario.setSesion(1);
 						usuario.setFechaConexion(LocalDateTime.now().toString());
+						totalplay.login.com.helper.Util.TokenResponse	 token=	ult.token(request.getUsuario(),request.getPassword());
+						
+					log.info(token.toString());
 						usuarios.save(usuario);
 			}else {
 				
 				String res = validaUsuario(request);
 				if (res == "LDAP_SUCCESS") {
 				usuariosEntity usuario=	usuarios.findByNombreUsuario(request.getUsuario());
+				
 				//if(usuario.getSesion()==0) {
 					Optional<RolesEntity>  rol= roles.findById(usuario.getRol());
+					
 					response.setCod(0);
 					response.setSms("OK");
 					response.setNombreCompleto(usuario.getNombreCompleto());
 					response.setUsuario(usuario.getNombreUsuario());
 					response.setRol(rol.get().getRol());
+					//response.setCadenaConexion(ult.getJWTToken(request.getUsuario()));
 					usuario.setSesion(1);
 					usuario.setFechaConexion(LocalDateTime.now().toString());
+
+					totalplay.login.com.helper.Util.TokenResponse token=	ult.token(request.getUsuario(),request.getPassword());
+					log.info(token.toString());
 					usuarios.save(usuario);
 				/*}else {
 					response.setCod(1);
@@ -152,9 +168,11 @@ public class LoginServiceImpl implements IloginService {
 		return response;
 	}
 	
-	@ConditionalOnProperty(name="scheduler.enabled", matchIfMissing = true)
+	/*@ConditionalOnProperty(name="scheduler.enabled", matchIfMissing = true)
 	@Scheduled(fixedRate = 100)
 	public void cron() {
 		System.out.println("ejecuto::::::::::::::");
-	}
+	}*/
+
+
 }
