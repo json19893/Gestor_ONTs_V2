@@ -561,7 +561,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
         private _snackbar: MatSnackBar
       ) {
      
-        //setInterval(() => this.getaArchivo(), 1000);
+        setInterval(() => this.getaArchivo(), 1000);
     
       }
       ngOnInit() {
