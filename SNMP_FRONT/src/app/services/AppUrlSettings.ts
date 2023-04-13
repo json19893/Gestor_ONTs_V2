@@ -5,7 +5,7 @@ export class AppUrlSettings{
     //public static BASE_API_LOGIN = 'http://localhost:9084/';
     //public static BASE_API_DESCUBRIMIENTO = 'http://localhost:9080/';
     //public static BASE_API = 'http://10.180.199.75:9081/';
-    public static BASE_API_DESCUBRIMIENTO = 'http://10.180.199.74:9082/';
+    public static BASE_API_DESCUBRIMIENTO = 'http://localhost:9082/';
     public static BASE_API_LOGIN = 'http://10.180.199.75:9084/';
     //public static BASE_API = 'http://10.180.251.83:9081/';
     //public static BASE_API_DESCUBRIMIENTO = 'http://10.180.251.83:9080/';
@@ -43,6 +43,7 @@ export class AppUrlSettings{
     public static CAMBIA_BLOQUE_METRICA="changeMetricBlock/"
     public static DESASIGNA_BLOQUE_METRICA="removeMetricBlock/"
     public static GET_ARCHIVO="getArchivo";
+    public static POLEO_METRICA_OID="metrica/poleo"
    
     
 }

@@ -6,6 +6,7 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import {NgxSpinnerService} from 'ngx-spinner';
 import {pointService} from '../services/poinst.service';
+import {poleoMetricaOidRequest} from '../model/poleoMetricaOidRequest'
 import {getOnts}  from '../model/getOnts'
 import { CookieService } from 'ngx-cookie-service';
 import {animate, state, style, transition, trigger} from '@angular/animations';
@@ -66,6 +67,7 @@ export class DetalleOntComponent implements OnInit {
     public al:any;
     tabla=false;
     public getOntsData:getOnts | undefined;
+    public requestPoleoOid:poleoMetricaOidRequest | undefined;
     displayedColumns: string[] = [];
 
     public lastUpTime: any
@@ -80,6 +82,7 @@ export class DetalleOntComponent implements OnInit {
     public profName: any
     public downBytes: any 
     public fechaPoleo: any
+    public metrics:any
 
     columnsToDisplayWithExpand : string[] = [];
     dataUp = new MatTableDataSource<up>(ELEMENT_DATA);
@@ -100,9 +103,8 @@ export class DetalleOntComponent implements OnInit {
     
         }
     ngOnInit() {
-       this.dataDetalle=JSON.parse(localStorage.getItem("dataDetalle")!);
-  //this.dataDetalle=JSON.parse(this.cookieService.get('dataDetalle')!);
-   
+      this.getMetricas()
+       this.dataDetalle=JSON.parse(localStorage.getItem("dataDetalle")!);   
       if(this.mostrar==null){
         this.mostrar='E';
        }
@@ -137,7 +139,7 @@ if(this.dataDetalle==undefined){
   this.llenaTabla(this.dataDetalle);
 }
 }
-this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias', 'estatus','fecha','fechaUltimaCaida','desEstatus'];
+this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias', 'estatus','fecha','fechaUltimaCaida','desEstatus','acciones'];
  this.columnsToDisplayWithExpand= [...this.displayedColumns, 'expand'];
    this.titulo="TOTAL";
             this.icono="./assets/img/network.png";
@@ -152,8 +154,24 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
       this.dataUp.sort = this.sort!;
     }
 
+    getMetricas (){
+  
+      this.service.detalleMetricas().subscribe(
+       res =>{
+      this.metrics=res.entity;
+      }
+      )
+    }
 
-    
+    poleoMetrica(ns:any,idMetrica:any){
+      this.requestPoleoOid=new poleoMetricaOidRequest(ns,idMetrica);
+      this.service.poleoMetricaOid(this.requestPoleoOid).subscribe(
+        res =>{
+         console.log("ddddd::: "+res)
+       this.metrics=res.entity;
+       }
+       )
+    }
       applyFilter(event: Event) {
         const filterValue = (event.target as HTMLInputElement).value;
         this.dataUp.filter = filterValue.trim().toLowerCase();

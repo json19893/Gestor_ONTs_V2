@@ -266,7 +266,7 @@
   </div>
   </div>
   </div>
-  <mat-paginator  #tblOlts [pageSizeOptions]="[10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+  <mat-paginator  *ngIf="muestraDetalle=='false'" #tblOlts [pageSizeOptions]="[10, 25, 100]" aria-label="Select page of users"></mat-paginator>
   <app-detalle-ont *ngIf="muestraDetalle=='true'"></app-detalle-ont>
   <br>
     
