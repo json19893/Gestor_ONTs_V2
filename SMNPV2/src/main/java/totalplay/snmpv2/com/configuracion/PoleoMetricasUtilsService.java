@@ -38,7 +38,7 @@ public class PoleoMetricasUtilsService extends Constantes {
     public CompletableFuture<GenericResponseDto> dispatcherAsyncPoleoMetrica(
             configuracionDto configuracion, String idMonitorPoleo, int idMetrica,
             Integer idOlt, boolean saveErroneos,
-            String referencia, boolean error, boolean manual) throws IOException {
+            String referencia, boolean error, boolean manual) throws IOException, NoSuchFieldException, NoSuchMethodException {
 
         //Setteo de valores por defecto
         saveErroneos = saveErroneos ? true : false;
