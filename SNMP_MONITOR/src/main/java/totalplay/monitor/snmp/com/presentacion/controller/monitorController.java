@@ -601,9 +601,9 @@ public class monitorController extends constantes {
 
 
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-    @RequestMapping(value = "/getArchivo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<String> getArchivo() {
-        return consulta.getArchivo();
+    @RequestMapping(value = "/getArchivo/{archivo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<String> getArchivo(@PathVariable("archivo") Integer archivo) {
+        return consulta.getArchivo(archivo);
     }
     
     @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})

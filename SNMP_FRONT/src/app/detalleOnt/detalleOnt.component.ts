@@ -6,9 +6,12 @@ import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import {NgxSpinnerService} from 'ngx-spinner';
 import {pointService} from '../services/poinst.service';
+import {poleoMetricaOidRequest} from '../model/poleoMetricaOidRequest'
 import {getOnts}  from '../model/getOnts'
 import { CookieService } from 'ngx-cookie-service';
 import {animate, state, style, transition, trigger} from '@angular/animations';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 export interface up {
     _id: string;
     numero_serie:string;
@@ -66,6 +69,7 @@ export class DetalleOntComponent implements OnInit {
     public al:any;
     tabla=false;
     public getOntsData:getOnts | undefined;
+    public requestPoleoOid:poleoMetricaOidRequest | undefined;
     displayedColumns: string[] = [];
 
     public lastUpTime: any
@@ -80,6 +84,8 @@ export class DetalleOntComponent implements OnInit {
     public profName: any
     public downBytes: any 
     public fechaPoleo: any
+    public metrics:any
+ 
 
     columnsToDisplayWithExpand : string[] = [];
     dataUp = new MatTableDataSource<up>(ELEMENT_DATA);
@@ -94,15 +100,16 @@ export class DetalleOntComponent implements OnInit {
         private router:Router,
         private spinner:NgxSpinnerService,
         private service:pointService,
-        private cookieService: CookieService
+        private cookieService: CookieService,
+        private _snackBar: MatSnackBar,
+        public dialog: MatDialog,
         
         ){
     
         }
     ngOnInit() {
-       this.dataDetalle=JSON.parse(localStorage.getItem("dataDetalle")!);
-  //this.dataDetalle=JSON.parse(this.cookieService.get('dataDetalle')!);
-   
+      this.getMetricas()
+       this.dataDetalle=JSON.parse(localStorage.getItem("dataDetalle")!);   
       if(this.mostrar==null){
         this.mostrar='E';
        }
@@ -137,7 +144,7 @@ if(this.dataDetalle==undefined){
   this.llenaTabla(this.dataDetalle);
 }
 }
-this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias', 'estatus','fecha','fechaUltimaCaida','desEstatus'];
+this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias', 'estatus','fecha','fechaUltimaCaida','desEstatus','acciones'];
  this.columnsToDisplayWithExpand= [...this.displayedColumns, 'expand'];
    this.titulo="TOTAL";
             this.icono="./assets/img/network.png";
@@ -152,8 +159,28 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
       this.dataUp.sort = this.sort!;
     }
 
+    getMetricas (){
+      this.service.detalleMetricas().subscribe(
+       res =>{
+      this.metrics=res.entity;
+      }
+      )
+    }
 
-    
+    openDetalle() {
+      this.dialog.open(detalleEjecucionMetricaDialog);
+    }
+    poleoMetrica(ns:any,idMetrica:any){
+      this.requestPoleoOid=new poleoMetricaOidRequest(ns,idMetrica);
+      this.openDetalle()
+      this.service.poleoMetricaOid(this.requestPoleoOid).subscribe(
+        res =>{
+          this._snackBar.open(res.sms, "cerrar", {
+            duration: 4000
+          });
+       }
+       )
+    }
       applyFilter(event: Event) {
         const filterValue = (event.target as HTMLInputElement).value;
         this.dataUp.filter = filterValue.trim().toLowerCase();
@@ -517,4 +544,36 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
     }
   }
 
-   
+  @Component({
+    selector: 'detalleEjecucionMetrica',
+    templateUrl: './detalleEjecucionMetrica.html',
+    styleUrls: ['./detalleOnt.component.css']
+  })
+  
+  export class detalleEjecucionMetricaDialog implements OnInit {
+    archivo:any;
+    
+      constructor(
+
+        private service: pointService,
+        private spinner: NgxSpinnerService,
+        private _snackbar: MatSnackBar
+      ) {
+     
+        setInterval(() => this.getaArchivo(), 1000);
+    
+      }
+      ngOnInit() {
+        this.getaArchivo();
+      
+      }
+     
+    
+      getaArchivo() {
+        this.service.getArchivo(2).subscribe(
+          res => {
+            this.archivo=res;
+          })
+    
+      }
+    }

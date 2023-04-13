@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.negocio.dto.PostMetricaResponse;
 import totalplay.snmpv2.com.negocio.dto.RequestPostMetrica;
 import totalplay.snmpv2.com.negocio.services.IpoleoMetricasService;
@@ -46,10 +47,11 @@ public class MetricaController {
      * @return ResponseEntity<?> Respuesta: Es una envoltura donde contiene un codigo de estatus http junto con la respuesta del servidor
      */
     @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
-    @RequestMapping(value = "/metrica/poleo", produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.POST})
+    @RequestMapping(value = "/metrica/poleo", produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.GET, RequestMethod.POST})
     public ResponseEntity<PostMetricaResponse> getMetricaByNum_serial(@RequestBody RequestPostMetrica request) {
         ResponseEntity<PostMetricaResponse> responseWrapperServer = null;
-        PostMetricaResponse response = null;
+        GenericResponseDto response = new GenericResponseDto();
+
         try {
             response = service.getPoleoOntMetrica(request);
             if (response.getCod().intValue() == 0) {
@@ -64,10 +66,10 @@ public class MetricaController {
                 }
             }
         } catch (Exception e) {
+            response.setCod(1);
+            response.setSms("Internal Server Error");
             return responseWrapperServer = new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return responseWrapperServer;
     }
-    //Agregar mensajes estandar para cada metrica, primero ve si te responde el error. Agregar una hora de consulta
-    //Genera mensajes en funcion del id de la metrica
 }

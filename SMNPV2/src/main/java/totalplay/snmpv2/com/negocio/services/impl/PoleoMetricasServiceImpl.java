@@ -1,12 +1,7 @@
 package totalplay.snmpv2.com.negocio.services.impl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import totalplay.snmpv2.com.configuracion.Constantes;
+import totalplay.snmpv2.com.configuracion.PoleoMetricasUtilsService;
 import totalplay.snmpv2.com.configuracion.Utils;
 import totalplay.snmpv2.com.negocio.dto.*;
 import totalplay.snmpv2.com.negocio.services.IGenericMetrics;
@@ -31,7 +27,6 @@ import totalplay.snmpv2.com.negocio.services.IpoleoMetricasService;
 import totalplay.snmpv2.com.persistencia.entidades.*;
 import totalplay.snmpv2.com.persistencia.repositorio.*;
 import org.springframework.scheduling.annotation.Async;
-import totalplay.snmpv2.com.presentacion.MetricaController;
 import totalplay.snmpv2.com.persistencia.repositorio.IauxiliarJoinEstatusRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IconfiguracionMetricaRepository;
@@ -41,8 +36,6 @@ import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasRepositor
 import totalplay.snmpv2.com.persistencia.entidades.CatConfiguracionEntity;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.ConfiguracionMetricaEntity;
-import totalplay.snmpv2.com.persistencia.entidades.FaltantesEstatusEntity;
-import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoEntity;
 import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoOltMetricaEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.IhistoricoConteoOltRepository;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosAliasEntity;
@@ -132,135 +125,138 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
     @Autowired
     IpoleoEstatusRepositorio poleoEstatus;
 
-
+    @Autowired
+    PoleoMetricasUtilsService poleoMetricasUtilsService;
+    @Autowired
+    ImonitorPoleoRepository monitorPoleo;
     Utils util = new Utils();
 
 
     @Override
 
-	@Async("taskExecutor2")
-	public CompletableFuture<String> executeProcess(List<CatOltsEntity> olts, String idMonitorPoleo, int idMetrica) throws Exception {
-				
-		String fechaInicio = LocalDate.now().toString();
-		String hilo = Thread.currentThread().getName(); 
-		Integer estatusPoleo = FALLIDO;
-		ConfiguracionMetricaEntity confMetrica;
-		MonitorPoleoOltMetricaEntity monitor;
-		String idMonitorOlt ="";
-		
-		
-		try {
-			
-			for (CatOltsEntity olt : olts) {				
-				try {
-									
-					Integer idOlt= olt.getId_olt();
-					monitor = monitorPoleoOltMetrica.getMonitorExist(idMonitorPoleo, idMetrica, olt.getId_olt());
-					
-					if(monitor !=null)
-						idMonitorOlt = monitor.getId();
-					else
-						idMonitorOlt =  monitorPoleoOltMetrica.save(new MonitorPoleoOltMetricaEntity(idOlt,Integer.valueOf(idMetrica),LocalDateTime.now().toString(), idMonitorPoleo)).getId();
-					
-					
-					AggregationOperation match = Aggregation.match(Criteria.where("id_olt").is(idOlt));
-					AggregationOperation lookup = Aggregation.lookup("cat_configuracion", "id_configuracion",
-							"id_configuracion", "configuracion");
-					Aggregation aggregation = Aggregation.newAggregation(match, lookup);
-					AggregationResults<CatOltsEntity> out = mongoTemplate.aggregate(aggregation, "cat_olts",
-							CatOltsEntity.class);
-					configuracionDto configuracion = util.getConfiguracion(out.getMappedResults());
-					
-					
-					CompletableFuture<GenericResponseDto> metrica = new CompletableFuture<GenericResponseDto>();
-				
-				
-					switch(idMetrica) {
-						case 1:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 1,idOlt, PoleosEstatusEntity.class, false, "", false,false);
-						break;
-						case 2:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 2,idOlt, PoleosLastDownCauseEntity.class, false, "", false,false);
-						break;
-						case 3:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 3,idOlt, PoleosLastUpTimeEntity.class, false, "", false,false);
-						break;
-						case 4:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 4,idOlt, PoleosLastDownTimeEntity.class, false, "", false,false);
-						break;
-						case 5:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 5,idOlt, PoleosUpBytesEntity.class, false, "", false,false);
-						break;
-						case 6:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 6,idOlt, PoleosDownBytesEntity.class, false, "", false,false);
-						break;
-						case 7:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 7,idOlt, PoleosTimeOutEntity.class, false, "", false,false);							
-						break;
-						case 8:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 8,idOlt, PoleosUpPacketsEntity.class, false, "", false, false);
-						break;
-						case 9:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 9,idOlt, PoleosDownPacketsEntity.class, false, "", false, false);
-						break;
-						case 10:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 10,idOlt, PoleosDropUpPacketsEntity.class, false, "", false, false);
-						break;
-						case 11:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 11,idOlt, PoleosDropDownPacketsEntity.class, false, "", false, false);
-						break;
-						case 12:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 12,idOlt, PoleosCpuEntity.class, false, "", false, false);
-						break;
-						case 13:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 13,idOlt, PoleosMemoryEntity.class, false, "", false, false);
-						break;
-						case 14:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 14,idOlt, PoleosAliasEntity.class, false, "", false, false);
-						break;
-						case 15:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 15,idOlt, PoleosProfNameEntity.class, false, "", false, false);
-						break;
-						case 16:
-							metrica =  genericMetrics.poleo(configuracion, idMonitorPoleo, 16,idOlt, PoleosFrameSlotPortEntity.class, false, "", false, false);
-						break;
-					}		
-					
-					
-					MonitorPoleoOltMetricaEntity monitorPoleoOlt= monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
-					monitorPoleoOlt.setFecha_inicio(fechaInicio);
-					monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
-					monitorPoleoOlt.setError( metrica.get().getSms().equals("0") || metrica.get().getSms().equals("error")  || metrica.get().getSms().equals("Sin metrica") );
-					monitorPoleoOlt.setResultado(metrica.get().getSms());
-					
-					monitorPoleoOltMetrica.save(monitorPoleoOlt);
-					
-				} catch (Exception e) {
-					log.error("error:" + e);
-					
-					if(!idMonitorOlt.equals("")) {
-						MonitorPoleoOltMetricaEntity monitorPoleoOlt= monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
-						monitorPoleoOlt.setFecha_inicio(fechaInicio);
-						monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
-						monitorPoleoOlt.setError( true );
-						
-						monitorPoleoOltMetrica.save(monitorPoleoOlt);
-					}
-					
-				}			
-			
-				estatusPoleo = EXITOSO;
-				
-			}
-	
-		} catch (Exception e) {
-			log.error("error:" + e);
-		}
-		
-		return null;
-		
-    }	
-    
+    @Async("taskExecutor2")
+    public CompletableFuture<String> executeProcess(List<CatOltsEntity> olts, String idMonitorPoleo, int idMetrica) throws Exception {
+
+        String fechaInicio = LocalDate.now().toString();
+        String hilo = Thread.currentThread().getName();
+        Integer estatusPoleo = FALLIDO;
+        ConfiguracionMetricaEntity confMetrica;
+        MonitorPoleoOltMetricaEntity monitor;
+        String idMonitorOlt = "";
+
+
+        try {
+
+            for (CatOltsEntity olt : olts) {
+                try {
+
+                    Integer idOlt = olt.getId_olt();
+                    monitor = monitorPoleoOltMetrica.getMonitorExist(idMonitorPoleo, idMetrica, olt.getId_olt());
+
+                    if (monitor != null)
+                        idMonitorOlt = monitor.getId();
+                    else
+                        idMonitorOlt = monitorPoleoOltMetrica.save(new MonitorPoleoOltMetricaEntity(idOlt, Integer.valueOf(idMetrica), LocalDateTime.now().toString(), idMonitorPoleo)).getId();
+
+
+                    AggregationOperation match = Aggregation.match(Criteria.where("id_olt").is(idOlt));
+                    AggregationOperation lookup = Aggregation.lookup("cat_configuracion", "id_configuracion",
+                            "id_configuracion", "configuracion");
+                    Aggregation aggregation = Aggregation.newAggregation(match, lookup);
+                    AggregationResults<CatOltsEntity> out = mongoTemplate.aggregate(aggregation, "cat_olts",
+                            CatOltsEntity.class);
+                    configuracionDto configuracion = util.getConfiguracion(out.getMappedResults());
+
+
+                    CompletableFuture<GenericResponseDto> metrica = new CompletableFuture<GenericResponseDto>();
+
+
+                    switch (idMetrica) {
+                        case 1:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 1, idOlt, PoleosEstatusEntity.class, false, "", false, false);
+                            break;
+                        case 2:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 2, idOlt, PoleosLastDownCauseEntity.class, false, "", false, false);
+                            break;
+                        case 3:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 3, idOlt, PoleosLastUpTimeEntity.class, false, "", false, false);
+                            break;
+                        case 4:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 4, idOlt, PoleosLastDownTimeEntity.class, false, "", false, false);
+                            break;
+                        case 5:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 5, idOlt, PoleosUpBytesEntity.class, false, "", false, false);
+                            break;
+                        case 6:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 6, idOlt, PoleosDownBytesEntity.class, false, "", false, false);
+                            break;
+                        case 7:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 7, idOlt, PoleosTimeOutEntity.class, false, "", false, false);
+                            break;
+                        case 8:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 8, idOlt, PoleosUpPacketsEntity.class, false, "", false, false);
+                            break;
+                        case 9:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 9, idOlt, PoleosDownPacketsEntity.class, false, "", false, false);
+                            break;
+                        case 10:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 10, idOlt, PoleosDropUpPacketsEntity.class, false, "", false, false);
+                            break;
+                        case 11:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 11, idOlt, PoleosDropDownPacketsEntity.class, false, "", false, false);
+                            break;
+                        case 12:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 12, idOlt, PoleosCpuEntity.class, false, "", false, false);
+                            break;
+                        case 13:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 13, idOlt, PoleosMemoryEntity.class, false, "", false, false);
+                            break;
+                        case 14:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 14, idOlt, PoleosAliasEntity.class, false, "", false, false);
+                            break;
+                        case 15:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 15, idOlt, PoleosProfNameEntity.class, false, "", false, false);
+                            break;
+                        case 16:
+                            metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, 16, idOlt, PoleosFrameSlotPortEntity.class, false, "", false, false);
+                            break;
+                    }
+
+
+                    MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
+                    monitorPoleoOlt.setFecha_inicio(fechaInicio);
+                    monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
+                    monitorPoleoOlt.setError(metrica.get().getSms().equals("0") || metrica.get().getSms().equals("error") || metrica.get().getSms().equals("Sin metrica"));
+                    monitorPoleoOlt.setResultado(metrica.get().getSms());
+
+                    monitorPoleoOltMetrica.save(monitorPoleoOlt);
+
+                } catch (Exception e) {
+                    log.error("error:" + e);
+
+                    if (!idMonitorOlt.equals("")) {
+                        MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
+                        monitorPoleoOlt.setFecha_inicio(fechaInicio);
+                        monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
+                        monitorPoleoOlt.setError(true);
+
+                        monitorPoleoOltMetrica.save(monitorPoleoOlt);
+                    }
+
+                }
+
+                estatusPoleo = EXITOSO;
+
+            }
+
+        } catch (Exception e) {
+            log.error("error:" + e);
+        }
+
+        return null;
+
+    }
+
 
     @Override
     public List<OntsConfiguracionDto> getOntsFaltantes(int idMetrica, String idEjecucion, boolean resultado, boolean empresariales, String tabla, int tipo, List<CatOltsEntity> olts) {
@@ -342,114 +338,114 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
 
     }
 
-	@Async("taskExecutor")
-	public CompletableFuture<String> getMetricaEmpresarialesByMetrica(List<OntsConfiguracionDto> ontsEmpresariales,
-			String idMonitorPoleo, int idMetrica) {
+    @Async("taskExecutor")
+    public CompletableFuture<String> getMetricaEmpresarialesByMetrica(List<OntsConfiguracionDto> ontsEmpresariales,
+                                                                      String idMonitorPoleo, int idMetrica) {
 
-		for (OntsConfiguracionDto ont : ontsEmpresariales) {
-			EjecucionDto proces = null;
-			try {
-				
-				CatConfiguracionEntity conf = ont.getConfiguracion();
-				String oid = idMetrica != 16 ? ont.getOnt().getOid(): ont.getOnt().getId_puerto();
-				Integer idOlt = ont.getOnt().getId_olt();
-				String tecnologia = ont.getOnt().getTecnologia();
-				Integer region = ont.getOnt().getId_region();
-				Integer configuracion = ont.getId_configuracion();
-				String comando;
-				boolean errorOlt = false; 
-				
-				if(ont.isError() || ont.getPoleable().intValue() == 0 )
-					errorOlt = true;
-				
-				log.info("Porcesando la ont con id: " + oid);
+        for (OntsConfiguracionDto ont : ontsEmpresariales) {
+            EjecucionDto proces = null;
+            try {
 
-				if (oid != null && ont.getId_configuracion() != 0 && !ont.getIp().equals("")) {
-					
-					if(tecnologia != "FIBER HOME") {
-						comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + "2" + SPACE
-								+ conf.getVersion() + USER_NAME + conf.getUsuario() + LEVEL + conf.getNivel()
-								+ PROTOCOL_ENCR + conf.getProt_encriptado() + PASSPHRASE + conf.getPassword()
-								+ PROTOCOL_PRIV + conf.getProt_privado() + PROTOCOL_PHRASE + conf.getFrase() + SPACE + IR
-								+ ont.getIp() + SPACE;
-					}else {
-						comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + "2"
-							+ SPACE + conf.getVersion() + " -c " + conf.getProt_privado() + SPACE
-							+ ont.getIp() + SPACE;
-					}
-					configuracionDto configPoleo = new configuracionDto();
-					configPoleo.setComando(comando);
-					configPoleo.setIdConfiguracion(configuracion);
-					configPoleo.setTecnologia(tecnologia);
+                CatConfiguracionEntity conf = ont.getConfiguracion();
+                String oid = idMetrica != 16 ? ont.getOnt().getOid() : ont.getOnt().getId_puerto();
+                Integer idOlt = ont.getOnt().getId_olt();
+                String tecnologia = ont.getOnt().getTecnologia();
+                Integer region = ont.getOnt().getId_region();
+                Integer configuracion = ont.getId_configuracion();
+                String comando;
+                boolean errorOlt = false;
 
-					// TODO: LLAMAR A LOS COMANDOS PARA LAS MÈTRICAS
-					CompletableFuture<GenericResponseDto> metrica = new CompletableFuture<GenericResponseDto>();
-					try {
-						switch(idMetrica) {
-							case 1:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 1,idOlt, PoleosEstatusEntity.class, false, oid, errorOlt, false);
-							break;
-							case 2:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 2,idOlt, PoleosLastDownCauseEntity.class, false, oid, errorOlt, false);
-							break;
-							case 3:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 3,idOlt, PoleosLastUpTimeEntity.class, false, oid, errorOlt, false);
-							break;
-							case 4:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 4,idOlt, PoleosLastDownTimeEntity.class, false, oid, errorOlt, false);
-							break;
-							case 5:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 5,idOlt, PoleosUpBytesEntity.class, false, oid, errorOlt, false);
-							break;
-							case 6:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 6,idOlt, PoleosDownBytesEntity.class, false, oid, errorOlt, false);
-							break;
-							case 7:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 7,idOlt, PoleosTimeOutEntity.class, false, oid, errorOlt, false);							
-							break;
-							case 8:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 8,idOlt, PoleosUpPacketsEntity.class, false, oid, errorOlt, false);
-							break;
-							case 9:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 9,idOlt, PoleosDownPacketsEntity.class, false, oid, errorOlt, false);
-							break;
-							case 10:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 10,idOlt, PoleosDropUpPacketsEntity.class, false, oid, errorOlt, false);
-							break;
-							case 11:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 11,idOlt, PoleosDropDownPacketsEntity.class, false, oid, errorOlt, false);
-							break;
-							case 12:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 12,idOlt, PoleosCpuEntity.class, false, oid, errorOlt, false);
-							break;
-							case 13:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 13,idOlt, PoleosMemoryEntity.class, false, oid, errorOlt, false);
-							break;
-							case 14:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 14,idOlt, PoleosAliasEntity.class, false, oid, errorOlt, false);
-							break;
-							case 15:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 15,idOlt, PoleosProfNameEntity.class, false, oid, errorOlt, false);
-							break;
-							case 16:
-								metrica =  genericMetrics.poleo(configPoleo, idMonitorPoleo, 16,idOlt, PoleosFrameSlotPortEntity.class, false, oid, errorOlt, false);
-							break;
-						}							
-					
-					}catch (Exception e) {
-						log.info(e.toString());
-					}
-				}
-					
-			} catch (Exception e) {
-				log.info(e.toString());
-			}
-		}
+                if (ont.isError() || ont.getPoleable().intValue() == 0)
+                    errorOlt = true;
 
-		return null;
+                log.info("Porcesando la ont con id: " + oid);
 
-	}
-    
+                if (oid != null && ont.getId_configuracion() != 0 && !ont.getIp().equals("")) {
+
+                    if (tecnologia != "FIBER HOME") {
+                        comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + "2" + SPACE
+                                + conf.getVersion() + USER_NAME + conf.getUsuario() + LEVEL + conf.getNivel()
+                                + PROTOCOL_ENCR + conf.getProt_encriptado() + PASSPHRASE + conf.getPassword()
+                                + PROTOCOL_PRIV + conf.getProt_privado() + PROTOCOL_PHRASE + conf.getFrase() + SPACE + IR
+                                + ont.getIp() + SPACE;
+                    } else {
+                        comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + "2"
+                                + SPACE + conf.getVersion() + " -c " + conf.getProt_privado() + SPACE
+                                + ont.getIp() + SPACE;
+                    }
+                    configuracionDto configPoleo = new configuracionDto();
+                    configPoleo.setComando(comando);
+                    configPoleo.setIdConfiguracion(configuracion);
+                    configPoleo.setTecnologia(tecnologia);
+
+                    // TODO: LLAMAR A LOS COMANDOS PARA LAS MÈTRICAS
+                    CompletableFuture<GenericResponseDto> metrica = new CompletableFuture<GenericResponseDto>();
+                    try {
+                        switch (idMetrica) {
+                            case 1:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 1, idOlt, PoleosEstatusEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 2:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 2, idOlt, PoleosLastDownCauseEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 3:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 3, idOlt, PoleosLastUpTimeEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 4:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 4, idOlt, PoleosLastDownTimeEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 5:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 5, idOlt, PoleosUpBytesEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 6:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 6, idOlt, PoleosDownBytesEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 7:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 7, idOlt, PoleosTimeOutEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 8:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 8, idOlt, PoleosUpPacketsEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 9:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 9, idOlt, PoleosDownPacketsEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 10:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 10, idOlt, PoleosDropUpPacketsEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 11:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 11, idOlt, PoleosDropDownPacketsEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 12:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 12, idOlt, PoleosCpuEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 13:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 13, idOlt, PoleosMemoryEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 14:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 14, idOlt, PoleosAliasEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 15:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 15, idOlt, PoleosProfNameEntity.class, false, oid, errorOlt, false);
+                                break;
+                            case 16:
+                                metrica = genericMetrics.poleo(configPoleo, idMonitorPoleo, 16, idOlt, PoleosFrameSlotPortEntity.class, false, oid, errorOlt, false);
+                                break;
+                        }
+
+                    } catch (Exception e) {
+                        log.info(e.toString());
+                    }
+                }
+
+            } catch (Exception e) {
+                log.info(e.toString());
+            }
+        }
+
+        return null;
+
+    }
+
     @Override
     public void joinUpdateStatus(String idMonitorPoleo) {
 
@@ -562,64 +558,68 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
      * @return
      */
     @Override
-    public PostMetricaResponse getPoleoOntMetrica(RequestPostMetrica request) throws IOException, InterruptedException {
+    public GenericResponseDto getPoleoOntMetrica(RequestPostMetrica request) throws Exception {
+        String logEventos = "";
+        logEventos = "[ " + util.getCurrentDateTime() + " ] " + " INFO " + " [Funcion a Ejecutar]:  PoleoMetricasImpl.getPoleoOntMetrica" + "\n";
 
+        //System.out.println(logEventos);
         //Parametros de entrada:
         String num_serie = request.getNumero_serie();
         Integer idMetrica = request.getIdMetrica();
+        String fechaInicio = LocalDate.now().toString();
 
         //Mensaje del happy path
-        PostMetricaResponse response = new PostMetricaResponse();
+        GenericResponseDto response = new GenericResponseDto();
         response.setCod(0);
-        response.setSms("Exito: La consulta de metrica se realizó correctamente");
-        response.setMetrica(new MetricaController.MetricaPoleo());
+        response.setSms("Exito: Se poleo la metrica correctamente");
 
-        //String ruta_sistema = "/home/implementacion/ecosistema/comandos/";
+
         String OID_METRICA = "";
-        String ruta_sistema;
         Utils utilerias;
 
         InventarioOntsEntity ont;
         CatOltsEntity olt;
-        configuracionDto configuracion;
+        configuracionDto configuracionPoleo;
 
         ont = inventario.getOntBySerialNumber(num_serie);
+        OntsConfiguracionDto config;
         if (ont == null) {
-            response.setCod(MetricaController.RESOURCE_NOT_FOUND);
+            response.setCod(RESOURCE_NOT_FOUND);
             response.setSms("Error: recurso no encontrado");
             return response;
         }
 
         if (ont.getEstatus().equals("0")) {
-            response.setCod(MetricaController.RESOURCE_NOT_AVAILABLE);
+            response.setCod(RESOURCE_NOT_AVAILABLE);
             response.setSms("Error: recurso no disponible");
             return response;
         }
+        String tecnologia = ont.getTecnologia();
 
         olt = catOltRepository.getOlt(ont.getId_olt());
         if (olt == null) {
-            response.setCod(MetricaController.RESOURCE_NOT_FOUND);
+            response.setCod(RESOURCE_NOT_FOUND);
             response.setSms("Error: recurso no encontrado");
             return response;
         }
 
         if (olt.getEstatus().equals("0")) {
-            response.setCod(MetricaController.RESOURCE_NOT_AVAILABLE);
+            response.setCod(RESOURCE_NOT_AVAILABLE);
             response.setSms("Error: recurso no disponible");
             return response;
         }
+        Integer idConfiguracion = olt.getId_configuracion();
 
         Query query = new Query();
         query.addCriteria(Criteria.where("id_metrica").is(idMetrica.intValue()));
         ConfiguracionMetricaEntity configMetrica = mongoTemplate
                 .findOne(query, ConfiguracionMetricaEntity.class, "tb_configuracion_metricas");
         if (configMetrica == null) {
-            response.setCod(MetricaController.METRIC_NOT_SUPPORTED);
+            response.setCod(METRIC_NOT_SUPPORTED);
             response.setSms("Error: Metrica no soportada por esta version");
             return response;
         }
 
-        //En este bloque se settea el oid de la metrica en funcion de la tecnologia de la ont
         if (configMetrica.isActivo()) {
             if (ont.getTecnologia().equalsIgnoreCase("HUAWEI")) {
                 OID_METRICA = configMetrica.getHUAWEI().getOid() + "." + ont.getOid();
@@ -634,7 +634,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
             }
         } else {
             //No esta activada la metrica para este dispositivo
-            response.setCod(MetricaController.TECHNOLOGY_NOT_SUPPORTED);
+            response.setCod(TECHNOLOGY_NOT_SUPPORTED);
             response.setSms("Error: Tecnologia no soportada por esta version");
             return response;
         }
@@ -649,54 +649,95 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                 = mongoTemplate.aggregate(aggregation, "cat_olts", CatOltsEntity.class);
 
         utilerias = new Utils();
-        configuracion = utilerias.getConfiguracion(out.getMappedResults());
+        configuracionPoleo = utilerias.getConfiguracion(out.getMappedResults());
+
 
         final String BASE_COMMAND = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + TIME_OUT_VALUE
-                + SPACE + configuracion.getVersion() + USER_NAME + configuracion.getUserName() + LEVEL
-                + configuracion.getLevel() + PROTOCOL_ENCR + configuracion.getProtEn() + PASSPHRASE
-                + configuracion.getPassword() + PROTOCOL_PRIV + configuracion.getProtPriv()
-                + PROTOCOL_PHRASE + configuracion.getPhrase() + " -O v " + IR + olt.getIp();
+                + SPACE + configuracionPoleo.getVersion() + USER_NAME + configuracionPoleo.getUserName() + LEVEL
+                + configuracionPoleo.getLevel() + PROTOCOL_ENCR + configuracionPoleo.getProtEn() + PASSPHRASE
+                + configuracionPoleo.getPassword() + PROTOCOL_PRIV + configuracionPoleo.getProtPriv()
+                + PROTOCOL_PHRASE + configuracionPoleo.getPhrase() + SPACE + IR + olt.getIp();
 
-        ruta_sistema = "/home/ubuntu/bash/comandos/";
-        String command_to_execute = BASE_COMMAND + SPACE + OID_METRICA;
+        Integer idOlt = olt.getId_olt();
+        String oid = ont.getOid();
+        String idMonitorPoleo = monitorPoleo.findFirstByOrderByIdDesc().getId();
+        configuracionPoleo.setComando(BASE_COMMAND);
+        configuracionPoleo.setIdConfiguracion(idConfiguracion);
+        configuracionPoleo.setTecnologia(tecnologia);
+        configuracionPoleo.setTrazaEventos(logEventos);
 
-        InputStream inputStream;
-        InputStream inputStreamError;
-        BufferedReader buffer;
-        String aux;
-        String readLine = "";
+        String finalLogEventos = logEventos;
 
-        EjecucionDto ejecucionDto = utilerias.execBash(command_to_execute, ruta_sistema);
-        ejecucionDto.getProceso().waitFor();
+        //Escucha los eventos
+        configuracionPoleo.setManejarResultadoComando((ruta, c, result, status) -> {
+            util.deleteLogFile(ruta);
+            String copyString = finalLogEventos;
+            PoleosEstatusEntity metrica = result.get(0);
+            String tmp = c.getTrazaEventos();
+            if(status == 0){
+                    tmp += "[ " + util.getCurrentDateTime() + " ] " + " INFO " + " [Comando Ejecutado]: " + c.getComando() + "\n";
+                    tmp += "[ " + util.getCurrentDateTime() + " ] " + " INFO " + " [Resultado Ejecuccion]: " + metrica.getValor() + "\n";
+                    c.setTrazaEventos(tmp);
+                }else {
+                    tmp += "[ " + util.getCurrentDateTime() + " ] " + " ERROR " + " [Error en la ejecuccion del comando]: " + c.getComando() + "\n";
+                    c.setTrazaEventos(tmp);
+                }
+            tmp += "[ " + util.getCurrentDateTime() + " ] " + " INFO " + " [Guardando en Disco]: " + ruta + "\n";
+            util.crearArchivos(ruta,c.getTrazaEventos());
+        });
 
-        response.setHoraPoleo(LocalTime.now((ZoneId.of("America/Mexico_City"))));
-        response.getMetrica().setNombre(configMetrica.getNombre());
 
-        if (ejecucionDto.getProceso().exitValue() == 1) {
-            //lee la salida del error por generada por la salida standar de error:
-            //Lee la respuesta del comando retornada por la salida estandar:
-            inputStreamError = ejecucionDto.getProceso().getErrorStream();
-            buffer = new BufferedReader(new InputStreamReader(inputStreamError));
+        //String resultado = configuracionPoleo.getManejarResultadoComando().getCommandResponse("10");
+        //System.out.println(resultado);
 
-            while ((aux = buffer.readLine()) != null) {
-                readLine += aux;
-                response.getMetrica().setValor(readLine);
-            }
+        CompletableFuture<GenericResponseDto> metricaAsyncProcess = new CompletableFuture<>();
+        boolean errorOlt = false;
 
-            response.setCod(1);
-            response.setSms("Error: error en el servidor");
-            return response;
+        metricaAsyncProcess = poleoMetricasUtilsService
+                .dispatcherAsyncPoleoMetrica(
+                        configuracionPoleo,
+                        idMonitorPoleo,
+                        request.getIdMetrica(),
+                        olt.getId_olt(),
+                        false,
+                        oid,
+                        false,
+                        false);
+
+        MonitorPoleoOltMetricaEntity monitor;
+        String idMonitorOlt = "";
+
+        monitor = monitorPoleoOltMetrica.getMonitorExist(idMonitorPoleo, idMetrica, olt.getId_olt());
+        if (monitor != null)
+            idMonitorOlt = monitor.getId();
+        else
+            idMonitorOlt = monitorPoleoOltMetrica.save(new MonitorPoleoOltMetricaEntity(idOlt, Integer.valueOf(idMetrica), LocalDateTime.now().toString(), idMonitorPoleo)).getId();
+
+        boolean isErrorAsyncProcess
+                = metricaAsyncProcess.get().getSms().equals("0")
+                || metricaAsyncProcess.get().getSms().equals("error")
+                || metricaAsyncProcess.get().getSms().equals("Sin metrica");
+
+        if (isErrorAsyncProcess) {
+            MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
+            monitorPoleoOlt.setFecha_inicio(fechaInicio);
+            monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
+            monitorPoleoOlt.setError(true);
+
+            monitorPoleoOltMetrica.save(monitorPoleoOlt);
+            //Lanza una excepcion
+            throw new RuntimeException("Error: No asigno el id process para el proceso de metrica");
         }
 
-        //Lee la respuesta del comando retornada por la salida estandar:
-        inputStream = ejecucionDto.getProceso().getInputStream();
-        buffer = new BufferedReader(new InputStreamReader(inputStream));
-        //Llenar el objeto response:
-        response.getMetrica().setNombre(configMetrica.getNombre());
-        while ((aux = buffer.readLine()) != null) {
-            readLine += aux;
-            response.getMetrica().setValor(readLine);
-        }
-        return response;
+        MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
+        monitorPoleoOlt.setFecha_inicio(fechaInicio);
+        monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
+        monitorPoleoOlt.setError(isErrorAsyncProcess);
+        monitorPoleoOlt.setResultado(metricaAsyncProcess.get().getSms());
+
+        GenericResponseDto res = metricaAsyncProcess.get();
+        res.setSms("Se ejecuto correctamente la metrica");
+        res.setCod(0);
+        return res;
     }
 }

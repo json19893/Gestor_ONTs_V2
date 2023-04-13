@@ -478,7 +478,7 @@ archivo:any;
 
   }
   getaArchivo() {
-    this.service.getArchivo().subscribe(
+    this.service.getArchivo(1).subscribe(
       res => {
         this.archivo=res;
       })
