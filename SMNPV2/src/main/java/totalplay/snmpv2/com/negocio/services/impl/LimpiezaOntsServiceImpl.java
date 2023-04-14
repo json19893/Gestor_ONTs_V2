@@ -238,19 +238,21 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			
 			getInventarioPuertos(monitor, olts);
 			
-			//updateDescripcion(monitor, INICIO_DESC+" OBTENCIÓN INFO TABLAS");
+			updateDescripcion(monitor, INICIO_DESC+" OBTENCIÓN INFO TABLAS");
 			log.info(INICIO_DESC+" OBTENCIÓN INFO TABLAS");
 			limpieza =  inventarioTmp.getOntsInventarios();
 			
-			inventarioOnts.deleteAll(limpieza.get(0).getEliminar());
-			diferencias.saveAll(limpieza.get(0).getDuplicados());
-			diferenciasManual.saveAll(limpieza.get(0).getManual());
-			inventarioAuxManual.saveAll(limpieza.get(0).getInventarioAux());
+			if(limpieza.size()>0) {
+				inventarioOnts.deleteAll(limpieza.get(0).getEliminar());
+				diferencias.saveAll(limpieza.get(0).getDuplicados());
+				diferenciasManual.saveAll(limpieza.get(0).getManual());
+				inventarioAuxManual.saveAll(limpieza.get(0).getInventarioAux());
+			}
 			
 			
 			String idPoleo =  monitorPoleo.getLastFinishId().getId();
 			
-			//updateDescripcion(monitor, INICIO_DESC+" CRECE MÉTRICAS");
+			updateDescripcion(monitor, INICIO_DESC+" CRECE MÉTRICAS");
 			log.info(INICIO_DESC+" CRECE MÉTRICAS");
 			
 			crucesMetricas(2,idPoleo, "auxiliar_descubrimiento_manual", olts, true );
@@ -260,7 +262,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			
 			getEmpresarialesVips(true);
 			
-			//updateDescripcion(monitor, INICIO_DESC+" SEND INVENTARIO");
+			updateDescripcion(monitor, INICIO_DESC+" SEND INVENTARIO");
 			log.info(INICIO_DESC+" SEND INVENTARIO");
 			
 			

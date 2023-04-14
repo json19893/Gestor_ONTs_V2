@@ -173,7 +173,9 @@ public class DescubrimientoController extends Constantes {
 			thredOlts  = getProceso(olts,idProceso,true,datos.getUsuario());
 			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
 			//Limpieza de datos para inventario final
-			limpiezaOnts.LimpiezaManual(olts, null);
+			if(inventarioTmp.count()>0) {
+				limpiezaOnts.LimpiezaManual(olts, desc);
+			}			
 			updateTotales.updateTotalOntsFromOlts();
 		} catch (Exception e) {
 			return new GenericResponseDto(EJECUCION_ERROR, 1);
