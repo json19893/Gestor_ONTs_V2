@@ -58,13 +58,13 @@ import totalplay.snmpv2.com.persistencia.entidades.PoleosUpPacketsEntity;
 
 @Slf4j
 @Service
-public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetricasService {
-    
-	@Autowired
-	private MongoTemplate mongoTemplate;
-	
-	@Autowired
-	IinventarioOntsErroneas erroneasRepositori;
+public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasService {
+
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
+    @Autowired
+    IinventarioOntsErroneas erroneasRepositori;
     @Autowired
     IcatOltsRepository catOltRepository;
     @Autowired

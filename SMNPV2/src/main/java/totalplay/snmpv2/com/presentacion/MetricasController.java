@@ -118,7 +118,7 @@ public class MetricasController extends Constantes {
 			List<CompletableFuture<String>> regionSegmentOnts;
 			List<CompletableFuture<String>> regionSegmentOntsEmpresariales;
 			
-			for(int j=2;j<=16;j++) {
+			for(int j=3;j<=16;j++) {
 				
 				activas = confMetricas.getCountActive(j);
 				
