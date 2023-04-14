@@ -11,13 +11,11 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+
 import lombok.extern.slf4j.Slf4j;
-import totalplay.login.com.helper.Util;
+
 import totalplay.login.com.negocio.Dto.RequestDto;
 import totalplay.login.com.negocio.Dto.ResponseDto;
 import totalplay.login.com.negocio.Dto.ResponseGenericoDto;
@@ -37,8 +35,7 @@ public class LoginServiceImpl implements IloginService {
 	IUsuariosPermitidosRepository usuarios;
 	@Autowired
 	IRolesRepository roles;
-	@Autowired
-	Util ult;
+
 
 
 	@Override
@@ -60,9 +57,7 @@ public class LoginServiceImpl implements IloginService {
 						//response.setCadenaConexion(ult.getJWTToken(request.getUsuario()));
 						usuario.setSesion(1);
 						usuario.setFechaConexion(LocalDateTime.now().toString());
-						totalplay.login.com.helper.Util.TokenResponse	 token=	ult.token(request.getUsuario(),request.getPassword());
-						
-					log.info(token.toString());
+					
 						usuarios.save(usuario);
 			}else {
 				
@@ -82,8 +77,8 @@ public class LoginServiceImpl implements IloginService {
 					usuario.setSesion(1);
 					usuario.setFechaConexion(LocalDateTime.now().toString());
 
-					totalplay.login.com.helper.Util.TokenResponse token=	ult.token(request.getUsuario(),request.getPassword());
-					log.info(token.toString());
+	
+			
 					usuarios.save(usuario);
 				/*}else {
 					response.setCod(1);

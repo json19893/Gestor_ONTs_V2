@@ -1,6 +1,4 @@
-package totalplay.login.com.helper;
-
-
+package totalplay.oauth2.com.cofiguracion;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.AuthorizationServerConfigurerAdapter;
@@ -19,11 +18,11 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.security.oauth2.provider.token.store.JwtTokenStore;
 
-
+@RefreshScope
 @Configuration
 @EnableAuthorizationServer
-public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter{
-	
+public class OAuth2Config extends AuthorizationServerConfigurerAdapter {
+
 	@Autowired
 	private Environment env;
 	
@@ -37,20 +36,17 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 	private String jwkey;
 
 	
-	
-	
-	@Autowired (required = false)
-    private AuthenticationManager authenticationManager;
-	
-	@Autowired
-	private InfoAdicionalToken infoAdicionalToken;
+	 @Autowired
+	  private AuthenticationManager authenticationManager;
 
+	
+
+    
 	@Override
 	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
 		security.tokenKeyAccess("permitAll()")
 		.checkTokenAccess("isAuthenticated()");
 	}
-
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
 		clients.inMemory().withClient(idClie)
@@ -61,13 +57,23 @@ public class AuthorizationServerConfig extends AuthorizationServerConfigurerAdap
 		.refreshTokenValiditySeconds(3600);
 	}
 
-	@Override
+    @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
-        endpoints.authenticationManager(authenticationManager);
+        endpoints.authenticationManager(authenticationManager)
+            .tokenStore(tokenStore())
+            .accessTokenConverter(accessTokenConverter());
     }
 
-	
-	
-	
-	
+    @Bean
+	public JwtAccessTokenConverter accessTokenConverter() {
+		JwtAccessTokenConverter tokenConverter = new JwtAccessTokenConverter();
+		tokenConverter.setSigningKey(jwkey);
+		return tokenConverter;
+	}
+
+    @Bean
+    public JwtTokenStore tokenStore() {
+        return new JwtTokenStore(accessTokenConverter());
+    }
+
 }
