@@ -3,7 +3,11 @@ package totalplay.monitor.snmp.com.negocio.service.impl;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.sql.Date;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -246,7 +250,7 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 						}
 						
 						
-						res.setFecha_descubrimiento(LocalDateTime.now().toString());
+						res.setFecha_descubrimiento(Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS)));
 						res.setActualizacion(6);
 						res.setTipo(d.getTipo());
 						

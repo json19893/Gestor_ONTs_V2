@@ -2,7 +2,7 @@ package totalplay.monitor.snmp.com.persistencia.entidad;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-
+import java.util.Date;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -16,7 +16,7 @@ public class inventarioOntsEntidad {
 	private String _id;
 	private String numero_serie;
 	private String oid;
-	private String fecha_descubrimiento;
+	private Date fecha_descubrimiento;
 	private Integer id_olt;
 	private Integer estatus;
 	private String id_ejecucion;
@@ -51,10 +51,10 @@ public class inventarioOntsEntidad {
 	public void setOid(String oid) {
 		this.oid = oid;
 	}
-	public String getFecha_descubrimiento() {
+	public Date getFecha_descubrimiento() {
 		return fecha_descubrimiento;
 	}
-	public void setFecha_descubrimiento(String fecha_descubrimiento) {
+	public void setFecha_descubrimiento(Date fecha_descubrimiento) {
 		this.fecha_descubrimiento = fecha_descubrimiento;
 	}
 	public Integer getid_olt() {

@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import totalplay.monitor.snmp.com.negocio.dto.catRegionDto;
 import totalplay.monitor.snmp.com.negocio.dto.datosRegionDto;
 import totalplay.monitor.snmp.com.negocio.dto.diferenciasDto;
@@ -43,6 +44,7 @@ import totalplay.monitor.snmp.com.persistencia.repository.IvwTotalOntsVipsReposi
 import totalplay.monitor.snmp.com.persistencia.repository.IvwTotalRegionRepositorio;
 
 @Service
+@Slf4j
 public class monitoreoServiceImpl extends utils implements ImonitorService {
 	@Autowired
 	IinventarioOltsReposirorio invOLts;
@@ -223,13 +225,20 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 
 	@Override
 	public List<inventarioOntsEntidad> finOntsByIdAll(Integer idOlt, String tipo) throws Exception {
-		if(tipo.compareTo("T")==0) {
-			return invOLts.finOntsByIdAll(idOlt);
-		}else if (tipo.compareTo("E")==0) {
-			return invOLts.finOntsByIdAllEmp(idOlt);
-		}else {
-			return invOLts.finOntsByIdAllVips(idOlt);
-		}
+		List<inventarioOntsEntidad> onts=new ArrayList<inventarioOntsEntidad>();
+		try {
+			
+				if(tipo.compareTo("T")==0) {
+					onts= invOLts.finOntsByIdAll(idOlt);
+				}else if (tipo.compareTo("E")==0) {
+					onts= invOLts.finOntsByIdAllEmp(idOlt);
+				}else {
+					onts= invOLts.finOntsByIdAllVips(idOlt);
+				}
+	} catch (Exception e) {
+		log.error("Error al extraer la informaciòn ", e);
+	}
+	return onts;
 	}
 
 	@Override
