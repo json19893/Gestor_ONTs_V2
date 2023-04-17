@@ -1,15 +1,14 @@
-package totalplay.snmpv2.com.presentacion;
+package totalplay.monitor.snmp.com.presentacion.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import totalplay.snmpv2.com.negocio.dto.OntsRepetidasPorOltPostRequest;
-import totalplay.snmpv2.com.negocio.dto.OntsRepetidasPorOltPostResponse;
-import totalplay.snmpv2.com.negocio.dto.PostMetricaResponse;
-import totalplay.snmpv2.com.negocio.services.IDiferenciaCargaManualService;
-import totalplay.snmpv2.com.negocio.services.impl.DiferenciaCargaManualServiceImpl;
+import totalplay.monitor.snmp.com.negocio.dto.OntsRepetidasPorOltPostRequest;
+import totalplay.monitor.snmp.com.negocio.dto.OntsRepetidasPorOltPostResponse;
+import totalplay.monitor.snmp.com.negocio.service.IDiferenciaCargaManualService;
+import totalplay.monitor.snmp.com.negocio.service.impl.DiferenciaCargaManualServiceImpl;
 
 import java.util.List;
 
@@ -27,7 +26,7 @@ public class OntController {
      */
     @CrossOrigin(origins = "*", methods = RequestMethod.POST)
     @RequestMapping(value = "/limpieza/onts/repetidas", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-    public ResponseEntity<PostMetricaResponse> obtenerOntsRepetidas(@RequestBody OntsRepetidasPorOltPostRequest request) {
+    public ResponseEntity<OntsRepetidasPorOltPostResponse> obtenerOntsRepetidas(@RequestBody OntsRepetidasPorOltPostRequest request) {
         ResponseEntity wrapperServerHttp = new ResponseEntity("", HttpStatus.OK);
         OntsRepetidasPorOltPostResponse response = new OntsRepetidasPorOltPostResponse();
         List<DiferenciaCargaManualServiceImpl.AuxOntsAdapter> coleccion;

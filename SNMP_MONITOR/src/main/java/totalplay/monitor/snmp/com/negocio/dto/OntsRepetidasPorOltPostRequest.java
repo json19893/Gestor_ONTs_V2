@@ -1,6 +1,5 @@
-package totalplay.snmpv2.com.negocio.dto;
+package totalplay.monitor.snmp.com.negocio.dto;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.ToString;
 
