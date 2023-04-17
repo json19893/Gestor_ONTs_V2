@@ -21,7 +21,7 @@ export interface up {
     estatus: string;
     id_ejecucion:string; 
     tipoCambio:string;   
-    alias:number;
+    alias:string;
     frame:number;
     slot:number;
     puerto:number;
@@ -30,9 +30,6 @@ export interface up {
     desEstatus:string;
     selected:boolean;
     fecha_ultima_caida: string;
-    
-    
-    
   }
   const ELEMENT_DATA:up[]= []
   const ELEMENT_DATA2:up[]= []

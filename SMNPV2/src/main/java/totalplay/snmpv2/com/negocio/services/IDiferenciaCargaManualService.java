@@ -6,5 +6,5 @@ import totalplay.snmpv2.com.negocio.services.impl.DiferenciaCargaManualServiceIm
 import java.util.List;
 
 public interface IDiferenciaCargaManualService {
-    List<DiferenciaCargaManualServiceImpl.AuxOntsAdapter> consultarCatalogoOntsRepetidas(final OntsRepetidasPorOltPostRequest request);
+    List<DiferenciaCargaManualServiceImpl.AuxOntsAdapter> consultarCatalogoOntsRepetidas(Integer idOlt);
 }
