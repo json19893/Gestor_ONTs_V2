@@ -87,7 +87,7 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
     IfaltantesMetricasManualRepository faltantesMetricasManual;
     @Autowired
     IfaltantesEstatusRepository faltantesEstatus;
-
+   
     /*----------------Se inyectan las dependencias para las mètricas----------------*/
 
     @Autowired
@@ -748,22 +748,30 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
 
     private String obtenerValor(Integer metrica, Object result) {
         String valor = "";
+        InventarioOntsEntity inv=new InventarioOntsEntity();
         switch (metrica) {
             case RUN_STATUS:
                 PoleosEstatusEntity me = (PoleosEstatusEntity) result;
                 valor = me.getValor();
+                inv=  inventario.getOntByOid(me.getId_olt(), me.getOid());
+                inv.setEstatus(Integer.parseInt(me.getValor()));
                 break;
             case LAST_DOWN_CASE:
                 PoleosLastDownCauseEntity me1 = (PoleosLastDownCauseEntity) result;
                 valor = me1.getValor();
+                inv=  inventario.getOntByOid(me1.getId_olt(), me1.getOid());
+                inv.setDescripcionAlarma(me1.getValor());
                 break;
             case LAST_UP_TIME:
                 PoleosLastUpTimeEntity me2 = (PoleosLastUpTimeEntity) result;
                 valor = me2.getValor();
+                
                 break;
             case LAST_DOWN_TIME:
                 PoleosLastDownTimeEntity me3 = (PoleosLastDownTimeEntity) result;
                 valor = me3.getValor();
+                inv=  inventario.getOntByOid(me3.getId_olt(), me3.getOid());
+                inv.setLastDownTime(me3.getValor());
                 break;
             case UP_BYTES:
                 PoleosUpBytesEntity me4 = (PoleosUpBytesEntity) result;
@@ -804,6 +812,8 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
             case ALIAS_ONT:
                 PoleosAliasEntity me13 = (PoleosAliasEntity) result;
                 valor = me13.getValor();
+                inv=  inventario.getOntByOid(me13.getId_olt(), me13.getOid());
+                inv.setAlias(me13.getValor());
                 break;
             case PROF_NAME_ONT:
                 PoleosProfNameEntity me14 = (PoleosProfNameEntity) result;
@@ -814,6 +824,9 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
                 valor = me15.getValor();
                 break;
         }
+            if (inv!=null){
+             inventario.save(inv);
+            }
         return valor;
     }
 }
