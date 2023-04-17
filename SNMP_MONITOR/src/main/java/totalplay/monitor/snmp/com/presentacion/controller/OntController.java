@@ -26,13 +26,13 @@ public class OntController {
      */
     @CrossOrigin(origins = "*", methods = RequestMethod.POST)
 
-    @RequestMapping(value = "/limpieza/onts/repetidas", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-    public ResponseEntity<OntsRepetidasPorOltPostResponse> obtenerOntsRepetidas(@RequestBody OntsRepetidasPorOltPostRequest request) {
+    @RequestMapping(value = "/limpieza/onts/repetidas/{idOlt}", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
+    public ResponseEntity<OntsRepetidasPorOltPostResponse> obtenerOntsRepetidas(@PathVariable("idOlt") Integer idOlt) {
         ResponseEntity wrapperServerHttp = new ResponseEntity("", HttpStatus.OK);
         OntsRepetidasPorOltPostResponse response = new OntsRepetidasPorOltPostResponse();
         List<DiferenciaCargaManualServiceImpl.AuxOntsAdapter> coleccion;
         try {
-            coleccion = service.consultarCatalogoOntsRepetidas(request);
+            coleccion = service.consultarCatalogoOntsRepetidas(idOlt);
             response.setOnts(coleccion);
             if (response.getOnts().isEmpty()) {
                 response.setOnts(coleccion);

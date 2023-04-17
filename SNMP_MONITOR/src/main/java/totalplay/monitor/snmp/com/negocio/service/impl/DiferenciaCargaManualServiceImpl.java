@@ -42,8 +42,8 @@ public class DiferenciaCargaManualServiceImpl implements IDiferenciaCargaManualS
      * @return
      */
     @Override
-    public List<AuxOntsAdapter> consultarCatalogoOntsRepetidas(final OntsRepetidasPorOltPostRequest request) {
-        List<DiferenciasManualEntity> lista = obtenerOntsOlt(request.getIdOlt());
+    public List<AuxOntsAdapter> consultarCatalogoOntsRepetidas(Integer idOlt) {
+        List<DiferenciasManualEntity> lista = obtenerOntsOlt(idOlt);
         List<AuxOntsAdapter> adapterOntsList = adapterList(lista);
         List<AuxOntsAdapter> repetidas = consultarOntsRepetidas(adapterOntsList);
         return repetidas;
