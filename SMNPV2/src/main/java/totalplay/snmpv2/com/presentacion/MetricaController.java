@@ -9,7 +9,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
-import totalplay.snmpv2.com.negocio.dto.PostMetricaResponse;
 import totalplay.snmpv2.com.negocio.dto.RequestPostMetrica;
 import totalplay.snmpv2.com.negocio.services.IpoleoMetricasService;
 
@@ -48,8 +47,8 @@ public class MetricaController {
      */
     @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
     @RequestMapping(value = "/metrica/poleo", produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.GET, RequestMethod.POST})
-    public ResponseEntity<PostMetricaResponse> getMetricaByNum_serial(@RequestBody RequestPostMetrica request) {
-        ResponseEntity<PostMetricaResponse> responseWrapperServer = null;
+    public ResponseEntity<?> getMetricaByNum_serial(@RequestBody RequestPostMetrica request) {
+        ResponseEntity<GenericResponseDto> responseWrapperServer = null;
         GenericResponseDto response = new GenericResponseDto();
 
         try {

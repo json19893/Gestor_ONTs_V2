@@ -31,6 +31,7 @@ public class inventarioOntsEntidad {
 	private String lastDownTime;
 	private Integer actualizacion;
 	private String id_puerto;
+	private String tecnologia;
 	
 	public String get_id() {
 		return _id;
@@ -143,6 +144,23 @@ public class inventarioOntsEntidad {
 	public void setId_puerto(String id_puerto) {
 		this.id_puerto = id_puerto;
 	}
+
+	public Integer getId_olt() {
+		return id_olt;
+	}
+
+	public void setId_olt(Integer id_olt) {
+		this.id_olt = id_olt;
+	}
+
+	public String getTecnologia() {
+		return tecnologia;
+	}
+
+	public void setTecnologia(String tecnologia) {
+		this.tecnologia = tecnologia;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if(obj instanceof inventarioOntsEntidad) {

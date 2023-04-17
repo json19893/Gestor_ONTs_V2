@@ -530,4 +530,7 @@ List<FaltantesMetricasManualEntity> getFaltantesMetricasManual(@Param("idRegion"
 	 */
 	@Query("{id_olt: ?0}")
 	List<InventarioOntsEntity> getOntsListByIdOlt(Integer idOlt);
+
+	@Aggregation(pipeline = {"{$match:{$and:[{id_olt:?0},{oid:?1}]}}"})
+	InventarioOntsEntity getOntByOid(@Param("idOlt") Integer idOlt, @Param("oid") String oid);
 }

@@ -75,7 +75,6 @@ public class MetricasController extends Constantes {
 	ImonitorPoleoManualRepository monitorPoleoManual;
 	
 	
-	
 	@Scheduled(cron = "0 2 0 * * *", zone = "CST")
 	private void cleanDatabase() {
 		monitorMetrica.deleteAll();
