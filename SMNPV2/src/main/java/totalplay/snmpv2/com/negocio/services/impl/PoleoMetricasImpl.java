@@ -674,6 +674,7 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
             try{
 
                 valor = obtenerValor(metrica, result);
+                log.info("################# ::"+valor);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -754,7 +755,13 @@ public class PoleoMetricasImpl extends Constantes implements IpoleoMetricasServi
                 PoleosEstatusEntity me = (PoleosEstatusEntity) result;
                 valor = me.getValor();
                 inv=  inventario.getOntByOid(me.getId_olt(), me.getOid());
-                inv.setEstatus(Integer.parseInt(me.getValor()));
+                inv.setEstatus(
+                me.getValor().equals("up(1)") ? 1: 
+                me.getValor().equals("down(2)")? 2:
+                me.getValor().equals("6")?1:
+                me.getValor().equals("1")?1:
+                me.getValor().equals("2")?2:
+                me.getValor().equals("3")?3:2);
                 break;
             case LAST_DOWN_CASE:
                 PoleosLastDownCauseEntity me1 = (PoleosLastDownCauseEntity) result;

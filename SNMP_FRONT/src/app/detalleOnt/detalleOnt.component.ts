@@ -11,7 +11,7 @@ import {getOnts}  from '../model/getOnts'
 import { CookieService } from 'ngx-cookie-service';
 import {animate, state, style, transition, trigger} from '@angular/animations';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 export interface up {
     _id: string;
     numero_serie:string;
@@ -30,6 +30,13 @@ export interface up {
     desEstatus:string;
     selected:boolean;
     fecha_ultima_caida: string;
+    olts:oltsAsignacion[]
+  }
+  export interface oltsAsignacion {
+    id_olt:number;
+    ip:string;
+    oid:string;
+
   }
   const ELEMENT_DATA:up[]= []
   const ELEMENT_DATA2:up[]= []
@@ -82,7 +89,9 @@ export class DetalleOntComponent implements OnInit {
     public downBytes: any 
     public fechaPoleo: any
     public metrics:any
- 
+    public cambTabla:any
+     asigna=true;
+  public oltsAsig:any
 
     columnsToDisplayWithExpand : string[] = [];
     dataUp = new MatTableDataSource<up>(ELEMENT_DATA);
@@ -105,6 +114,7 @@ export class DetalleOntComponent implements OnInit {
     
         }
     ngOnInit() {
+  
       this.getMetricas()
        this.dataDetalle=JSON.parse(localStorage.getItem("dataDetalle")!);   
       if(this.mostrar==null){
@@ -166,7 +176,12 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
     }
 
     openDetalle() {
-      this.dialog.open(detalleEjecucionMetricaDialog);
+    const dialogo=  this.dialog.open(detalleEjecucionMetricaDialog);
+      dialogo.afterClosed().subscribe(result =>{
+        this.cambTabla=localStorage.getItem("cambiaTabla");
+       window.location.reload()
+      })
+   
     }
     poleoMetrica(ns:any,idMetrica:any){
       this.requestPoleoOid=new poleoMetricaOidRequest(ns,idMetrica);
@@ -176,8 +191,12 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
           this._snackBar.open(res.sms, "cerrar", {
             duration: 4000
           });
+         
        }
+       
        )
+
+      
     }
       applyFilter(event: Event) {
         const filterValue = (event.target as HTMLInputElement).value;
@@ -212,7 +231,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                 tipo:res[d].tipo,
                 desEstatus:res[d].descripcionAlarma=='0-0-0,0:0:0.0,.0:0'?'1':res[d].descripcionAlarma,
                 fecha_ultima_caida: res[d].lastDownTime=='0-0-0,0:0:0.0,.0:0'?'1 ':res[d].lastDownTime,
-                selected:false
+                selected:false,
+                olts:[]
               }
               ELEMENT_DATA.push(dat);
             }
@@ -262,6 +282,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                 desEstatus:res.listOnts[d].descripcionAlarma,
                 selected:res.listOnts[d].selected,
                 fecha_ultima_caida: res[d].lastDownTime,
+                olts:[]
       
               }
               ELEMENT_DATA.push(dat);
@@ -323,8 +344,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
             uid:res[d].uid,
             tipo:res[d].tipo,
             desEstatus:res[d].descripcionAlarma,
-            selected:res[d].selected
-            
+            selected:res[d].selected,
+            olts:[]
           }
           ELEMENT_DATA.push(dat);
         }
@@ -372,7 +393,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                  tipo:res[d].tipo,
                  desEstatus:res[d].descripcionAlarma,
                  fecha_ultima_caida: res[d].lastDownTime=='0-0-0,0:0:0.0,.0:0'?'1 ':res[d].lastDownTime,
-                 selected:false
+                 selected:false,
+                 olts:[]
               }
               ELEMENT_DATA.push(dat);
             }
@@ -382,7 +404,43 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
           err => console.error(err)
         )
       }
-
+      getCambios(idOlt:any,tipo:any){
+        this.spinner.show();
+        ELEMENT_DATA.length = ELEMENT_DATA.length - ELEMENT_DATA.length
+        this.service.cambios(idOlt).subscribe(
+          res => {
+     
+           let dat;
+            for(let d in res.onts){
+              dat={
+                _id: res.onts[d]._id,
+                numero_serie:res.onts[d].numero_serie,
+                oid:res.onts[d].oid,
+                fecha_descubrimiento:res.onts[d].fecha_poleo=='0-0-0,0:0:0.0,.0:0'?'1 ':res.onts[d].fecha_poleo,
+                id_olt:res.onts[d].id_olt,
+                estatus: res.onts[d].estatus==1? "UP":res.onts[d]==0?"DISCONNECT":"DOWN",
+                id_ejecucion:res.onts[d].id_ejecucion,    
+                tipoCambio:res.onts[d].tipoCambio,
+                 alias:res.onts[d].alias,
+                frame:res.onts[d].frame,
+                 slot:res.onts[d].slot,
+                 puerto:res.onts[d].port,
+                 uid:res.onts[d].uid,
+                 tipo:res.onts[d].tipo,
+                 desEstatus:"--",
+                 fecha_ultima_caida: "---",
+                 selected:false,
+                 olts:res.onts[d].oltList
+              }
+              ELEMENT_DATA.push(dat);
+            }
+            this.dataUp.paginator = this.paginator;
+            this.spinner.hide();
+            console.log(ELEMENT_DATA)
+          },
+          err => console.error(err)
+        )
+      }
       getOntsByolAll(){
         this.spinner.show();
         ELEMENT_DATA.length = ELEMENT_DATA.length - ELEMENT_DATA.length
@@ -424,7 +482,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                 tipo:res[d].tipo,
                 desEstatus:res[d].descripcionAlarma,
                 fecha_ultima_caida: res[d].lastDownTime,
-                selected:false
+                selected:false,
+                olts:[]
               }
               ELEMENT_DATA.push(dat);
             }
@@ -458,50 +517,62 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
       }
 
       cambiaTabla(id:any){
+        localStorage.setItem("cambiaTabla",id);
         if(this.busqueda!='1'){
-        switch (id)
-        {
-           case 1:
-            this.getOntsByolAll();
-            this.titulo="TOTAL";
-            this.icono="./assets/img/network.png";
-            this.tabla=true;
-            this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias', 'estatus','fecha','fechaUltimaCaida','desEstatus','acciones'];
-            this.columnsToDisplayWithExpand= [...this.displayedColumns, 'expand'];
-            this.tipoCambio=false; 
-               break;
-      
-            case 2:
-             this.getOntsByOlts(this.idOlt,1,this.mostrar);
-             this.titulo="ARRIBA";
-             this.icono="./assets/img/up.png";
-             this.tabla=true;
-             this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias', 'estatus','fecha','fechaUltimaCaida','desEstatus','acciones'];
-             this.columnsToDisplayWithExpand= [...this.displayedColumns, 'expand'];
-             this.tipoCambio=false;
-               break;
-            case 3:
-              this.getOntsByOlts(this.idOlt,2,this.mostrar);
-              this.titulo="ABAJO";
-              this.icono="./assets/img/down.png";
-              this.tabla=true;
-              this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias',  'estatus','fecha', 'fechaUltimaCaida','desEstatus','acciones'];
-              this.columnsToDisplayWithExpand= [...this.displayedColumns, 'expand'];
-              this.tipoCambio=false;
-               break;          
-            case 4:
-              this.getHistByOlts(this.idOlt,this.mostrar);
-              this.icono="./assets/img/change.png";
-              this.titulo="CAMBIOS";
-              this.tabla=true;
-              this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias','estatus','fecha','fechaUltimaCaida','desEstatus','acciones','tipoCambio'];
-              this.columnsToDisplayWithExpand= [...this.displayedColumns, 'expand'];
-              this.tipoCambio=true;
-                break;
-        }
+          this.detallTabla(id);
       }
     }
-
+    detallTabla(id:any){
+      switch (id)
+      {
+         case 1:
+        
+          this.getOntsByolAll();
+          this.titulo="TOTAL";
+          this.icono="./assets/img/network.png";
+          this.tabla=true;
+          this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias', 'estatus','fecha','fechaUltimaCaida','desEstatus','acciones'];
+          this.columnsToDisplayWithExpand= [...this.displayedColumns, 'expand'];
+          this.tipoCambio=false; 
+          this.asigna=true
+      
+             break;
+    
+          case 2:
+           this.getOntsByOlts(this.idOlt,1,this.mostrar);
+           this.titulo="ARRIBA";
+           this.icono="./assets/img/up.png";
+           this.tabla=true;
+           this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias', 'estatus','fecha','fechaUltimaCaida','desEstatus','acciones'];
+           this.columnsToDisplayWithExpand= [...this.displayedColumns, 'expand'];
+           this.tipoCambio=false;
+           this.asigna=true
+         
+             break;
+          case 3:
+            this.getOntsByOlts(this.idOlt,2,this.mostrar);
+            this.titulo="ABAJO";
+            this.icono="./assets/img/down.png";
+            this.tabla=true;
+            this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias',  'estatus','fecha', 'fechaUltimaCaida','desEstatus','acciones'];
+            this.columnsToDisplayWithExpand= [...this.displayedColumns, 'expand'];
+            this.tipoCambio=false;
+            this.asigna=true
+         
+             break;          
+          case 4:
+            this.getCambios(this.idOlt,this.mostrar);
+            this.icono="./assets/img/change.png";
+            this.titulo="CAMBIOS";
+            this.tabla=true;
+            this.displayedColumns=['oid','numeroSerie','estatus','fecha','acciones',];
+            this.columnsToDisplayWithExpand= [...this.displayedColumns];
+            this.tipoCambio=true;
+            this.asigna=false
+       
+              break;
+      }
+    }
     getData(oid:string,id_olt:number){
       this.spinner.show();
       this.service.getMetricas(oid,id_olt).subscribe(
@@ -550,9 +621,9 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
   
   export class detalleEjecucionMetricaDialog implements OnInit {
     archivo:any;
-    
+    public idOlt:any;
       constructor(
-
+        public dialogRef:MatDialogRef<detalleEjecucionMetricaDialog>,
         private service: pointService,
         private spinner: NgxSpinnerService,
         private _snackbar: MatSnackBar
@@ -573,5 +644,9 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
             this.archivo=res;
           })
     
+      }
+
+      OnNoclick():void{
+        this.dialogRef.close();
       }
     }

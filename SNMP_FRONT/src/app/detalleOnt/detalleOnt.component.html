@@ -226,12 +226,16 @@
                           <mat-icon matTooltip="Acciones" >settings</mat-icon>
                         </button>
                         <mat-menu #animals="matMenu">
-                          <button mat-menu-item [matMenuTriggerFor]="asignar">Poleo metrica</button>
-                          <button mat-menu-item   >Asignación</button>
+                          <button [hidden]="!asigna"   mat-menu-item   [matMenuTriggerFor]="poleo">Poleo metrica</button>
+                          <button [hidden]="asigna" mat-menu-item   [matMenuTriggerFor]="asignacion"  >Asignación</button>
                         </mat-menu>
-                        <mat-menu #asignar="matMenu" >
+                        <mat-menu #poleo="matMenu" >
                           <button mat-menu-item  (click)="poleoMetrica(row.numero_serie,item.id_metrica)"  *ngFor="let item of metrics" >{{item.nombre}}</button>
-                        </mat-menu>   </td>
+                        </mat-menu>   
+                        <mat-menu #asignacion="matMenu" >
+                          <button mat-menu-item    *ngFor="let item of row.olts" >{{item.ip}}</button>
+                        </mat-menu> 
+                      </td>
                       </ng-container>
 
                       <ng-container matColumnDef="expand">
