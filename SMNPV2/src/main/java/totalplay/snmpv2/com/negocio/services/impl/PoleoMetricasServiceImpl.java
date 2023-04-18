@@ -719,8 +719,8 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
         monitor = monitorPoleoOltMetrica.getMonitorExist(idMonitorPoleo, idMetrica, olt.getId_olt());
         if (monitor != null)
             idMonitorOlt = monitor.getId();
-        else
-            idMonitorOlt = monitorPoleoOltMetrica.save(new MonitorPoleoOltMetricaEntity(idOlt, Integer.valueOf(idMetrica), LocalDateTime.now().toString(), idMonitorPoleo)).getId();
+//        else
+//            idMonitorOlt = monitorPoleoOltMetrica.save(new MonitorPoleoOltMetricaEntity(idOlt, Integer.valueOf(idMetrica), LocalDateTime.now().toString(), idMonitorPoleo)).getId();
 
         boolean isErrorAsyncProcess
                 = metricaAsyncProcess.get().getSms().equals("0")
@@ -728,21 +728,21 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                 || metricaAsyncProcess.get().getSms().equals("Sin metrica");
 
         if (isErrorAsyncProcess) {
-            MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
-            monitorPoleoOlt.setFecha_inicio(fechaInicio);
-            monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
-            monitorPoleoOlt.setError(true);
-
-            monitorPoleoOltMetrica.save(monitorPoleoOlt);
+//            MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
+//            monitorPoleoOlt.setFecha_inicio(fechaInicio);
+//            monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
+//            monitorPoleoOlt.setError(true);
+//
+//            monitorPoleoOltMetrica.save(monitorPoleoOlt);
             //Lanza una excepcion
             throw new RuntimeException("Error: No asigno el id process para el proceso de metrica");
         }
 
-        MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
-        monitorPoleoOlt.setFecha_inicio(fechaInicio);
-        monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
-        monitorPoleoOlt.setError(isErrorAsyncProcess);
-        monitorPoleoOlt.setResultado(metricaAsyncProcess.get().getSms());
+//        MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
+//        monitorPoleoOlt.setFecha_inicio(fechaInicio);
+//        monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
+//        monitorPoleoOlt.setError(isErrorAsyncProcess);
+//        monitorPoleoOlt.setResultado(metricaAsyncProcess.get().getSms());
 
         GenericResponseDto res = metricaAsyncProcess.get();
         res.setSms("Se ejecuto correctamente la metrica");
