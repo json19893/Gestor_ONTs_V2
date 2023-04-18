@@ -186,14 +186,7 @@ export class pointService {
 
   }
 
-  validaUsuario(data: any): Observable<ValidaUser> {
-    /*var headers = new HttpHeaders({
-      'Authorization': token,
-      'mode':'no-cors'});*/
-
-    return this.http.post<ValidaUser>(AppUrlSettings.BASE_API + AppUrlSettings.VALIDA_USUARIO, data);
-
-  }
+ 
 
   login(data: any): Observable<ValidaUser> {
     /*var headers = new HttpHeaders({

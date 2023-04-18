@@ -679,7 +679,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                 valor = obtenerValor(metrica, result);
                 log.info("################# ::"+valor);
             }catch (Exception e){
-                e.printStackTrace();
+                log.error("Error: "+e);
             }
 
             String tmp = c.getTrazaEventos();

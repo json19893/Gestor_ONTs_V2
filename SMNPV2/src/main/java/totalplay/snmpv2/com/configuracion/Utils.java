@@ -389,7 +389,7 @@ public class Utils extends Constantes {
                 response = false;
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error: "+e);
             log.info("error:" + e);
         }
         return response;
@@ -428,7 +428,7 @@ public class Utils extends Constantes {
             // System.out.println("codigo de proceso:: "+proces.getProceso().exitValue());
 
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error: "+e);
             log.error("error:" + e);
 
         }

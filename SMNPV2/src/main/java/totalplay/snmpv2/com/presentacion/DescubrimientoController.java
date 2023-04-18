@@ -2,17 +2,13 @@ package totalplay.snmpv2.com.presentacion;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+
 import java.util.ArrayList;
-import java.util.Date;
+
 import java.util.List;
 import java.util.Optional;
-import java.util.TimeZone;
+
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,10 +36,8 @@ import totalplay.snmpv2.com.negocio.services.IdescubrimientoService;
 import totalplay.snmpv2.com.negocio.services.IlimpiezaOntsService;
 import totalplay.snmpv2.com.persistencia.entidades.BitacoraEventosEntity;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
-import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
-import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsTmpEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.IBitacoraEventosRepository;
-import totalplay.snmpv2.com.persistencia.repositorio.IcatConfiguracionRepositorio;
+
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsErroneas;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
@@ -211,19 +205,7 @@ public class DescubrimientoController extends Constantes {
 	}
 
 	
-	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-	@GetMapping("/desencriptar/{cadena}")
-	public String desencriptar(@PathVariable("cadena") String cadena) throws Exception {
 
-		try {			
-			EncryptorHelper encryptorHelper = EncryptorHelper.getINSTANCE();
-	       return encryptorHelper.deencryptString(cadena);
-			
-		} catch (Exception e) {
-			
-		}
-		return "";
-	}
 	
 	
 }

@@ -1,27 +1,4 @@
-<!--div class="body">
-    <div class="login">
-        <img  src="./assets/img/totalplay.svg" class="img-principal"  width="50%" >
-        <h1>Login</h1>
 
-        <form [formGroup]="form"  (ngSubmit)="ingresar()" novalidate>
-            <mat-form-field class="form-input" appearance="fill" >
-                <mat-label>Usuario</mat-label>
-                <input matInput autocomplete="off" formControlName="usuario">
-                <mat-icon matSuffix>account_circle</mat-icon>
-            </mat-form-field>
-            <mat-form-field class="form-input" appearance="fill">
-                <mat-label>Contraseña</mat-label>
-                <input [type]="hide ? 'password' : 'text'" matInput autocomplete="off" formControlName="password">
-                <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-pressed]="hide">
-                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-                </button>
-            </mat-form-field>
-            <button [disabled]="!form.valid" type="submit" mat-raised-button color="primary" mat-button>Ingresar</button>
-        </form>
-        
-        
-    </div>
-</div-->
 <div class="body d-flex align-items-center">
   <div id="large-header" class="large-header w-100">
     <div class="container fluid d-flex justify-content-center">
@@ -37,7 +14,7 @@
               <p>
                 <mat-form-field appearance="fill" class="">
                   <mat-label>Usuario</mat-label>
-                  <input matInput placeholder="Nombre de usuario" formControlName="usuario" required>
+                  <input matInput placeholder="Nombre de usuario" formControlName="u" required>
                   <mat-icon matSuffix>account_circle</mat-icon>
 
                 </mat-form-field>
@@ -45,7 +22,7 @@
               <p>
                 <mat-form-field appearance="fill">
                   <mat-label>Contraseña</mat-label>
-                  <input matInput [type]="hide ? 'password' : 'text'" formControlName="password" required>
+                  <input matInput [type]="hide ? 'p' : 'text'" formControlName="p" required>
                   <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-pressed]="hide">
                     <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
                   </button>

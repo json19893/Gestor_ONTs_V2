@@ -26,7 +26,7 @@ import { DialogContentExampleDialog } from './menu/menu.component';
 import { ActualizacionComponent } from './actualizacion/actualizacion.component'
 import { ActualizaOntsDialog, ConsultaOltsComponent ,detalleEjecucionDialog, DialogElementsExampleDialog} from './consultaOlts/consultaOlts.component';
 import { FileSaverModule } from 'ngx-filesaver';
-
+import {DateFormatPipe} from './pipes/date-format.pipe'
 
 @NgModule({
   declarations: [
@@ -46,7 +46,8 @@ import { FileSaverModule } from 'ngx-filesaver';
     detalleEjecucionDialog,
     DialogElementsExampleDialog,
     detalleActualizacionDialog,
-    detalleEjecucionMetricaDialog
+    detalleEjecucionMetricaDialog,
+    DateFormatPipe
 
    
 

@@ -1,8 +1,5 @@
 package totalplay.services.com.negocio.service.impl;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +14,12 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import totalplay.services.com.negocio.dto.datosNumeroSerieDto;
-import totalplay.services.com.negocio.dto.datosOntsDto;
+
 import totalplay.services.com.negocio.dto.ejecucionDto;
 import totalplay.services.com.negocio.dto.requestAltaOnts;
 import totalplay.services.com.negocio.dto.requestDto;
@@ -44,6 +43,7 @@ import totalplay.services.com.persistencia.repositorio.IinventarioOntsTempReposi
 
 
 @Service
+@Slf4j
 public class apiServiceImpl implements IapiService {
 	@Autowired
 	IinventarioOntsRepositorio onts;
@@ -55,6 +55,8 @@ public class apiServiceImpl implements IapiService {
 	IcatOltsRepositorio catalogoOlts;
 	@Autowired
 	IdetalleActualizacionRepositorio detalleRepositorio;
+	@Value("${ruta.archivo.shell}")
+	private String ruta;
 	util util = new util();
 	@Override
 	public respuestaDto getNumeroSerie(requestDto datos) throws Exception {
@@ -119,6 +121,7 @@ public class apiServiceImpl implements IapiService {
 		} catch (Exception e) {
 			response.setCod(1);
 			response.setSms("error al procesar la solicitud");
+			log.error("ERROR: ", e);
 			return response;
 		}
 		return response;
@@ -210,7 +213,7 @@ public class apiServiceImpl implements IapiService {
 			response.setTotalActualizadas(datos.size() - noActualizadas.size());
 
 		} catch (Exception e) {
-			System.out.println("Error a actualizar estatus: " + e);
+			log.error("Error a actualizar estatus: " + e);
 			response.setCod(1);
 			response.setSms("Error al acualizar " + e);
 		}
@@ -220,14 +223,14 @@ public class apiServiceImpl implements IapiService {
 	@Override
 	public responseDto getConfiguracionOlt(String tecnologia) throws Exception {
 		try {
-			System.out.println("tecnologia:: "+tecnologia);
+			log.info("tecnologia:: "+tecnologia);
 			List<catOltsEntidad> olts = catalogoOlts.getConfiguracionOlt();
 			 //String [] olts= {"10.180.230.12"};
 			ejecucionDto respuesta=null;
 			String s;
 			for(catOltsEntidad olt:olts) {
-				System.out.println("*************************");
-				System.out.println("olt:: "+olt.getIp());
+				log.info("*************************");
+				log.info("olt:: "+olt.getIp());
 				/*String comando1 = "snmpget -v3 -l authPriv -u  userAGPON17 -a SHA -A accesskey372 -x AES -X securitykey372  " + olt
 						+ " .";
 				String comando2 = "snmpbulkwalk -v3 -l authPriv -u  ITSMon03 -a SHA -A au*MGTm0n1t0r%03 -x AES -X sc#MGTm0n1t0r$30 " + olt
@@ -245,11 +248,11 @@ public class apiServiceImpl implements IapiService {
 				data.setNombre(olt.getNombre());
 				data.setTecnologia(olt.getTecnologia());*/
 				//catOltsEntidad cat=	 catalogoOlts.getOlt(olt.getId_olt());
-				respuesta=util.ejecutaComando(comando4);
+				respuesta=util.execBash(comando4,ruta);
 				
 				 if(respuesta.getBuffer()!=null) {
 						while ((s = respuesta.getBuffer().readLine()) != null) {
-							System.out.println("============= "+s+"=============");
+							log.info("============= "+s+"=============");
 							 data.setPassword("accesskey372");
 							 data.setFrase("securitykey372");
 							 data.setProtocolo("DES");
@@ -260,7 +263,7 @@ public class apiServiceImpl implements IapiService {
 							 //catalogoOlts.save(cat);
 							 status.save(data);
 							 
-							 System.out.println("ejecuto primer comando:: "+olt);
+							 log.info("ejecuto primer comando:: "+olt);
 						}
 						
 					
@@ -268,11 +271,11 @@ public class apiServiceImpl implements IapiService {
 				
 					 
 				 }
-					System.out.println("*************************");
+					log.info("*************************");
 			}
 		
 		} catch (Exception e) {
-			// TODO: handle exception
+			log.error("ERROR:", e);
 		}
 		return null;
 	}
@@ -380,7 +383,8 @@ public class apiServiceImpl implements IapiService {
 			response.setNumeroSerie(dataSerie);
 		} catch (Exception e) {
 			response.setCod(1);
-			response.setSms("error al procesar la solicitud" + e);
+			response.setSms("error al procesar la solicitud");
+			log.error("ERROR:", e);
 			return response;
 		}
 		return response;
@@ -394,8 +398,8 @@ public class apiServiceImpl implements IapiService {
 			 //String [] olts= {"10.180.230.12"};
 			ejecucionDto respuesta=null;
 			String s;
-				System.out.println("*************************");
-				System.out.println("olt:: "+ ip);
+				log.info("*************************");
+				log.info("olt:: "+ ip);
 				String comandoZTE1 = "snmpbulkwalk  -r 1 -t 1 -v3 -u userAGPON17 -l authPriv -a SHA -A accesskey372 -x DES -X securitykey372 " + ip + " 1.3.6.1.4.1.3902.1012.3.28.1.1.5";
 				String comandoZTE2 = "snmpbulkwalk  -r 1 -t 1 -v3 -u ITSMon03 -l authPriv -a SHA -A au*MGTm0n1t0r%03 -x DES -X sc#MGTm0n1t0r$30 " + ip + " 1.3.6.1.4.1.3902.1012.3.28.1.1.5";
 				
@@ -404,19 +408,19 @@ public class apiServiceImpl implements IapiService {
 				
 				catOtsProcesadoEntidad data=new catOtsProcesadoEntidad();
 				if(config == 1) {
-					respuesta=util.ejecutaComando(comandoH1);
+					respuesta=util.execBash(comandoH1,ruta);
 				} else if(config == 2) {
-					respuesta=util.ejecutaComando(comandoH2);
+					respuesta=util.execBash(comandoH2,ruta);
 				} else if(config == 3) {
-					respuesta=util.ejecutaComando(comandoZTE1);
+					respuesta=util.execBash(comandoZTE1,ruta);
 				} else if(config == 4) {
-					respuesta=util.ejecutaComando(comandoZTE2);
+					respuesta=util.execBash(comandoZTE2,ruta);
 				}
 				
 				
 				 if(respuesta.getBuffer()!=null) {
 						while ((s = respuesta.getBuffer().readLine()) != null) {
-							System.out.println("============= "+s+"=============");
+							log.info("============= "+s+"=============");
 							String[] parts = s.split(":");
 							if(parts[0].equals("HUAWEI-XPON-MIB")) {
 								return true;
@@ -430,7 +434,7 @@ public class apiServiceImpl implements IapiService {
 				 }
 		
 		} catch (Exception e) {
-			// TODO: handle exception
+			log.error("ERROR:", e);
 		}
 		return false;
 	}
@@ -487,7 +491,8 @@ public class apiServiceImpl implements IapiService {
 			response.setNumeroSerie(dataSerie);
 		} catch (Exception e) {
 			response.setCod(1);
-			response.setSms("error al procesar la solicitud"+e);
+			response.setSms("error al procesar la solicitud");
+			log.error("ERROR:", e);
 			return response;
 		}
 		return response;
