@@ -441,6 +441,22 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
           err => console.error(err)
         )
       }
+
+      actualizaOntbyOLt(idOlt:any,serie:any){
+        this.service.actualizaOltByOnt(idOlt,serie).subscribe(
+          res => {
+              this._snackBar.open(res.sms, "cerrar", {
+                duration: 4000
+              });
+             console.log(res.sms)
+              setTimeout(() => {
+                window.location.reload();
+              }, 1400);
+           
+          },
+          err => console.error(err)
+        )
+      }
       getOntsByolAll(){
         this.spinner.show();
         ELEMENT_DATA.length = ELEMENT_DATA.length - ELEMENT_DATA.length

@@ -45,6 +45,8 @@ export class AppUrlSettings{
     public static GET_ARCHIVO="getArchivo";
     public static POLEO_METRICA_OID="metrica/poleo"
     public static CAMBIOS="api/v2/limpieza/onts/repetidas/"
+    public static ACTUALIZA_OLT_BY_ONT="actualizaOltOnOnt/"
+    
    
     
 }

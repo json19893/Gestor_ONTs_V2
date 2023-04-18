@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import totalplay.monitor.snmp.com.negocio.dto.requestEstatusDto;
+import totalplay.monitor.snmp.com.negocio.dto.responseDto;
 import totalplay.monitor.snmp.com.negocio.dto.responseFindDto;
 import totalplay.monitor.snmp.com.negocio.dto.responseFindOntDto;
 import totalplay.monitor.snmp.com.negocio.dto.responseMetricasDto;
@@ -21,4 +22,5 @@ public interface IconsultaService {
 	responseFindOntDto getOnt(String tipo, String data, boolean serie);
 	responseMetricasDto getMetrics(Integer idOlt, String oid);
 	List<String> getArchivo(Integer archivo);
+    responseDto actualizaOnt(String serie,Integer idOlt);
 }

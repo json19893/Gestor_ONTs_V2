@@ -233,7 +233,7 @@
                           <button mat-menu-item  (click)="poleoMetrica(row.numero_serie,item.id_metrica)"  *ngFor="let item of metrics" >{{item.nombre}}</button>
                         </mat-menu>   
                         <mat-menu #asignacion="matMenu" >
-                          <button mat-menu-item    *ngFor="let item of row.olts" >{{item.ip}}</button>
+                          <button mat-menu-item (click)="actualizaOntbyOLt(item.id_olt,row.numero_serie)"   *ngFor="let item of row.olts" >{{item.ip}}</button>
                         </mat-menu> 
                       </td>
                       </ng-container>

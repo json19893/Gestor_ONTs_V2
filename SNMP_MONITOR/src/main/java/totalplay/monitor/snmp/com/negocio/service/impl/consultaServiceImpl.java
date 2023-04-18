@@ -13,26 +13,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import totalplay.monitor.snmp.com.negocio.dto.requestEstatusDto;
+import totalplay.monitor.snmp.com.negocio.dto.responseDto;
 import totalplay.monitor.snmp.com.negocio.dto.responseFindDto;
 import totalplay.monitor.snmp.com.negocio.dto.responseFindOntDto;
 import totalplay.monitor.snmp.com.negocio.dto.responseMetricasDto;
 import totalplay.monitor.snmp.com.negocio.dto.responseRegionDto;
-import totalplay.monitor.snmp.com.negocio.dto.respuestaCambioEstatusDto;
+
 import totalplay.monitor.snmp.com.negocio.dto.respuestaStatusDto;
 import totalplay.monitor.snmp.com.negocio.dto.totalesOltsDto;
 import totalplay.monitor.snmp.com.negocio.service.IconsultaService;
 import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
 import totalplay.monitor.snmp.com.negocio.util.utils;
+import totalplay.monitor.snmp.com.persistencia.entidad.DiferenciasManualEntity;
 import totalplay.monitor.snmp.com.persistencia.entidad.catOltsEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.detalleActualizacionesEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsPdmEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.monitorPoleoEntidad;
+
 import totalplay.monitor.snmp.com.persistencia.entidad.poleosCpuEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.poleosDownBytesEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.poleosDownPacketsEntidad;
@@ -48,6 +51,7 @@ import totalplay.monitor.snmp.com.persistencia.entidad.vwTotalOntsEmpresarialesE
 import totalplay.monitor.snmp.com.persistencia.entidad.vwTotalOntsEntidad;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IdetalleActualizacionRepositorio;
+import totalplay.monitor.snmp.com.persistencia.repository.IdiferenciasManualRepository;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOltsReposirorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsPdmRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsRepositorio;
@@ -76,7 +80,7 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 	@Autowired
 	IvwTotalOntsRepositorio vwOnts;
 	@Autowired
-	IinventarioOltsReposirorio invOLts;
+	IinventarioOltsReposirorio invOnts;
 	@Autowired
 	ImonitorService monitoreo;
 	@Autowired
@@ -109,6 +113,9 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 	IdetalleActualizacionRepositorio detalleRepositorio;
 	@Autowired
 	IinventarioOntsPdmRepositorio ontsPdm;
+	@Autowired
+	IdiferenciasManualRepository diferencias;
+	
 	@Value("${ruta.archivo.metrica}")
 	private String rutaMetrica;
 	@Value("${ruta.archivo.txt}")
@@ -264,7 +271,7 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 							res.setOid(d.getOid()+d.getUid());
 						}
 						
-						invOLts.save(res);
+						invOnts.save(res);
 					} else if(resPdm!=null) {
 						
 						if (d.getEstatus().equals("UP") || d.getEstatus().equals("CLEAR")) {
@@ -472,6 +479,35 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 		}
 
 	return archivo;
+	}
+
+	@Override
+	public responseDto actualizaOnt(String serie,Integer idOlt) {
+		responseDto response= new responseDto();
+		inventarioOntsEntidad ont =new inventarioOntsEntidad();
+		inventarioOntsEntidad onts =new inventarioOntsEntidad();
+		try {
+			response.setCod(0);
+			response.setSms("Se asigno correctamente la ont");
+			ont=inventarioOnts.getOntBySerie(serie);
+			if(ont==null){
+				DiferenciasManualEntity diferencia=	diferencias.getOntBySerieOlt(idOlt,serie);
+				BeanUtils.copyProperties(onts, diferencia);
+				inventarioOnts.save(onts);
+				List<DiferenciasManualEntity> supDife=	diferencias.getOntBySerie(serie);
+				for(DiferenciasManualEntity d:supDife){
+					diferencias.deleteById(d.get_id());
+				}
+			}else{
+				response.setCod(1);
+			response.setSms("La ont ya se encuentra registrada en el inventario");
+			}
+
+		} catch (Exception e) {
+			response.setCod(1);
+			response.setSms("Error al actualizar la Ont "+ e);
+		}
+		return response;
 	}
 
 }

@@ -279,6 +279,12 @@ export class pointService {
       'mode':'no-cors'});*/
     return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.CAMBIOS+idOlt);
   }
+  actualizaOltByOnt(idOlt:any,serie:any): Observable<any> {
+    /*var headers = new HttpHeaders({
+      'Authorization': token,
+      'mode':'no-cors'});*/
+    return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.ACTUALIZA_OLT_BY_ONT+idOlt+"/"+serie);
+  }
   
 
 
