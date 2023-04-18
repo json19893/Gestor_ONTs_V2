@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import totalplay.monitor.snmp.com.negocio.dto.dataRegionResponseDto;
 import totalplay.monitor.snmp.com.negocio.dto.requestEstatusDto;
 import totalplay.monitor.snmp.com.negocio.dto.responseFindDto;
 import totalplay.monitor.snmp.com.negocio.dto.responseFindOntDto;
@@ -143,16 +144,17 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 	public responseFindDto getOlt(String tipo, String data, boolean ip) {
 		responseFindDto response = new responseFindDto();
 		responseRegionDto responseMonitoreo = new responseRegionDto();
-		List<vwTotalOntsEmpresarialesEntidad> oltsEmp = new ArrayList<vwTotalOntsEmpresarialesEntidad>();
-		List<vwTotalOntsEntidad> olts = new ArrayList<vwTotalOntsEntidad>();
+		List<dataRegionResponseDto> oltsVip = new ArrayList<dataRegionResponseDto>();
+		List<dataRegionResponseDto> oltsEmp = new ArrayList<dataRegionResponseDto>();
+		List<dataRegionResponseDto> olts = new ArrayList<dataRegionResponseDto>();
 		Integer idRegion = 0;
 
 		switch (tipo) {
 		case "T":
 			if (ip) {
-				olts = vwOnts.findByIp(data);
+				olts = catalogoOlts.getResultLookup(data, true);
 			} else {
-				olts = vwOnts.findByNombre(data);
+				olts = catalogoOlts.getResultLookup(data, false);
 			}
 			if (olts.isEmpty()) {
 				response.setMessage("No se pudo localizar la olt");
@@ -161,23 +163,36 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 			break;
 		case "E":
 			if (ip) {
-				oltsEmp = vwOntsEmp.findByIp(data);
+				oltsEmp = catalogoOlts.getResultLookupEmpresarial(data, true);//oltsEmp = vwOntsEmp.findByIp(data);
 			} else {
-				oltsEmp = vwOntsEmp.findByNombre(data);
+				oltsEmp = catalogoOlts.getResultLookupEmpresarial(data, false);//oltsEmp = vwOntsEmp.findByNombre(data);
 			}
 			if (oltsEmp.isEmpty()) {
 				response.setMessage("No se pudo localizar la olt");
 				return response;
 			}
 			break;
+			
+		case "V":
+			if (ip) {
+				oltsVip = catalogoOlts.getResultLookupVip(data, true);
+			} else {
+				oltsVip = catalogoOlts.getResultLookupVip(data, false);
+			}
+			if (oltsVip.isEmpty()) {
+				response.setMessage("No se pudo localizar la olt");
+				return response;
+			}
+			break;
 		}
 
-		idRegion = tipo.compareTo("T") == 0 ? olts.get(0).getId_region() : oltsEmp.get(0).getId_region();
+		idRegion = tipo.equals("T") ? olts.get(0).getId_region() : tipo.equals("E") ?  oltsEmp.get(0).getId_region(): oltsVip.get(0).getId_region();
 
 		try {
 			responseMonitoreo = monitoreo.getOltsByRegion(idRegion, tipo, true);
 			responseMonitoreo.setTotalesRegion(olts);
 			responseMonitoreo.setTotalesRegionEmp(oltsEmp);
+			responseMonitoreo.setTotalesRegionVips(oltsVip);
 		} catch (Exception e) {
 			response.setMessage("Error al cargar los datos de la base " + e);
 			return response;
@@ -354,19 +369,26 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 
 			List<inventarioOntsEntidad> ontAllData = null;
 			switch (tipo) {
-			case "T":
-				if (serie) {
-					ontAllData = inventarioOnts.findOntBySerieT(data);
-				} else {
-					ontAllData = inventarioOnts.findOntByAliasT(data);
-				}
+				case "T":
+					if (serie) {
+						ontAllData = inventarioOnts.findOntBySerieT(data);
+					} else {
+						ontAllData = inventarioOnts.findOntByAliasT(data);
+					}
 				break;
-			case "E":
-				if (serie) {
-					ontAllData = inventarioOnts.findOntBySerieE(data);
-				} else {
-					ontAllData = inventarioOnts.findOntByAliasE(data);
-				}
+				case "E":
+					if (serie) {
+						ontAllData = inventarioOnts.findOntBySerieE(data);
+					} else {
+						ontAllData = inventarioOnts.findOntByAliasE(data);
+					}
+				break;
+				case "V":
+					if (serie) {
+						ontAllData = inventarioOnts.findOntBySerieV(data);
+					} else {
+						ontAllData = inventarioOnts.findOntByAliasV(data);
+					}
 				break;
 			}
 
@@ -410,25 +432,25 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 		responseMetricasDto response = new responseMetricasDto();
 		
 		try {
-			String idEjecucion  = monitor.getLastId().get_id();
+			String idEjecucion  =  "640774190ba5db75b4cb89d3";//monitor.getLastId().get_id();
 			
 			
 			
-			//(poleo.*.getMetrica\(idEjecucion, idOlt, oid\))(\.getValor\(\))
-			poleosLastUpTimeEntidad poleo =  poleoLastUpTime.getMetrica(idEjecucion, idOlt, oid);
+			//(poleo.*.idEjecucion, idOlt+oid\(idEjecucion, idOlt, oid\))(\.getValor\(\))
+			//poleosLastUpTimeEntidad poleo =  poleoLastUpTime.getMetrica(idEjecucion, idOlt, oid);
 			
 			 System.out.println(idEjecucion);
-			poleosLastUpTimeEntidad poleoLastUpTimeV = poleoLastUpTime.getMetrica(idEjecucion, idOlt, oid);
-			poleosUpBytesEntidad poleoUpBytesV = poleoUpBytes.getMetrica(idEjecucion, idOlt, oid);
-			poleosDownBytesEntidad poleoDownBytesV = poleoDownBytes.getMetrica(idEjecucion, idOlt, oid);
-			poleosTimeOutEntidad poleoTimeOutV = poleoTimeOut.getMetrica(idEjecucion, idOlt, oid);
-			poleosUpPacketsEntidad poleoUpPacketsV = poleoUpPackets.getMetrica(idEjecucion, idOlt, oid);
-			poleosDownPacketsEntidad poleoDownPacketsV = poleoDownPackets.getMetrica(idEjecucion, idOlt, oid);
-			poleosDropUpPacketsEntidad poleoDropUpPacketsV = poleoDropUpPackets.getMetrica(idEjecucion, idOlt, oid);
-			poleosDropDownPacketsEntidad poleoDropDownPacketsV = poleoDropDownPackets.getMetrica(idEjecucion, idOlt, oid);
-			poleosCpuEntidad poleoCpuV = poleoCpu.getMetrica(idEjecucion, idOlt, oid);
-			poleosMemoryEntidad poleoMemoryV = poleoMemory.getMetrica(idEjecucion, idOlt, oid);
-			poleosProfNameEntidad poleoProfNameV = poleoProfName.getMetrica(idEjecucion, idOlt, oid);
+			poleosLastUpTimeEntidad poleoLastUpTimeV = poleoLastUpTime.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
+			poleosUpBytesEntidad poleoUpBytesV = poleoUpBytes.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
+			poleosDownBytesEntidad poleoDownBytesV = poleoDownBytes.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
+			poleosTimeOutEntidad poleoTimeOutV = poleoTimeOut.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
+			poleosUpPacketsEntidad poleoUpPacketsV = poleoUpPackets.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
+			poleosDownPacketsEntidad poleoDownPacketsV = poleoDownPackets.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
+			poleosDropUpPacketsEntidad poleoDropUpPacketsV = poleoDropUpPackets.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
+			poleosDropDownPacketsEntidad poleoDropDownPacketsV = poleoDropDownPackets.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
+			poleosCpuEntidad poleoCpuV = poleoCpu.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
+			poleosMemoryEntidad poleoMemoryV = poleoMemory.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
+			poleosProfNameEntidad poleoProfNameV = poleoProfName.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
 			
 			response.setLastUpTime(poleoLastUpTimeV  !=  null ? poleoLastUpTimeV.getValor():"");
 			response.setUpBytes(poleoUpBytesV  !=  null ? poleoUpBytesV.getValor():"");

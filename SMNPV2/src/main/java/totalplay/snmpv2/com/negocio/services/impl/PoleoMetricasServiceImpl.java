@@ -4,9 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -38,6 +40,7 @@ import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.ConfiguracionMetricaEntity;
 import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoOltMetricaEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.IhistoricoConteoOltRepository;
+import totalplay.snmpv2.com.presentacion.MetricaController.MetricaPoleo;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosAliasEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosCpuEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosDownBytesEntity;
@@ -61,10 +64,10 @@ import totalplay.snmpv2.com.persistencia.entidades.PoleosUpPacketsEntity;
 public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetricasService {
     
 	@Autowired
-	private MongoTemplate mongoTemplate;
-	
-	@Autowired
-	IinventarioOntsErroneas erroneasRepositori;
+    private MongoTemplate mongoTemplate;
+
+    @Autowired
+    IinventarioOntsErroneas erroneasRepositori;
     @Autowired
     IcatOltsRepository catOltRepository;
     @Autowired
@@ -87,7 +90,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
     IfaltantesMetricasManualRepository faltantesMetricasManual;
     @Autowired
     IfaltantesEstatusRepository faltantesEstatus;
-
+   
     /*----------------Se inyectan las dependencias para las mètricas----------------*/
 
     @Autowired
@@ -674,6 +677,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
             try{
 
                 valor = obtenerValor(metrica, result);
+                log.info("################# ::"+valor);
             }catch (Exception e){
                 e.printStackTrace();
             }
@@ -748,22 +752,36 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
 
     private String obtenerValor(Integer metrica, Object result) {
         String valor = "";
+        InventarioOntsEntity inv=new InventarioOntsEntity();
         switch (metrica) {
             case RUN_STATUS:
                 PoleosEstatusEntity me = (PoleosEstatusEntity) result;
                 valor = me.getValor();
+                inv=  inventario.getOntByOid(me.getId_olt(), me.getOid());
+                inv.setEstatus(
+                me.getValor().equals("up(1)") ? 1: 
+                me.getValor().equals("down(2)")? 2:
+                me.getValor().equals("6")?1:
+                me.getValor().equals("1")?1:
+                me.getValor().equals("2")?2:
+                me.getValor().equals("3")?3:2);
                 break;
             case LAST_DOWN_CASE:
                 PoleosLastDownCauseEntity me1 = (PoleosLastDownCauseEntity) result;
                 valor = me1.getValor();
+                inv=  inventario.getOntByOid(me1.getId_olt(), me1.getOid());
+                inv.setDescripcionAlarma(me1.getValor());
                 break;
             case LAST_UP_TIME:
                 PoleosLastUpTimeEntity me2 = (PoleosLastUpTimeEntity) result;
                 valor = me2.getValor();
+                
                 break;
             case LAST_DOWN_TIME:
                 PoleosLastDownTimeEntity me3 = (PoleosLastDownTimeEntity) result;
                 valor = me3.getValor();
+                inv=  inventario.getOntByOid(me3.getId_olt(), me3.getOid());
+                inv.setLastDownTime(me3.getValor());
                 break;
             case UP_BYTES:
                 PoleosUpBytesEntity me4 = (PoleosUpBytesEntity) result;
@@ -804,6 +822,8 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
             case ALIAS_ONT:
                 PoleosAliasEntity me13 = (PoleosAliasEntity) result;
                 valor = me13.getValor();
+                inv=  inventario.getOntByOid(me13.getId_olt(), me13.getOid());
+                inv.setAlias(me13.getValor());
                 break;
             case PROF_NAME_ONT:
                 PoleosProfNameEntity me14 = (PoleosProfNameEntity) result;
@@ -811,8 +831,14 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                 break;
             case FRAME_SLOT_PORT:
                 PoleosFrameSlotPortEntity me15 = (PoleosFrameSlotPortEntity) result;
-                valor = me15.getValor();
+                valor = me15.getFrame()+"/"+me15.getSlot()+"/"+me15.getPort();
+                inv.setFrame(me15.getFrame());
+                inv.setSlot(me15.getSlot());
+                inv.setPort(me15.getPort());
                 break;
+        }
+        if (inv!=null){
+         inventario.save(inv);
         }
         return valor;
     }

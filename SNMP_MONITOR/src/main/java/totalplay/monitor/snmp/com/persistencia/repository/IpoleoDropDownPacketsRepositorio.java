@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import totalplay.monitor.snmp.com.persistencia.entidad.poleosCpuEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.poleosDropDownPacketsEntidad;
+import totalplay.monitor.snmp.com.persistencia.entidad.poleosLastUpTimeEntidad;
 
 
 @Repository
@@ -20,4 +21,10 @@ public interface IpoleoDropDownPacketsRepositorio extends MongoRepository<poleos
 			})
 	poleosDropDownPacketsEntidad getMetrica(@Param("idEjecucion") String idEjecucion, @Param("idOlt") Integer idOlt, @Param("oid") String oid );
 
+	@Aggregation(pipeline = { 
+			"{'$match':{'$and':[{'id_ejecucion': ?0},{'index': ?1}]}}"
+			,"{$sort:{_id:-1}}"
+			,"{$limit:1}"
+			})
+	poleosDropDownPacketsEntidad getMetricaByIndex(@Param("idEjecucion") String idEjecucion, @Param("index") String index );
 }

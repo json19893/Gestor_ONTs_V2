@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import totalplay.monitor.snmp.com.persistencia.entidad.poleosDownPacketsEntidad;
+import totalplay.monitor.snmp.com.persistencia.entidad.poleosLastUpTimeEntidad;
 
 @Repository
 public interface IpoleoDownPacketsRepositorio extends MongoRepository<poleosDownPacketsEntidad, String> {
@@ -17,4 +18,11 @@ public interface IpoleoDownPacketsRepositorio extends MongoRepository<poleosDown
 			,"{$limit:1}"
 			})
 	poleosDownPacketsEntidad getMetrica(@Param("idEjecucion") String idEjecucion, @Param("idOlt") Integer idOlt, @Param("oid") String oid );
+
+	@Aggregation(pipeline = { 
+			"{'$match':{'$and':[{'id_ejecucion': ?0},{'index': ?1}]}}"
+			,"{$sort:{_id:-1}}"
+			,"{$limit:1}"
+			})
+	poleosDownPacketsEntidad getMetricaByIndex(@Param("idEjecucion") String idEjecucion, @Param("index") String index );
 }

@@ -7,8 +7,10 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import totalplay.monitor.snmp.com.negocio.dto.dataRegionResponseDto;
 import totalplay.monitor.snmp.com.negocio.dto.totalesTecnologiaDto;
 import totalplay.monitor.snmp.com.persistencia.entidad.catOltsEntidad;
+import totalplay.monitor.snmp.com.persistencia.entidad.vwTotalOntsEntidad;
 
 public interface IcatOltsRepositorio extends MongoRepository<catOltsEntidad, String> {
 	catOltsEntidad findByIp(String ip);	
@@ -413,5 +415,204 @@ public interface IcatOltsRepositorio extends MongoRepository<catOltsEntidad, Str
 			
 	})
 	List<totalesTecnologiaDto> getTotalesTecnologiaVips();
+	
+	
+	@Aggregation(pipeline = {
+		      "{$match:{id_region:?0}}\r\n"
+		    , "{\r\n"
+		    + "	'$lookup':{\r\n"
+		    + "		from: 'tb_inventario_onts',\r\n"
+		    + "		localField:'id_olt',\r\n"
+		    + "		foreignField:'id_olt',\r\n"
+		    + "		let: {olt:'id_olt' },\r\n"
+		    + "		pipeline:[\r\n"
+		    + "			{$unionWith:'tb_inventario_onts_pdm'},"
+		    + "			{ $match: {$expr: {$eq: [ 'id_olt',  '$$olt' ] } }},\r\n"
+		    + "			 {\r\n"
+		    + "				'$group': {\r\n"
+		    + "						'_id': '$id_olt', \r\n"
+		    + "						'count': { '$sum': 1 },      \r\n"
+		    + "				  },\r\n"
+		    + "			}, \r\n"
+		    + "		],\r\n"
+		    + "		as: 'onts',\r\n"
+		    + " }\r\n"
+		    + "}\r\n"
+		    , "{ $unwind:{ path:'$onts',  preserveNullAndEmptyArrays: true } }\r\n"
+		    , "{ $set: {total_onts: {$ifNull:[ '$onts.count', 0] }} }" 
+			})
+	List<dataRegionResponseDto> getDataRegion(@Param("idOlt") Integer idOlt);
+	
+	
+	@Aggregation(pipeline = {
+		      "{$match:{id_region:?0}}\r\n"
+		    , "{\r\n"
+		    + "	'$lookup':{\r\n"
+		    + "		from: 'tb_inventario_onts',\r\n"
+		    + "		localField:'id_olt',\r\n"
+		    + "		foreignField:'id_olt',\r\n"
+		    + "		let: {olt:'id_olt' },\r\n"
+		    + "		pipeline:[\r\n"
+		    + "			 {$unionWith:'tb_inventario_onts_pdm'},"
+		    + "			 { $match: {$expr: {$eq: [ 'id_olt',  '$$olt' ] } }},\r\n"
+		    + "			 {$match:{tipo:'E'}},\r\n"
+		    + "			 {\r\n"
+		    + "				'$group': {\r\n"
+		    + "						'_id': '$id_olt', \r\n"
+		    + "						'count': { '$sum': 1 },      \r\n"
+		    + "				  },\r\n"
+		    + "			}, \r\n"
+		    + "		],\r\n"
+		    + "		as: 'onts',\r\n"
+		    + " }\r\n"
+		    + "}\r\n"
+		    , "{ $unwind:{ path:'$onts',  preserveNullAndEmptyArrays: true } }\r\n"
+		    , "{ $set: {total_onts: {$ifNull:[ '$onts.count', 0] }} }"
+		    , "{$match:{total_onts:{$ne:0}}}" 
+			})
+	List<dataRegionResponseDto> getDataRegionEmpresariales(@Param("idOlt") Integer idOlt);
+	
+	
+	@Aggregation(pipeline = {
+		      "{$match:{id_region:?0}}\r\n"
+		    , "{\r\n"
+		    + "	'$lookup':{\r\n"
+		    + "		from: 'tb_inventario_onts',\r\n"
+		    + "		localField:'id_olt',\r\n"
+		    + "		foreignField:'id_olt',\r\n"
+		    + "		let: {olt:'id_olt' },\r\n"
+		    + "		pipeline:[\r\n"
+		    + "			{$unionWith:'tb_inventario_onts_pdm'},"
+		    + "			{ $match: {$expr: {$eq: [ 'id_olt',  '$$olt' ] } }},\r\n"
+		    + "			{$match:{vip:1}},\r\n"
+		    + "			{\r\n"
+		    + "				'$group': {\r\n"
+		    + "						'_id': '$id_olt', \r\n"
+		    + "						'count': { '$sum': 1 },      \r\n"
+		    + "				  },\r\n"
+		    + "			}, \r\n"
+		    + "		],\r\n"
+		    + "		as: 'onts',\r\n"
+		    + " }\r\n"
+		    + "}\r\n"
+		    , "{ $unwind:{ path:'$onts',  preserveNullAndEmptyArrays: true } }\r\n"
+		    , "{ $set: {total_onts: {$ifNull:[ '$onts.count', 0] }} }"
+		    , "{$match:{total_onts:{$ne:0}}}" 
+			})
+	List<dataRegionResponseDto> getDataRegionVips(@Param("idOlt") Integer idOlt);
+	
+	@Aggregation(pipeline = {
+		        "{\r\n"
+		      + "        $match: {\r\n"
+		      + "            $expr: {\r\n"
+		      + "                $cond: {\r\n"
+		      + "                    if: ?1,\r\n"
+		      + "                    then: {$eq:[ \"$ip\", ?0 ]} ,\r\n"
+		      + "                    else: {$eq:[ \"$nombre\", ?0 ]}\r\n"
+		      + "                }\r\n"
+		      + "            }\r\n"
+		      + "        }\r\n"
+		      + "}\r\n"
+		      , "{\r\n"
+		      + "		\"$lookup\":{\r\n"
+		      + "			from: \"tb_inventario_onts\",\r\n"
+		      + "			localField:\"id_olt\",\r\n"
+		      + "			foreignField:\"id_olt\",\r\n"
+		      + "			let: {olt:\"id_olt\" },\r\n"
+		      + "			pipeline:[\r\n"
+		      + "			    {$unionWith:'tb_inventario_onts_pdm'},\r\n"
+		      + "			    { $match: {$expr: {$eq: [ \"id_olt\",  \"$$olt\" ] } }},\r\n"
+		      + "               {\r\n"
+		      + "                    \"$group\": {\r\n"
+		      + "                            \"_id\": \"$id_olt\", \r\n"
+		      + "                            \"count\": { \"$sum\": 1 },      \r\n"
+		      + "                      },\r\n"
+		      + "               }, \r\n"
+		      + "			],\r\n"
+		      + "			as: \"onts\",\r\n"
+		      + "		}\r\n"
+		      + "}\r\n"
+		      , "{ $unwind:{ path:\"$onts\",  preserveNullAndEmptyArrays: true } }\r\n"
+		      , "{ $set: {total_onts: {$ifNull:[ '$onts.count', 0] }} },\r\n"
+		      
+			})
+	List<dataRegionResponseDto> getResultLookup(@Param("data") String data, @Param("caso") boolean  caso );
+	
+	@Aggregation(pipeline = {
+	        "{\r\n"
+	      + "        $match: {\r\n"
+	      + "            $expr: {\r\n"
+	      + "                $cond: {\r\n"
+	      + "                    if: ?1,\r\n"
+	      + "                    then: {$eq:[ \"$ip\", ?0 ]} ,\r\n"
+	      + "                    else: {$eq:[ \"$nombre\", ?0 ]}\r\n"
+	      + "                }\r\n"
+	      + "            }\r\n"
+	      + "        }\r\n"
+	      + "}\r\n"
+	      , "{\r\n"
+	      + "		\"$lookup\":{\r\n"
+	      + "			from: \"tb_inventario_onts\",\r\n"
+	      + "			localField:\"id_olt\",\r\n"
+	      + "			foreignField:\"id_olt\",\r\n"
+	      + "			let: {olt:\"id_olt\" },\r\n"
+	      + "			pipeline:[\r\n"
+	      + "			     {$unionWith:'tb_inventario_onts_pdm'},\r\n"
+	      + "			     {$match: {$expr: {$eq: [ \"id_olt\",  \"$$olt\" ] } }},\r\n"
+	      + "                {$match:{tipo:'E'}},\r\n"
+	      + "                {\r\n"
+	      + "                    \"$group\": {\r\n"
+	      + "                            \"_id\": \"$id_olt\", \r\n"
+	      + "                            \"count\": { \"$sum\": 1 },      \r\n"
+	      + "                      },\r\n"
+	      + "                }, \r\n"
+	      + "			],\r\n"
+	      + "			as: \"onts\",\r\n"
+	      + "		}\r\n"
+	      + "}\r\n"
+	      , "{ $unwind:{ path:\"$onts\",  preserveNullAndEmptyArrays: true } }\r\n"
+	      , "{ $set: {total_onts: {$ifNull:[ '$onts.count', 0] }} }\r\n"
+	      , "{$match:{total_onts:{$ne:0}}}" 
+		})
+	List<dataRegionResponseDto> getResultLookupEmpresarial(@Param("data") String data, @Param("caso") boolean  caso );
+	
+	
+	@Aggregation(pipeline = {
+	        "{\r\n"
+	      + "        $match: {\r\n"
+	      + "            $expr: {\r\n"
+	      + "                $cond: {\r\n"
+	      + "                    if: ?1,\r\n"
+	      + "                    then: {$eq:[ \"$ip\", ?0 ]} ,\r\n"
+	      + "                    else: {$eq:[ \"$nombre\", ?0 ]}\r\n"
+	      + "                }\r\n"
+	      + "            }\r\n"
+	      + "        }\r\n"
+	      + "}\r\n"
+	      , "{\r\n"
+	      + "		\"$lookup\":{\r\n"
+	      + "			from: \"tb_inventario_onts\",\r\n"
+	      + "			localField:\"id_olt\",\r\n"
+	      + "			foreignField:\"id_olt\",\r\n"
+	      + "			let: {olt:\"id_olt\" },\r\n"
+	      + "			pipeline:[\r\n"
+	      + "			     {$unionWith:'tb_inventario_onts_pdm'},\r\n"
+	      + "			     {$match: {$expr: {$eq: [ \"id_olt\",  \"$$olt\" ] } }},\r\n"
+	      + "                {$match:{vip:1}},\r\n"
+	      + "                {\r\n"
+	      + "                    \"$group\": {\r\n"
+	      + "                            \"_id\": \"$id_olt\", \r\n"
+	      + "                            \"count\": { \"$sum\": 1 },      \r\n"
+	      + "                      },\r\n"
+	      + "                }, \r\n"
+	      + "			],\r\n"
+	      + "			as: \"onts\",\r\n"
+	      + "		}\r\n"
+	      + "}\r\n"
+	      , "{ $unwind:{ path:\"$onts\",  preserveNullAndEmptyArrays: true } }\r\n"
+	      , "{ $set: {total_onts: {$ifNull:[ '$onts.count', 0] }} }\r\n"
+	      , "{$match:{total_onts:{$ne:0}}}" 
+		})
+	List<dataRegionResponseDto> getResultLookupVip(@Param("data") String data, @Param("caso") boolean  caso );
 
 }

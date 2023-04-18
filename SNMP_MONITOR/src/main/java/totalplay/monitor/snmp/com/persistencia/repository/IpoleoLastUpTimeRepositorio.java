@@ -19,4 +19,11 @@ public interface IpoleoLastUpTimeRepositorio extends MongoRepository<poleosLastU
 			,"{$limit:1}"
 			})
 	poleosLastUpTimeEntidad getMetrica(@Param("idEjecucion") String idEjecucion, @Param("idOlt") Integer idOlt, @Param("oid") String oid );
+
+	@Aggregation(pipeline = { 
+			"{'$match':{'$and':[{'id_ejecucion': ?0},{'index': ?1}]}}"
+			,"{$sort:{_id:-1}}"
+			,"{$limit:1}"
+			})
+	poleosLastUpTimeEntidad getMetricaByIndex(@Param("idEjecucion") String idEjecucion, @Param("index") String index );
 }
