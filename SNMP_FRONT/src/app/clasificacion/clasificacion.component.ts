@@ -201,6 +201,7 @@ export class ClasificacionComponent implements OnInit {
     this.muestraHome = 'true';
 
     localStorage.setItem('muestraHome', this.muestraHome);
+    localStorage.setItem('muestraOnt', 'true');
     localStorage.setItem('IdRegion', idRegion);
     localStorage.setItem('nombreRegion', region);
     localStorage.removeItem('busqueda');
