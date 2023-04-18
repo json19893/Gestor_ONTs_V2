@@ -254,8 +254,8 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 						res.setActualizacion(6);
 						res.setTipo(d.getTipo());
 						
-						if(olt != null && olt.getId_olt().intValue() == res.getid_olt().intValue()) {
-							res.setid_olt(olt.getId_olt());
+						if(olt != null && olt.getId_olt().intValue() == res.getId_olt().intValue()) {
+							res.setId_olt(olt.getId_olt());
 							res.setFrame(d.getFrame());
 							res.setSlot(d.getSlot());
 							res.setPort(d.getPort());
@@ -377,7 +377,7 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 			if (!ontAllData.isEmpty()) {
 				data = ontAllData.get(0).getNumero_serie();
 				idRegion = ontAllData.get(0).getId_region();
-				idOlt = ontAllData.get(0).getid_olt();
+				idOlt = ontAllData.get(0).getId_olt();
 				oltAllData = catalogoOlts.findOltByIdolt(idOlt);
 
 				try {

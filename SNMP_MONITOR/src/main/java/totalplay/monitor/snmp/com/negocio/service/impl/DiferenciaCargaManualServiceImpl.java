@@ -19,6 +19,7 @@ import totalplay.monitor.snmp.com.persistencia.repository.IdiferenciasManualRepo
 
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -63,7 +64,7 @@ public class DiferenciaCargaManualServiceImpl implements IDiferenciaCargaManualS
             tmpOnt.setTecnologia(ont.getTecnologia());
             tmpOnt.setId_olt(ont.getId_olt());
             //tmpOnt.setId_metrica(ont.getId_metrica());
-            //tmpOnt.setFecha_poleo(ont.getFecha_poleo());
+            tmpOnt.setFecha_poleo(ont.getFecha_poleo());
             tmpOnt.setId_region(ont.getId_region());
             //tmpOnt.setFecha_modificacion(ont.getFecha_modificacion());
             tmpOnt.setFrame(ont.getFrame());
@@ -118,6 +119,7 @@ public class DiferenciaCargaManualServiceImpl implements IDiferenciaCargaManualS
         private String ip;
         private Integer id_olt;
         private String oid;
+
     }
 
     @Setter
@@ -129,7 +131,7 @@ public class DiferenciaCargaManualServiceImpl implements IDiferenciaCargaManualS
         //private String valor;
         private Integer id_olt;
         //private Integer id_metrica;
-        //private Date fecha_poleo;
+        private Date fecha_poleo;
         //private Date fecha_modificacion;
         private Integer estatus;
         private String id_ejecucion;

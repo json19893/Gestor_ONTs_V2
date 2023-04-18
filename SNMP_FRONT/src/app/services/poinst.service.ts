@@ -272,6 +272,13 @@ export class pointService {
       'mode':'no-cors'});*/
     return this.http.post<any>(AppUrlSettings.BASE_API_DESCUBRIMIENTO + AppUrlSettings.POLEO_METRICA_OID,data);
   }
+
+  cambios(idOlt:any): Observable<any> {
+    /*var headers = new HttpHeaders({
+      'Authorization': token,
+      'mode':'no-cors'});*/
+    return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.CAMBIOS+idOlt);
+  }
   
 
 
