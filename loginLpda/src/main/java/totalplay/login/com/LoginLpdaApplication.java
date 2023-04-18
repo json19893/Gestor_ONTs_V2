@@ -6,7 +6,7 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 
 @SpringBootApplication
-//@EnableScheduling
+//@EnableSchedulingo
 @EnableDiscoveryClient
 public class LoginLpdaApplication {
 

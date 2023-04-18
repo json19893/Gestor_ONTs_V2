@@ -42,7 +42,6 @@ import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsAuxManualRep
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsAuxRepository;
 import totalplay.snmpv2.com.persistencia.entidades.HistoricoConteosOltsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
-import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxManualEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsPdmEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsTmpEntity;
@@ -140,7 +139,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			 //Enviar a la tabla de diferencias las olts duplicadas
 			 log.info(":::::::::::::::::::::::::: enviar a duplicados  :::::::::::::::::::::::");
 			 updateDescripcion(monitor, INICIO_DESC+" AISLAR DUPLICADOS");
-			 idEjecucion =  monitorEstatus.getLastFinishId().getId();//findFirstByOrderByIdDesc().getId();
+			 idEjecucion =  monitorEstatus.findFirstByOrderByIdDesc().getId();
 			 poleometricas.getOntsFaltantes(1,idEjecucion, false, false, "auxiliar",2, null);
 			 inventarioTmp.sendTbDiferencias();
 			
@@ -153,27 +152,22 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			 }catch(Exception e) {
 				 
 			 }
-			
-			
-			
 			//Obtener las difencias que van al inventario auxiliar
 			 //
-//			 log.info(":::::::::::::::::::::::::: get diferecias  :::::::::::::::::::::::");
-//			 updateDescripcion(monitor, INICIO_DESC+" OBTENER DIFERENCIAS DEFINITIVAS");
-//			 diferenciaFinales =  diferencias.findDiferencias();
-//			 inventarioAux.saveAll(diferenciaFinales);
-			
+			 log.info(":::::::::::::::::::::::::: get diferecias  :::::::::::::::::::::::");
+			 updateDescripcion(monitor, INICIO_DESC+" OBTENER DIFERENCIAS DEFINITIVAS");
+			 diferenciaFinales =  diferencias.findDiferencias();
+			 inventarioAux.saveAll(diferenciaFinales);
 			
 			
 			//Obtener las onts que se van al inventario de carga manual
 			 log.info(":::::::::::::::::::::::::: get carga manual  :::::::::::::::::::::::");
 			 updateDescripcion(monitor, INICIO_DESC+" OBTENER DIFERENCIAS MANUALES");
 			diferenciasManual.deleteAll();	  
-			diferenciaManuales = diferencias.getAllDiferencias();//diferencias.findDiferenciasManual();
+			diferenciaManuales = diferencias.findDiferenciasManual();
 			diferenciasManual.saveAll(diferenciaManuales);
 			
-				
-			 //hacer el cruce de estatus
+			//hacer el cruce de estatus
 			String idPoleo =  monitorPoleo.getLastFinishId().getId();
 			updateDescripcion(monitor, INICIO_DESC+" CRUCES  MÈTRICAS");
 			crucesMetricas(1,idEjecucion, "auxiliar", null, false );
@@ -191,7 +185,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			cleanOidsRepetidos();
 			
 			 updateDescripcion(monitor, INICIO_DESC+" OBTENER VIPS");
-			 getEmpresarialesVips(false);
+			 getEmpresarialesVips();
 			 updateDescripcion(monitor, INICIO_DESC+" OBTENER PDM");
 			 deleteInventarioPdm();
 			
@@ -351,15 +345,11 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 		
 	}
 	
-	private void getEmpresarialesVips(boolean manual) {
+	private void getEmpresarialesVips() {
 		log.info(":::::::::::::::::::::::::: Obtener onts empresariales "+ ":::::::::::::::::::::::");
 		
 		try {
-			List repetidos = null;
-			if (manual)
-				repetidos = inventarioOnts.getEmpresarialesVipsManuales();
-			else
-				repetidos = inventarioOnts.findEmpresarialesAndVips();
+			List<InventarioOntsAuxEntity> repetidos = inventarioOnts.findEmpresarialesAndVips();
 			
 			
 			List<CompletableFuture<GenericResponseDto>> thredOnts=new ArrayList<CompletableFuture<GenericResponseDto>>();
@@ -371,12 +361,8 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 				if (limMax >= repetidos.size()) {
 					limMax = repetidos.size();
 				}
-				List segmentOlts;
-				if(manual)
-					 segmentOlts = new ArrayList<InventarioOntsAuxManualEntity>(repetidos.subList(i, limMax));
-				else
-					 segmentOlts = new ArrayList<InventarioOntsAuxEntity>(repetidos.subList(i, limMax));
-				CompletableFuture<GenericResponseDto> executeProcess = asyncMethods.saveEmpresariales(segmentOlts, manual);
+				List<InventarioOntsAuxEntity> segmentOlts = new ArrayList<InventarioOntsAuxEntity>(repetidos.subList(i, limMax));
+				CompletableFuture<GenericResponseDto> executeProcess = asyncMethods.saveEmpresariales(segmentOlts);
 				
 				thredOnts.add(executeProcess);
 			}

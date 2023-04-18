@@ -644,6 +644,21 @@ public class monitorController extends constantes {
 
         return response;
     }
+
+    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
+    @RequestMapping(value = "/actualizaOltOnOnt/{idOlt}/{serie}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public responseDto actualizaOltOnOnt(@PathVariable("idOlt") Integer idOlt,@PathVariable("serie") String serie) throws Exception {
+        responseDto response = new responseDto();
+        try {
+        	        	
+            response=  consulta.actualizaOnt(serie,idOlt);
+
+        } catch (Exception e) {
+            System.out.println("Error:: " + e);
+        }
+
+        return response;
+    }
     
     
 

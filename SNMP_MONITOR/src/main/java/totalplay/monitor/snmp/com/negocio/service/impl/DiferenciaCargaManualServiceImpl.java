@@ -1,4 +1,4 @@
-package totalplay.snmpv2.com.negocio.services.impl;
+package totalplay.monitor.snmp.com.negocio.service.impl;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,15 +9,17 @@ import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
-import totalplay.snmpv2.com.negocio.dto.OntsRepetidasPorOltPostRequest;
-import totalplay.snmpv2.com.negocio.services.IDiferenciaCargaManualService;
-import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
-import totalplay.snmpv2.com.persistencia.entidades.DiferenciasManualEntity;
-import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
-import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
-import totalplay.snmpv2.com.persistencia.repositorio.IdiferenciasManualRepository;
+import totalplay.monitor.snmp.com.negocio.dto.OntsRepetidasPorOltPostRequest;
+import totalplay.monitor.snmp.com.negocio.service.IDiferenciaCargaManualService;
+import totalplay.monitor.snmp.com.persistencia.entidad.DiferenciasManualEntity;
+import totalplay.monitor.snmp.com.persistencia.entidad.catOltsEntidad;
+import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsEntidad;
+import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
+import totalplay.monitor.snmp.com.persistencia.repository.IdiferenciasManualRepository;
+
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,7 +35,7 @@ public class DiferenciaCargaManualServiceImpl implements IDiferenciaCargaManualS
     @Autowired
     IdiferenciasManualRepository diferenciasManualRepository;
     @Autowired
-    IcatOltsRepository catOltsRepository;
+    IcatOltsRepositorio catOltsRepository;
 
     /**
      * Este metodo devuelve la coleccion de documentos. Este documento realizara una comparativa para consultar las onts repetidas por el id olt.
@@ -41,19 +43,19 @@ public class DiferenciaCargaManualServiceImpl implements IDiferenciaCargaManualS
      * @return
      */
     @Override
-    public List<AuxOntsAdapter> consultarCatalogoOntsRepetidas(final OntsRepetidasPorOltPostRequest request) {
-        List<InventarioOntsEntity> lista = obtenerOntsOlt(request.getIdOlt());
+    public List<AuxOntsAdapter> consultarCatalogoOntsRepetidas(Integer idOlt) {
+        List<DiferenciasManualEntity> lista = obtenerOntsOlt(idOlt);
         List<AuxOntsAdapter> adapterOntsList = adapterList(lista);
         List<AuxOntsAdapter> repetidas = consultarOntsRepetidas(adapterOntsList);
         return repetidas;
     }
 
-    List<AuxOntsAdapter> adapterList(List<InventarioOntsEntity> ontList) {
+    List<AuxOntsAdapter> adapterList(List<DiferenciasManualEntity> ontList) {
 
         List<AuxOntsAdapter> auxiliarList = new ArrayList<>();
         AuxOntsAdapter tmpOnt;
 
-        for (InventarioOntsEntity ont : ontList) {
+        for (DiferenciasManualEntity ont : ontList) {
             tmpOnt = new AuxOntsAdapter();
             //Atributos del GenericPoleosDto
             tmpOnt.setOid(ont.getOid());
@@ -62,15 +64,15 @@ public class DiferenciaCargaManualServiceImpl implements IDiferenciaCargaManualS
             tmpOnt.setTecnologia(ont.getTecnologia());
             tmpOnt.setId_olt(ont.getId_olt());
             //tmpOnt.setId_metrica(ont.getId_metrica());
-            //tmpOnt.setFecha_poleo(ont.getFecha_poleo());
+            tmpOnt.setFecha_poleo(ont.getFecha_poleo());
             tmpOnt.setId_region(ont.getId_region());
             //tmpOnt.setFecha_modificacion(ont.getFecha_modificacion());
-            tmpOnt.setFrame(ont.getFrame() == null ? new Integer(0) : ont.getFrame());
-            tmpOnt.setSlot(ont.getSlot() == null ? new Integer(0) : ont.getSlot());
-            tmpOnt.setPort(ont.getPort() == null ? new Integer(0) : ont.getPort());
-            tmpOnt.setId_puerto(ont.getId_puerto() == null ? "": ont.getId_puerto());
+            tmpOnt.setFrame(ont.getFrame());
+            tmpOnt.setSlot(ont.getSlot());
+            tmpOnt.setPort(ont.getPort());
+            tmpOnt.setId_puerto(ont.getId_puerto());
             tmpOnt.setEstatus(ont.getEstatus());
-            tmpOnt.setId_ejecucion(ont.getId_ejecucion() == null ? "": ont.getId_ejecucion());
+            tmpOnt.setId_ejecucion(ont.getId_ejecucion());
             //Inicializa el espacio de memoria en donde viviran las referencias a las olts en donde se repite las onts
             tmpOnt.setOltList(new ArrayList<>());
             auxiliarList.add(tmpOnt);
@@ -102,11 +104,9 @@ public class DiferenciaCargaManualServiceImpl implements IDiferenciaCargaManualS
     }
 
     private void setIp(AuxOltAdapter auxArray) {
-        List<CatOltsEntity> oltList = catOltsRepository.findAll();
+        List<catOltsEntidad> oltList = catOltsRepository.findAll();
         oltList.stream().forEach(olt -> {
-            System.out.println("");
             if (auxArray.id_olt.intValue() == olt.getId_olt().intValue()) {
-                System.out.println("olt encontrada!");
                 auxArray.setIp(olt.getIp());
             }
         });
@@ -119,6 +119,7 @@ public class DiferenciaCargaManualServiceImpl implements IDiferenciaCargaManualS
         private String ip;
         private Integer id_olt;
         private String oid;
+
     }
 
     @Setter
@@ -130,7 +131,7 @@ public class DiferenciaCargaManualServiceImpl implements IDiferenciaCargaManualS
         //private String valor;
         private Integer id_olt;
         //private Integer id_metrica;
-        //private Date fecha_poleo;
+        private Date fecha_poleo;
         //private Date fecha_modificacion;
         private Integer estatus;
         private String id_ejecucion;
@@ -148,14 +149,14 @@ public class DiferenciaCargaManualServiceImpl implements IDiferenciaCargaManualS
         List<AuxOltAdapter> oltList;
     }
 
-    List<InventarioOntsEntity> obtenerOntsOlt(Integer idOlt) {
+    List<DiferenciasManualEntity> obtenerOntsOlt(Integer idOlt) {
         AggregationOperation match = Aggregation.match(Criteria.where("id_olt").is(idOlt.intValue()));
         AggregationOperation lookup = Aggregation.lookup("tb_inventario_onts", "numero_serie",
                 "numero_serie", "onts");
         Aggregation aggregation = Aggregation.newAggregation(match, lookup);
-        AggregationResults<InventarioOntsEntity> out
-                = mongoTemplate.aggregate(aggregation, "tb_diferencias_carga_manual", InventarioOntsEntity.class);
-        List<InventarioOntsEntity> list = out.getMappedResults();
+        AggregationResults<DiferenciasManualEntity> out
+                = mongoTemplate.aggregate(aggregation, "tb_diferencias_carga_manual", DiferenciasManualEntity.class);
+        List<DiferenciasManualEntity> list = out.getMappedResults();
         return list;
     }
 }

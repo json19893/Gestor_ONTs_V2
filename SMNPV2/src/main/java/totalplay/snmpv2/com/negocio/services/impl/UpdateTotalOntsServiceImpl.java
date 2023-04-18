@@ -3,12 +3,15 @@ package totalplay.snmpv2.com.negocio.services.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
+import totalplay.snmpv2.com.negocio.dto.CambioManualOntOltRequest;
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.negocio.services.IUpdateTotalOntsService;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.VwTotalOntsEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.ITotalOntsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsRepository;
 
 import java.util.List;
 
@@ -19,6 +22,9 @@ public class UpdateTotalOntsServiceImpl implements IUpdateTotalOntsService {
 
     @Autowired
     IcatOltsRepository IOltRepository;
+
+    @Autowired
+    IinventarioOntsRepository ontsRepository;
     @Autowired
     MongoTemplate template;
 
@@ -48,6 +54,17 @@ public class UpdateTotalOntsServiceImpl implements IUpdateTotalOntsService {
             response.setSms("Error: Hubo un error en el servidor");
         }
         return response;
+    }
+
+    /**
+     * Actualiza el idOlt de una ont y persiste los datos en el repositorio:
+     *
+     * @param ont - Objeto a actualizar y persistir en el repositorio.
+     * @return InventarioOntsEntity - Objeto actualizado devuelto por el repositorio.
+     */
+    @Override
+    public InventarioOntsEntity CambioManualOntdeOlt(InventarioOntsEntity ont) {
+        return ontsRepository.save(ont);
     }
 }
 

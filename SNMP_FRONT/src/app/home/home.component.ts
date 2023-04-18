@@ -118,8 +118,8 @@ export class HomeComponent implements OnInit {
       }else{
         this.llenaTabla(this.dataRegion)
       }
-      localStorage.setItem('muestraOnt','true');
-      localStorage.setItem('muestraDetalle','false');
+      //localStorage.setItem('muestraOnt','true');
+      //localStorage.setItem('muestraDetalle','false');
     }
 
     ngAfterViewInit() {
@@ -356,12 +356,12 @@ export class HomeComponent implements OnInit {
       this.dataUp.paginator = this.paginator;
     }
     verDetalle(idOlt:any,nombre:any,up:any,down:any,his:any,totalOnt:any,ip:any){
-      if(totalOnt==0){
+      /*if(totalOnt==0){
         this._snackbar2.open("No hay onts que mostrar", 'Cerrar', {
             horizontalPosition: 'center',
             verticalPosition: 'bottom'
         })      
-      }else{
+      }else{*/
         localStorage.setItem('muestraOnt','false');
         localStorage.setItem('muestraDetalle','true');
         localStorage.setItem('idOlt',idOlt);
@@ -378,7 +378,7 @@ export class HomeComponent implements OnInit {
         localStorage.removeItem('dataDetalle');
         localStorage.removeItem('busqueda');
         window.location.reload();
-      }  
+      //}  
       
     }
 

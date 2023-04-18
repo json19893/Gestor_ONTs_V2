@@ -105,9 +105,4 @@ public interface IdiferenciasRepository extends MongoRepository<DiferenciasEntit
 		    , "{ $replaceRoot: { newRoot: \"$inventario\" } }"})
 	List<DiferenciasManualEntity> findDiferenciasManual();
 	
-	@Aggregation(pipeline = { 
-		      "{$unset:['_id']}"})
-	List<DiferenciasManualEntity> getAllDiferencias();
-	
-	
 }

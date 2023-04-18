@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import totalplay.monitor.snmp.com.negocio.dto.catRegionDto;
 import totalplay.monitor.snmp.com.negocio.dto.datosRegionDto;
 import totalplay.monitor.snmp.com.negocio.dto.diferenciasDto;
@@ -31,6 +32,7 @@ import totalplay.monitor.snmp.com.persistencia.entidad.tbHistoricoDiferenciasEnt
 import totalplay.monitor.snmp.com.persistencia.entidad.tblMonitoreoEjecucionEntidad;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatRegionesRepositorio;
+import totalplay.monitor.snmp.com.persistencia.repository.IdiferenciasManualRepository;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOltsReposirorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsPdmRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsRepositorio;
@@ -43,6 +45,7 @@ import totalplay.monitor.snmp.com.persistencia.repository.IvwTotalOntsVipsReposi
 import totalplay.monitor.snmp.com.persistencia.repository.IvwTotalRegionRepositorio;
 
 @Service
+@Slf4j
 public class monitoreoServiceImpl extends utils implements ImonitorService {
 	@Autowired
 	IinventarioOltsReposirorio invOLts;
@@ -70,6 +73,8 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 	IvwTotalOntsEmpresarialesRepositorio wvOntsEmp; 
 	@Autowired
 	IvwTotalOntsVipsRepositorio wvOntsVips; 
+	@Autowired
+	IdiferenciasManualRepository diferencias;
 
 	@Override
 	public responseRegionDto getOltsByRegion(Integer idRegion, String tipo, boolean onlyHeaders) throws Exception {
@@ -223,13 +228,20 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 
 	@Override
 	public List<inventarioOntsEntidad> finOntsByIdAll(Integer idOlt, String tipo) throws Exception {
-		if(tipo.compareTo("T")==0) {
-			return invOLts.finOntsByIdAll(idOlt);
-		}else if (tipo.compareTo("E")==0) {
-			return invOLts.finOntsByIdAllEmp(idOlt);
-		}else {
-			return invOLts.finOntsByIdAllVips(idOlt);
-		}
+		List<inventarioOntsEntidad> onts=new ArrayList<inventarioOntsEntidad>();
+		try {
+			
+				if(tipo.compareTo("T")==0) {
+					onts= invOLts.finOntsByIdAll(idOlt);
+				}else if (tipo.compareTo("E")==0) {
+					onts= invOLts.finOntsByIdAllEmp(idOlt);
+				}else {
+					onts= invOLts.finOntsByIdAllVips(idOlt);
+				}
+	} catch (Exception e) {
+		log.error("Error al extraer la informaciòn ", e);
+	}
+	return onts;
 	}
 
 	@Override
@@ -480,23 +492,25 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 	public totalesOltsDto getTotalesByOlt(Integer idOlt, String tipo) throws Exception {
 		totalesOltsDto response = new totalesOltsDto();
 		try {
-		
+			response.setCambios(diferencias.findTotalCambios(idOlt));
 			if(tipo.compareTo("T")==0) {
 				response.setTotalOlt(inventario.finOntsByTotalOlt(idOlt)+inventarioPdm.finOntsByTotalOlt(idOlt) );
 				response.setArriba(inventario.finOntsByTotalEstatus(idOlt, 1)+inventarioPdm.finOntsByTotalEstatus(idOlt, 1));
 				response.setAbajo(inventario.finOntsByTotalEstatus(idOlt, 2)+inventario.finOntsByTotalEstatus(idOlt, 0)+inventarioPdm.finOntsByTotalEstatus(idOlt, 0)+inventarioPdm.finOntsByTotalEstatus(idOlt, 2));
-				response.setCambios(historicoDiferencias.findTotalCambiosOlt(idOlt));
-
+				//response.setCambios(historicoDiferencias.findTotalCambiosOlt(idOlt));
+				
 			}else if(tipo.compareTo("E")==0){
 				response.setTotalOlt(inventario.finOntsByTotalOltEmp(idOlt));
 				response.setArriba(inventario.finOntsByTotalEstatusEmp(idOlt, 1));
 				response.setAbajo(inventario.finOntsByTotalEstatusEmp(idOlt, 2));
-				response.setCambios(historicoDiferencias.findTotalCambiosOltEmp(idOlt));
+				//response.setCambios(historicoDiferencias.findTotalCambiosOltEmp(idOlt));
+				
 			}else {
 				response.setTotalOlt(inventario.finOntsByTotalOltVip(idOlt));
 				response.setArriba(inventario.finOntsByTotalEstatusVip(idOlt, 1));
 				response.setAbajo(inventario.finOntsByTotalEstatusVip(idOlt, 2));
-				response.setCambios(historicoDiferencias.findTotalCambiosOltVip(idOlt));
+				//response.setCambios(historicoDiferencias.findTotalCambiosOltVip(idOlt));
+				
 			}
 			
 		} catch (Exception e) {

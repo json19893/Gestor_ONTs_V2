@@ -181,7 +181,8 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 						configuracion.getManejarResultadoComando().writterLogOnDiskMetrica(ruta3, configuracion, data.get(0), 0,metrica,comando);
 					} catch (Exception e) {
 						// TODO: handle exception
-					}					
+					}
+					
 					guardaInventario(metrica,data);
 				}
 			

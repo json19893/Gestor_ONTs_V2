@@ -1,8 +1,9 @@
-package totalplay.snmpv2.com.negocio.dto;
+package totalplay.monitor.snmp.com.negocio.dto;
 
 import lombok.Data;
 import lombok.ToString;
-import totalplay.snmpv2.com.negocio.services.impl.DiferenciaCargaManualServiceImpl;
+import totalplay.monitor.snmp.com.negocio.service.impl.DiferenciaCargaManualServiceImpl;
+
 
 import java.io.Serializable;
 import java.util.List;
