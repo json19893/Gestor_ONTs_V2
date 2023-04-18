@@ -277,7 +277,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                                
                         
                     	} catch (final IOException e) {
-                            e.printStackTrace();
+                            log.error("Error: "+e);
                         }
                     	
                     }

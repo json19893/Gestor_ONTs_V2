@@ -206,7 +206,7 @@
                         <ng-container matColumnDef="fechaUltimaCaida">
                           <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha última caída</th>
                           <td mat-cell *matCellDef="let row"> 
-                            <span *ngIf="row.fecha_ultima_caida!=undefined ||row.fecha_ultima_caida!='--'||row.fecha_ultima_caida!='-'||row.fecha_ultima_caida!='0-0-0,0:0:0.0,.0:0'||row.fecha_ultima_caida!='' ">{{row.fecha_ultima_caida | date:'dd-MM-yyyy'}} {{row.fecha_ultima_caida | date:'mediumTime'}}</span>
+                            <span *ngIf="row.fecha_ultima_caida!=undefined ||row.fecha_ultima_caida!='--'||row.fecha_ultima_caida!='-'||row.fecha_ultima_caida!='0-0-0,0:0:0.0,.0:0'||row.fecha_ultima_caida!='' ">{{row.fecha_ultima_caida | dateFormat}}</span>
                             <span *ngIf="row.fecha_ultima_caida==undefined ||row.fecha_ultima_caida=='--'||row.fecha_ultima_caida=='-'||row.fecha_ultima_caida=='0-0-0,0:0:0.0,.0:0'||row.fecha_ultima_caida==''">-----</span>
                           </td>
                         </ng-container>
@@ -258,13 +258,13 @@
                                       <div class="col-sm-3">
                                         <span class="cabe">Fecha de poleo:</span>
                                         <br>
-                                        <span class="data">{{fechaPoleo=="" ? "--": (fechaPoleo | date:'dd-MM-yyyy')}} {{fechaPoleo=="" ? "" :fechaPoleo | date:'mediumTime'}}</span>
+                                        <span class="data">{{fechaPoleo | dateFormat}}</span>
                                       </div>
               
                                     <div class="col-sm-3">
                                       <span class="cabe">Última fecha arriba:</span>
                                         <br>
-                                        <span class="data">{{lastUpTime==""? "--": lastUpTime| date:'dd-MM-yyyy'}} {{lastUpTime==""? "":lastUpTime | date:'mediumTime'}}</span>
+                                        <span class="data">{{lastUpTime|dateFormat}}</span>
                                       </div>
               
                                     <div class="col-sm-3">

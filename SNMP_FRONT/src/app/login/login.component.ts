@@ -25,8 +25,8 @@ export class LoginComponent implements OnInit {
       private service: pointService,
       private spinner:NgxSpinnerService){
         this.loginForm = new FormGroup({
-            usuario: new FormControl('', [Validators.required]),
-            password: new FormControl('', [Validators.required])
+            u: new FormControl('', [Validators.required]),
+            p: new FormControl('', [Validators.required])
           });
     }
     ngOnInit() {
@@ -48,7 +48,7 @@ export class LoginComponent implements OnInit {
     if(!this.loginForm.valid){
         return;
       }else{
-        this.parLogin=new login(this.loginForm.value.usuario,this.loginForm.value.password);
+        this.parLogin=new login(this.loginForm.value.u,this.loginForm.value.p);
         this.service.login(this.parLogin).subscribe(
           res => {
             this.sesion=res;

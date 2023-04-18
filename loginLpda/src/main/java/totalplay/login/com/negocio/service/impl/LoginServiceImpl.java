@@ -158,7 +158,7 @@ public class LoginServiceImpl implements IloginService {
 		} catch (Exception e) {
 			response.setCod(1);
 			response.setSms("Error al registrar ");
-			e.printStackTrace();
+			log.error("Error: "+e);;
 		}
 		return response;
 	}

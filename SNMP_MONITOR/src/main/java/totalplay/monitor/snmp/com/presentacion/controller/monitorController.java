@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import totalplay.monitor.snmp.com.negocio.dto.*;
 import totalplay.monitor.snmp.com.negocio.service.IBlockMetricService;
-import totalplay.monitor.snmp.com.negocio.service.ICronExecution;
 import totalplay.monitor.snmp.com.negocio.service.IconsultaService;
 import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
 import totalplay.monitor.snmp.com.negocio.util.constantes;
@@ -55,10 +54,7 @@ public class monitorController extends constantes {
     private IcatOltsRepositorio catalogoOlt;
     @Autowired
     IconsultaService consulta;
-    // @Autowired
-    // IOltsCMDBDAO<oltsCMDBDto> oltsCMDB;
-    @Autowired
-    ICronExecution cronExecution;
+ 
     @Autowired
     IinventarioOntsRepositorio inventario;
     @Autowired
@@ -246,23 +242,6 @@ public class monitorController extends constantes {
         return consulta.consultaNumeroSerie(oid, ip);
     }
 
-    @RequestMapping(value = "/getPoleoOlts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public String getPoleoOlts() throws Exception {
-        String response = "";
-        try {
-            boolean res = cronExecution.updateOlts();
-            if (res) {
-                response = "ok";
-            } else {
-                response = "error";
-            }
-        } catch (Exception e) {
-            response = "error: " + e;
-        }
-
-        return response;
-
-    }
 
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/findOlt", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)

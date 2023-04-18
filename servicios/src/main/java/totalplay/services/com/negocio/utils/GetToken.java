@@ -14,6 +14,9 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class GetToken {
 
 	public String getToken() {
@@ -36,11 +39,11 @@ public class GetToken {
 
 			return token;
 		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
+			log.error("Error: "+e);
 		} catch (ClientProtocolException e) {
-			e.printStackTrace();
+			log.error("Error: "+e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("Error: "+e);
 		}
 		return null;
 
