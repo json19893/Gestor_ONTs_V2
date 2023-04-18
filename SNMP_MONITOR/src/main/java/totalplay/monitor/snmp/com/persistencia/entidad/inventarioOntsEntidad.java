@@ -17,6 +17,7 @@ public class inventarioOntsEntidad {
 	private String numero_serie;
 	private String oid;
 	private Date fecha_descubrimiento;
+	private Date fecha_modificacion;
 	private Integer id_olt;
 	private Integer estatus;
 	private String id_ejecucion;
@@ -32,6 +33,9 @@ public class inventarioOntsEntidad {
 	private Integer actualizacion;
 	private String id_puerto;
 	private String tecnologia;
+	private String index;
+	private String indexFSP;
+	private boolean error;
 	
 	
 	@Override
