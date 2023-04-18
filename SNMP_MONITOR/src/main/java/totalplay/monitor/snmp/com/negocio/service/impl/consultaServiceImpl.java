@@ -494,14 +494,23 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 				DiferenciasManualEntity diferencia=	diferencias.getOntBySerieOlt(idOlt,serie);
 				BeanUtils.copyProperties(onts, diferencia);
 				inventarioOnts.save(onts);
-				List<DiferenciasManualEntity> supDife=	diferencias.getOntBySerie(serie);
+				
+			}else{
+				DiferenciasManualEntity diferencia=	diferencias.getOntBySerieOlt(idOlt,serie);
+				ont.setEstatus(diferencia.getEstatus());
+				ont.setIndex(diferencia.getIndex());
+				ont.setId_olt(diferencia.getId_olt());
+				ont.setIndexFSP(diferencia.getIndexFSP());
+				ont.setId_puerto(diferencia.getId_puerto());
+				ont.setTecnologia(diferencia.getTecnologia());
+				ont.setId_region(diferencia.getId_region());
+				ont.setOid(diferencia.getOid());
+				inventarioOnts.save(ont);
+			}
+			List<DiferenciasManualEntity> supDife=	diferencias.getOntBySerie(serie);
 				for(DiferenciasManualEntity d:supDife){
 					diferencias.deleteById(d.get_id());
 				}
-			}else{
-				response.setCod(1);
-			response.setSms("La ont ya se encuentra registrada en el inventario");
-			}
 
 		} catch (Exception e) {
 			response.setCod(1);
