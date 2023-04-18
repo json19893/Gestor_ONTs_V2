@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import totalplay.monitor.snmp.com.persistencia.entidad.poleosCpuEntidad;
+import totalplay.monitor.snmp.com.persistencia.entidad.poleosLastUpTimeEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.poleosMemoryEntidad;
 
 
@@ -19,4 +20,11 @@ public interface IpoleoMemoryRepositorio extends MongoRepository<poleosMemoryEnt
 			,"{$limit:1}"
 			})
 	poleosMemoryEntidad getMetrica(@Param("idEjecucion") String idEjecucion, @Param("idOlt") Integer idOlt, @Param("oid") String oid );
+
+	@Aggregation(pipeline = { 
+			"{'$match':{'$and':[{'id_ejecucion': ?0},{'index': ?1}]}}"
+			,"{$sort:{_id:-1}}"
+			,"{$limit:1}"
+			})
+	poleosMemoryEntidad getMetricaByIndex(@Param("idEjecucion") String idEjecucion, @Param("index") String index );
 }

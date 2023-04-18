@@ -204,13 +204,15 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 	
 	@Override
 	@Async("taskExecutor2")
-	public CompletableFuture<GenericResponseDto> saveEmpresariales(List<InventarioOntsAuxEntity> onts ){
+	public CompletableFuture<GenericResponseDto> saveEmpresariales(List onts, boolean manual ){
 		
 		try {
 			
 				LocalDateTime now = LocalDateTime.now(); 
-				
-				inventarioAux.saveAll(onts);
+				if(manual)
+					inventarioAuxManual.saveAll(onts);
+				else
+					inventarioAux.saveAll(onts);
 				
 				int seconds = (int) ChronoUnit.SECONDS.between(now, LocalDateTime.now());
 				log.info("::::::::    onts empresariales guardas   :::::::::::::::  "+ seconds);

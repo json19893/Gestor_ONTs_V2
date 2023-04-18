@@ -15,6 +15,7 @@ import totalplay.monitor.snmp.com.negocio.dto.responseOltsOntsDto;
 import totalplay.monitor.snmp.com.negocio.dto.totalesOntsEmpDto;
 import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.vwActualizacionEntidad;
+import totalplay.monitor.snmp.com.persistencia.entidad.vwTotalOntsEntidad;
 
 
 @Repository
@@ -88,6 +89,14 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 	
 	@Aggregation(pipeline = { "{'$match':{'$and':[{'alias':?0},{'tipo':'E'}]}}" })
 	List<inventarioOntsEntidad> findOntByAliasE(@Param("alias") String alias);
+	
+	
+	@Aggregation(pipeline = { "{$unionWith: 'tb_inventario_onts_pdm'}"
+			, "{'$match':{'$and':[{'numero_serie':?0},{'vip': 1 }]}}" })
+	List<inventarioOntsEntidad> findOntBySerieV(@Param("serie") String serie);
+	
+	@Aggregation(pipeline = { "{'$match':{'$and':[{'alias':?0},{'vip':1}]}}" })
+	List<inventarioOntsEntidad> findOntByAliasV(@Param("alias") String alias);
 	
 	@Query(value="{'alias': {$regex: ?0, $options:'i'}}" )
 	List<inventarioOntsEntidad> findAliasByRegex(@Param("regex") String regex);
@@ -712,10 +721,7 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 					+ "}\r\n"
 					, "{ $replaceRoot: { newRoot: \"$olts\" } }" })
 			@Meta(allowDiskUse = true)
-			List<responseOltsOntsDto> getOltsOnts();
-
-
-	
+			List<responseOltsOntsDto> getOltsOnts();	
 	
 	
 }

@@ -34,7 +34,7 @@ public class PoleoMetricasUtilsService extends Constantes {
      * @return metrica: Devuelve un objeto asyncrono que envuelve una GenericResponseDto.
      * @throws IOException: Son las excepciones cachadas por la ejecuccion del comando snmp en un entorno de ejecuccion linux
      */
-    @Async("taskExecutor2")
+    //@Async("taskExecutor2")
     public CompletableFuture<GenericResponseDto> dispatcherAsyncPoleoMetrica(
             configuracionDto configuracion, String idMonitorPoleo, int idMetrica,
             Integer idOlt, boolean saveErroneos,

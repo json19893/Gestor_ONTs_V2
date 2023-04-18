@@ -184,12 +184,12 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 			
 
 		if(!onlyHeaders) {
-			if (tipo.compareTo("T") == 0)
-				response.setTotalesRegion(vwOnts.findByIdRegion(idRegion));
+			if (tipo.compareTo("T") == 0) 
+				response.setTotalesRegion(catOltsRepositorio.getDataRegion(idRegion)); /*vwOnts.findByIdRegion(idRegion));*/
 			else if (tipo.compareTo("E") == 0)
-				response.setTotalesRegionEmp(wvOntsEmp.findByIdRegion(idRegion));
+				response.setTotalesRegionEmp(catOltsRepositorio.getDataRegionEmpresariales(idRegion));
 			else
-				response.setTotalesRegionVips(wvOntsVips.findByIdRegion(idRegion));
+				response.setTotalesRegionVips(catOltsRepositorio.getDataRegionVips(idRegion));
 		}
 
 		return response;
