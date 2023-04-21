@@ -12,7 +12,7 @@ import totalplay.login.com.negocio.service.IloginService;
 public class LoginController {
 	@Autowired
 	IloginService loginService;
-	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+
 	 @PostMapping("/login")
 	  public ResponseDto  login(@RequestBody (required = true) RequestDto request ) throws Exception { 
 		    return loginService.loginLpda(request);

@@ -51,7 +51,7 @@ import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoMetricaEntity;
 import totalplay.snmpv2.com.persistencia.entidades.ParametrosGeneralesEntity;
 @Slf4j
 @RestController
-@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+
 public class MetricasController extends Constantes {
 	
 	@Autowired

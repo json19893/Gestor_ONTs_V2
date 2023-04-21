@@ -14,7 +14,7 @@ import totalplay.snmpv2.com.negocio.services.IpoleoMetricasService;
 
 @RestController
 @Slf4j
-@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+
 public class MetricaController {
     public static final int RESOURCE_NOT_FOUND = 5;
     public static final int SNMP_COMMAND_ERROR = 1;

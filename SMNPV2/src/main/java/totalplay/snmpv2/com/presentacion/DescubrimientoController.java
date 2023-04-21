@@ -46,7 +46,6 @@ import totalplay.snmpv2.com.persistencia.repositorio.ItblDescubrimientoManualRep
 import totalplay.snmpv2.com.persistencia.entidades.MonitorEjecucionEntity;
 @Slf4j
 @RestController
-@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 public class DescubrimientoController extends Constantes {
 
 	@Autowired

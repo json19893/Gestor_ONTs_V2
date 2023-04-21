@@ -17,7 +17,7 @@ import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsRepository;
 
 @Slf4j
 @RestController
-@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+
 public class OltsController {
 
     class ResourceNotFoundException extends RuntimeException {

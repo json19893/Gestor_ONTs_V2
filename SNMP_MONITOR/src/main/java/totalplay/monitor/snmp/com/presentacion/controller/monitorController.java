@@ -47,7 +47,7 @@ import totalplay.monitor.snmp.com.persistencia.repository.bitacoraEventosReposit
 
 @Controller
 @RestController
-@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+
 public class monitorController extends constantes {
     @Autowired
     ImonitorService monitorServicio;

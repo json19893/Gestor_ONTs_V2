@@ -14,7 +14,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v2")
-@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 public class OntController {
     @Autowired
     IDiferenciaCargaManualService service;
