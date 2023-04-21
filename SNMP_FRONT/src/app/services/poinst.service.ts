@@ -188,13 +188,7 @@ export class pointService {
 
  
 
-  login(data: any): Observable<ValidaUser> {
-    /*var headers = new HttpHeaders({
-      'Authorization': token,
-      'mode':'no-cors'});*/
-    return this.http.post<ValidaUser>(AppUrlSettings.BASE_API_LOGIN + AppUrlSettings.LOGIN, data);
-
-  }
+ 
 
   updateEstatus(idOlt: any, estatus: any,usuario:any): Observable<ValidaUser> {
     /*var headers = new HttpHeaders({
@@ -204,18 +198,7 @@ export class pointService {
 
   }
 
-  descubrimiento(data: any): Observable<any> {
-    /*var headers = new HttpHeaders({
-      'Authorization': token,
-      'mode':'no-cors'});*/
-    return this.http.post<any>(AppUrlSettings.BASE_API_DESCUBRIMIENTO + AppUrlSettings.DESCUBRIMIENTO_MANUAL, data);
-  }
-  poleoMetrica(data: any): Observable<any> {
-    /*var headers = new HttpHeaders({
-      'Authorization': token,
-      'mode':'no-cors'});*/
-    return this.http.post<any>(AppUrlSettings.BASE_API_DESCUBRIMIENTO + AppUrlSettings.POLEO_METRICAS_MANUAL,data);
-  }
+  
   validaMaximo(): Observable<any> {
     /*var headers = new HttpHeaders({
       'Authorization': token,
@@ -259,12 +242,7 @@ export class pointService {
   }
 
   
-  poleoMetricaOid(data:any): Observable<any> {
-    /*var headers = new HttpHeaders({
-      'Authorization': token,
-      'mode':'no-cors'});*/
-    return this.http.post<any>(AppUrlSettings.BASE_API_DESCUBRIMIENTO + AppUrlSettings.POLEO_METRICA_OID,data);
-  }
+  
 
   cambios(idOlt:any): Observable<any> {
     /*var headers = new HttpHeaders({
@@ -280,8 +258,38 @@ export class pointService {
   }
   
 
+/*Servicios de login  */
+
+login(data: any): Observable<ValidaUser> {
+  /*var headers = new HttpHeaders({
+    'Authorization': token,
+    'mode':'no-cors'});*/
+  return this.http.post<ValidaUser>(AppUrlSettings.BASE_API + AppUrlSettings.LOGIN, data);
+
+}
 
 
+/*Servicios de descubrimiento */
 
+descubrimiento(data: any): Observable<any> {
+  /*var headers = new HttpHeaders({
+    'Authorization': token,
+    'mode':'no-cors'});*/
+  return this.http.post<any>(AppUrlSettings.BASE_API + AppUrlSettings.DESCUBRIMIENTO_MANUAL, data);
+}
+poleoMetrica(data: any): Observable<any> {
+  /*var headers = new HttpHeaders({
+    'Authorization': token,
+    'mode':'no-cors'});*/
+  return this.http.post<any>(AppUrlSettings.BASE_API + AppUrlSettings.POLEO_METRICAS_MANUAL,data);
+}
+
+poleoMetricaOid(data:any): Observable<any> {
+  /*var headers = new HttpHeaders({
+    'Authorization': token,
+    'mode':'no-cors'});*/
+  return this.http.post<any>(AppUrlSettings.BASE_API + AppUrlSettings.POLEO_METRICA_OID,data);
+}
   
 }
+
