@@ -33,7 +33,7 @@ export class AppUrlSettings{
     public static GET_OLTS= 'snmp-monitor/getOlts/';
     public static UPDATE_STATUS="snmp-monitor/actualizaEstatus/";
     public static VALIDA_USUARIO="snmp-monitor/validaUser/";
-    public static LOGIN ="snmp-monitor/login-lpda/login"
+    public static LOGIN ="login-lpda/login"
     public static UPDATE_ESTATUS_OLT ="snmp-monitor/updateStatusOlt/"
     public static DESCUBRIMIENTO_MANUAL ="snmpv2/descubrimientoManual"
     public static POLEO_METRICAS_MANUAL="snmpv2/poleoMetricasManual/"

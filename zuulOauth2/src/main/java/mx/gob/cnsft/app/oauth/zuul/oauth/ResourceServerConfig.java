@@ -27,20 +27,7 @@ import org.springframework.web.filter.CorsFilter;
 @EnableResourceServer
 public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 
-	@Value("${config.security.oauth.jwt.key}")
-	private String jwtKey;
 	
-	@Value("${Http.security.endpoint.Allowed}")
-	private String allowed;
-	
-	@Value("${Http.security.endpoint.NotAllowed}")
-	private String notAllowed;
-	
-	@Value("${Http.security.corsConfig.header}")
-	private String header;
-	
-	@Value("${Http.security.corsConfig.metods}")
-	private String method;
 	
 
 	
@@ -51,9 +38,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable().authorizeRequests().antMatchers("/Totalplay/login-lpda/**").permitAll()
-		.antMatchers(HttpMethod.GET,notAllowed).hasAnyRole("ADMIN", "USER")
-		.anyRequest().authenticated().and().cors().configurationSource(corsConfigurationSource());
+		http.csrf().disable().authorizeRequests().antMatchers("/**").permitAll()
+		.antMatchers(HttpMethod.GET,"/ddd/**").hasAnyRole("ADMIN", "USER");
+		//.anyRequest().authenticated().and().cors().configurationSource(corsConfigurationSource());
 		
 		
 		

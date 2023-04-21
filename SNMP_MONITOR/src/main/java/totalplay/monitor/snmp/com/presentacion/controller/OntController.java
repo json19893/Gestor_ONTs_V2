@@ -14,6 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v2")
+@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 public class OntController {
     @Autowired
     IDiferenciaCargaManualService service;
@@ -24,7 +25,7 @@ public class OntController {
      * @param request
      * @return
      */
-    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+  
     @RequestMapping(value = "/limpieza/onts/repetidas/{idOlt}", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public ResponseEntity<OntsRepetidasPorOltPostResponse> obtenerOntsRepetidas(@PathVariable("idOlt") Integer idOlt) {
         ResponseEntity wrapperServerHttp = new ResponseEntity("", HttpStatus.OK);
