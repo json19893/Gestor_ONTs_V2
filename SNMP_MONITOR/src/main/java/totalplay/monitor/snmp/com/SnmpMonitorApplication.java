@@ -7,11 +7,15 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+
 
 @SpringBootApplication
 @EnableScheduling
 @EnableDiscoveryClient
+
 public class SnmpMonitorApplication {
 
 	public static void main(String[] args) {

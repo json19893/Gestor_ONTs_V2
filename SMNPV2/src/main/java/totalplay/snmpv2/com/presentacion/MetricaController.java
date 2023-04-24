@@ -47,7 +47,7 @@ public class MetricaController {
      * @return ResponseEntity<?> Respuesta: Es una envoltura donde contiene un codigo de estatus http junto con la respuesta del servidor
      */
  
-    @RequestMapping(value = "/metrica/poleo", produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.GET, RequestMethod.POST})
+    @GetMapping(value = "/metrica/poleo", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getMetricaByNum_serial(@RequestBody RequestPostMetrica request) {
         ResponseEntity<GenericResponseDto> responseWrapperServer = null;
         GenericResponseDto response = new GenericResponseDto();

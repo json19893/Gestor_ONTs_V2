@@ -45,7 +45,7 @@ import totalplay.monitor.snmp.com.persistencia.repository.IvwActualizacionReposi
 import totalplay.monitor.snmp.com.persistencia.repository.IvwTotalOntsRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.bitacoraEventosRepository;
 
-@Controller
+
 @RestController
 
 public class monitorController extends constantes {
