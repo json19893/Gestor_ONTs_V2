@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -267,9 +268,8 @@ public class monitorController extends constantes {
         return response;
     }
 
-    @RequestMapping(value = "/actualizaEstatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value = "/actualizaEstatus")
     public respuestaStatusDto cambiarEstatusOnt(@RequestBody requestEstatusUserDto datos) {
-    
         bitacoraEventos.save(new tblBitacoraEventosEntidad(LocalDateTime.now().toString(), DES_ACTUALIZACION_ONT,datos.getUsuario(),DESC_EVENTO_CAMBIO_ESTATUS_ONTS + datos.getLista().toString()));
         respuestaStatusDto response = new respuestaStatusDto();
         if (datos != null) {
