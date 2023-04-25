@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: totalplay.login.com.LoginLpdaApplicationTests
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 2.504 s - in totalplay.login.com.LoginLpdaApplicationTests
