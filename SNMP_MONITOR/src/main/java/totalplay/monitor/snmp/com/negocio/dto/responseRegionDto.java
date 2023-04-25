@@ -2,16 +2,15 @@ package totalplay.monitor.snmp.com.negocio.dto;
 
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import totalplay.monitor.snmp.com.persistencia.entidad.vwTotalOntsEmpresarialesEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.vwTotalOntsEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.vwTotalOntsVipsEntidad;
 
-@Getter
-@Setter
-@ToString
+@Data
+@NoArgsConstructor
+
 public class responseRegionDto {
 	private List<dataRegionResponseDto> totalesRegion;
 	private List<dataRegionResponseDto> totalesRegionEmp;

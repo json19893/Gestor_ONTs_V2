@@ -1,12 +1,9 @@
 package totalplay.monitor.snmp.com.persistencia.entidad;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-@Setter
-@Getter
-@ToString
+import lombok.Data;
+import lombok.NoArgsConstructor;
+@Data
+@NoArgsConstructor
 public class ObjectIdentified {
     private String oid;
     private String split;

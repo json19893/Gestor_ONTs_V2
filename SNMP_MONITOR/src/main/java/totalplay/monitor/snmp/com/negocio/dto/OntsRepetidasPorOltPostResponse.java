@@ -9,7 +9,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
-@ToString
+
 public class OntsRepetidasPorOltPostResponse implements Serializable {
     //List<EnvoltorioOntRepetidasOltsDto> ont;
     List<DiferenciaCargaManualServiceImpl.AuxOntsAdapter> onts;

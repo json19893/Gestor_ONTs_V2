@@ -302,8 +302,8 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 						resPdm.setActualizacion(6);
 						resPdm.setTipo(d.getTipo());
 						
-						if(olt !=null &&  olt.getId_olt().intValue() == resPdm.getid_olt().intValue()) {
-							resPdm.setid_olt(olt.getId_olt());
+						if(olt !=null &&  olt.getId_olt().intValue() == resPdm.getId_olt().intValue()) {
+							resPdm.setId_olt(olt.getId_olt());
 							resPdm.setFrame(d.getFrame());
 							resPdm.setSlot(d.getSlot());
 							resPdm.setPort(d.getPort());

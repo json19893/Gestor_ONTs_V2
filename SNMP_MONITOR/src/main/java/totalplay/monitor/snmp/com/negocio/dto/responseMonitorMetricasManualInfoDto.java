@@ -1,15 +1,14 @@
 package totalplay.monitor.snmp.com.negocio.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import totalplay.monitor.snmp.com.persistencia.entidad.MonitorPoleoManualEntity;
 import totalplay.monitor.snmp.com.persistencia.entidad.catOltsEntidad;
 
 
-@Getter
-@Setter
-@ToString
+@Data
+@NoArgsConstructor
+
 public class responseMonitorMetricasManualInfoDto extends MonitorPoleoManualEntity {
 	private Integer [] terminados;
 	private Integer [] faltantes;

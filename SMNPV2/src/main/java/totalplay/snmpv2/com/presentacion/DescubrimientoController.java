@@ -198,7 +198,7 @@ public class DescubrimientoController extends Constantes {
 			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
 			
 		} catch (Exception e) {
-			return new GenericResponseDto(EJECUCION_ERROR, 1);
+			return  new GenericResponseDto(EJECUCION_ERROR, 1);
 		}
 		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
 	}

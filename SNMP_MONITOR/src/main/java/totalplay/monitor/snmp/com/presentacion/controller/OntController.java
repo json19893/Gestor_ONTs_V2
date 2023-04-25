@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import totalplay.monitor.snmp.com.negocio.dto.OntsRepetidasPorOltPostRequest;
+
 import totalplay.monitor.snmp.com.negocio.dto.OntsRepetidasPorOltPostResponse;
 import totalplay.monitor.snmp.com.negocio.service.IDiferenciaCargaManualService;
 import totalplay.monitor.snmp.com.negocio.service.impl.DiferenciaCargaManualServiceImpl;

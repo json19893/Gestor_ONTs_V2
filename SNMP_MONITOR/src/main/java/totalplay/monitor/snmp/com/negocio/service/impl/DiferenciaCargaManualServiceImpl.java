@@ -1,7 +1,9 @@
 package totalplay.monitor.snmp.com.negocio.service.impl;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+
+import lombok.NoArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -9,11 +11,11 @@ import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
 import org.springframework.data.mongodb.core.aggregation.AggregationResults;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.stereotype.Service;
-import totalplay.monitor.snmp.com.negocio.dto.OntsRepetidasPorOltPostRequest;
+
 import totalplay.monitor.snmp.com.negocio.service.IDiferenciaCargaManualService;
 import totalplay.monitor.snmp.com.persistencia.entidad.DiferenciasManualEntity;
 import totalplay.monitor.snmp.com.persistencia.entidad.catOltsEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsEntidad;
+
 import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IdiferenciasManualRepository;
 
@@ -113,8 +115,8 @@ public class DiferenciaCargaManualServiceImpl implements IDiferenciaCargaManualS
     }
 
     //Patron-Adapter: Se usa para mappear ciertos campos del documento
-    @Setter
-    @Getter
+@Data
+@NoArgsConstructor
     public class AuxOltAdapter {
         private String ip;
         private Integer id_olt;
@@ -122,8 +124,8 @@ public class DiferenciaCargaManualServiceImpl implements IDiferenciaCargaManualS
 
     }
 
-    @Setter
-    @Getter
+    @Data
+    @NoArgsConstructor
     public class AuxOntsAdapter {
         //private String _id;
         private String oid;
