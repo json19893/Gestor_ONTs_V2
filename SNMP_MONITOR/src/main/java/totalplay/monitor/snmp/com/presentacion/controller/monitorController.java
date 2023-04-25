@@ -467,15 +467,12 @@ public class monitorController extends constantes {
         responseValidaUsuarioDto response = new responseValidaUsuarioDto();
 
         try {
-            tblBitacoraEventosEntidad bt = new tblBitacoraEventosEntidad();
+          
 
             catOltsEntidad olt = catOlts.findOltByIdolt(idOlt);
-            bt.setFecha(LocalDateTime.now().toString());
-            bt.setModulo(DES_ACTUALIZACION_E);
-            bt.setUsuario(usuario);
-            bt.setDescripcion(DESC_EVENTO_CAMBIO_ESTATUS + olt.getIp() + " nombre: " + olt.getNombre() + " a estatus: "
-                    + estatus);
-            bitacoraEventos.save(bt);
+  
+            bitacoraEventos.save(new tblBitacoraEventosEntidad(LocalDateTime.now().toString(),DES_ACTUALIZACION_E,usuario,DESC_EVENTO_CAMBIO_ESTATUS + olt.getIp() + " nombre: " + olt.getNombre() + " a estatus: "
+            + estatus));
             olt.setEstatus(estatus);
             catOlts.save(olt);
             response.setMensaje("OK");
