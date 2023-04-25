@@ -81,6 +81,7 @@ public ses:any;
   clasificacion: string = '';
 
   constructor(
+    private service: pointService,
     private router: Router,
     private spinner: NgxSpinnerService,
     private _bottomSheet: MatBottomSheet,
@@ -217,12 +218,19 @@ public ses:any;
   }
 
   salir() {
-    localStorage.removeItem("cod_sesion");
-    localStorage.removeItem("usuario");
-    localStorage.removeItem("nombreCompleto");
-    localStorage.removeItem("rol");
-    localStorage.removeItem('detalleOnts');
-    window.location.reload();
+
+    this.service.logout(this.usuario).subscribe(
+      res => {
+        localStorage.removeItem("cod_sesion");
+        localStorage.removeItem("usuario");
+        localStorage.removeItem("nombreCompleto");
+        localStorage.removeItem("rol");
+        localStorage.removeItem('detalleOnts');
+      },
+      err => console.error(err)
+      
+    );
+    //window.location.reload();
   }
 }
 

@@ -9,6 +9,8 @@ public interface IloginService {
 
 	ResponseDto loginLpda(RequestDto request) throws Exception;
 
-	ResponseGenericoDto putUsuarios(UsuariosRequestDto request) throws Exception;;
+	ResponseDto logout(String u) throws Exception;
+
+	ResponseGenericoDto putUsuarios(UsuariosRequestDto request) throws Exception;
 
 }

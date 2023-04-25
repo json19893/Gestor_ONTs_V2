@@ -241,6 +241,22 @@ login(data: any): Observable<ValidaUser> {
 }
 
 
+getIp(): Observable<any> {
+  var headers = new HttpHeaders({
+    'mode':'no-cors'});
+  return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.GET_IP,{headers});
+
+}
+
+logout(u:any): Observable<any> {
+  var headers = new HttpHeaders({
+    'mode':'no-cors'});
+  return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.LOGOUT+u,{headers});
+
+}
+
+
+
 /*Servicios de descubrimiento */
 
 descubrimiento(data: any): Observable<any> {

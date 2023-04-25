@@ -1,6 +1,7 @@
 package totalplay.login.com.negocio.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Optional;
@@ -42,30 +43,44 @@ public class LoginServiceImpl implements IloginService {
 	public ResponseDto loginLpda(RequestDto request) throws Exception {
 		ResponseDto response = new ResponseDto();
 		try {
-			long exite=usuarios.countByNombreUsuario(request.getUsuario());
+			long exite=usuarios.countByNombreUsuario(request.getU());
 			if(exite>0) {
-				if(request.getUsuario().equals("amagos")||request.getUsuario().equals("jsalgadom")) {
-					usuariosEntity usuario=	usuarios.findByNombreUsuario(request.getUsuario());
-				
-					//if(usuario.getSesion()==0) {
+				if(request.getU().equals("amagos")||request.getU().equals("jsalgadom")) {
+					usuariosEntity usuario=	usuarios.findByNombreUsuario(request.getU());
+					if(usuario.getSesion()==0 ) {
 						Optional<RolesEntity>  rol= roles.findById(usuario.getRol());
 						response.setCod(0);
 						response.setSms("OK");
 						response.setNombreCompleto(usuario.getNombreCompleto());
 						response.setUsuario(usuario.getNombreUsuario());
 						response.setRol(rol.get().getRol());
+						
 						//response.setCadenaConexion(ult.getJWTToken(request.getUsuario()));
 						usuario.setSesion(1);
+						usuario.setIpConexion(request.getC());
 						usuario.setFechaConexion(LocalDateTime.now().toString());
-					
+						usuario.setIntentos(usuario.getIntentos()+1);
+						List<String > intentos=usuario.getIpConexionIntentos();
+						intentos.add(request.getC());
+						usuario.setIpConexionIntentos(intentos);
 						usuarios.save(usuario);
+						}else {
+					response.setCod(1);
+					response.setSms("Ya existe una seion activa par el usuario: "+ request.getU());
+					usuario.setIntentos(usuario.getIntentos()+1);
+					List<String > intentos=usuario.getIpConexionIntentos();
+					intentos.add(request.getC());
+					usuario.setIpConexionIntentos(intentos);
+					usuarios.save(usuario);
+					return response;
+				}
 			}else {
 				
 				String res = validaUsuario(request);
+				usuariosEntity usuario=	usuarios.findByNombreUsuario(request.getU());
 				if (res == "LDAP_SUCCESS") {
-				usuariosEntity usuario=	usuarios.findByNombreUsuario(request.getUsuario());
-				
-				//if(usuario.getSesion()==0) {
+		
+					if(usuario.getSesion()==0) {
 					Optional<RolesEntity>  rol= roles.findById(usuario.getRol());
 					
 					response.setCod(0);
@@ -75,33 +90,46 @@ public class LoginServiceImpl implements IloginService {
 					response.setRol(rol.get().getRol());
 					//response.setCadenaConexion(ult.getJWTToken(request.getUsuario()));
 					usuario.setSesion(1);
+					usuario.setIpConexion(request.getC());
 					usuario.setFechaConexion(LocalDateTime.now().toString());
-
-	
-			
+					usuario.setIntentos(usuario.getIntentos()+1);
+					List<String > intentos=usuario.getIpConexionIntentos();
+					intentos.add(request.getC());
+					usuario.setIpConexionIntentos(intentos);
 					usuarios.save(usuario);
-				/*}else {
+			}else {
 					response.setCod(1);
-					response.setSms("Ya existe una seion activa par el usuario: "+ request.getUsuario());
+					response.setSms("Ya existe una seion activa par el usuario: "+ request.getU());
+					usuario.setIntentos(usuario.getIntentos()+1);
+					List<String > intentos=usuario.getIpConexionIntentos();
+					intentos.add(request.getC());
+					usuario.setIpConexionIntentos(intentos);
+					usuarios.save(usuario);
 					return response;
-				}*/
+				}
 				
 				}else {
 					response.setCod(1);
-					response.setSms("El usuario: "+ request.getUsuario()+" no tiene acceso al Directory Activo");
+					response.setSms("El usuario: "+ request.getU()+" no tiene acceso al Directory Activo");
+					usuario.setIntentos(usuario.getIntentos()+1);
+					List<String > intentos=usuario.getIpConexionIntentos();
+					intentos.add(request.getC());
+					usuario.setIpConexionIntentos(intentos);
+					usuarios.save(usuario);
 					return response;
 				}
+				
 				
 			}
 			}else {
 				response.setCod(1);
-				response.setSms("El usuario: "+ request.getUsuario()+" no tiene permitido acceder a este sistema");
+				response.setSms("El usuario: "+ request.getU()+" no tiene permitido acceder a este sistema");
 				return response;
 			}
 		
 		} catch (Exception e) {
 			response.setCod(1);
-			response.setSms("Error al consultar");
+			response.setSms("Error al consultar:: "+ e);
 		}
 		return response;
 	}
@@ -109,14 +137,14 @@ public class LoginServiceImpl implements IloginService {
 	public String validaUsuario(RequestDto datos) {
 		String response = "";
 		Hashtable<String, String> authEnv = new Hashtable<String, String>();
-		String userName = "totalplay\\" + datos.getUsuario();
+		String userName = "totalplay\\" + datos.getU();
 
 		String ldapURL = "ldap://10.216.20.175/DC=totalplay,DC=corp";
 		authEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 		authEnv.put(Context.PROVIDER_URL, ldapURL);
 		authEnv.put(Context.SECURITY_AUTHENTICATION, "simple");
 		authEnv.put(Context.SECURITY_PRINCIPAL, userName);
-		authEnv.put(Context.SECURITY_CREDENTIALS, datos.getPassword());
+		authEnv.put(Context.SECURITY_CREDENTIALS, datos.getP());
 		try {
 			@SuppressWarnings("unused")
 			DirContext authContext = new InitialDirContext(authEnv);
@@ -161,6 +189,28 @@ public class LoginServiceImpl implements IloginService {
 			log.error("Error: "+e);;
 		}
 		return response;
+	}
+
+	@Override
+	public ResponseDto logout(String u) throws Exception {
+		ResponseDto response = new ResponseDto();
+		try {
+			response.setCod(0);
+			response.setSms("OK");
+		
+		usuariosEntity usuario=	usuarios.findByNombreUsuario(u);
+		usuario.setIntentos(0);
+		usuario.setFechaConexion("");
+		usuario.setIpConexion("");
+		List<String> inCo=new ArrayList<>();
+		usuario.setIpConexionIntentos(inCo);
+		usuario.setSesion(0);
+		usuarios.save(usuario);
+	} catch (Exception e) {
+		response.setCod(1);
+		response.setSms("Error al cerra seión ");
+	}
+	return response;
 	}
 	
 	/*@ConditionalOnProperty(name="scheduler.enabled", matchIfMissing = true)

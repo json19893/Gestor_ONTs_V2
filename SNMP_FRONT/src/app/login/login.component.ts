@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit {
   public parLogin:login | undefined;
   public sesion:any;
   public ses:any;
+  public cli:any
   cod_sesion:any;
     hide = true;
     loginForm: FormGroup | any;
@@ -30,6 +31,16 @@ export class LoginComponent implements OnInit {
           });
     }
     ngOnInit() {
+     
+      this.service.getIp().subscribe(
+        res => {
+      res
+
+          localStorage.setItem("cl",res.sms)
+        },
+        err => console.error(err)
+        
+      );
        this.ses=localStorage.getItem('cod_sesion');
       if(this.ses==1){
         this.router.navigate(['/home'])
@@ -38,7 +49,7 @@ export class LoginComponent implements OnInit {
       }
       this.spinner.show();
         setTimeout(() => { this.spinner.hide(); }, 1000,);
- 
+
     }
 
   
@@ -48,7 +59,9 @@ export class LoginComponent implements OnInit {
     if(!this.loginForm.valid){
         return;
       }else{
-        this.parLogin=new login(this.loginForm.value.u,this.loginForm.value.p);
+       this.cli= localStorage.getItem("cl")
+      
+        this.parLogin=new login(this.loginForm.value.u,this.loginForm.value.p,this.cli.toString());
         this.service.login(this.parLogin).subscribe(
           res => {
             this.sesion=res;
@@ -57,7 +70,7 @@ export class LoginComponent implements OnInit {
             localStorage.setItem('usuario',this.sesion.usuario);
             localStorage.setItem('nombreCompleto',this.sesion.nombreCompleto);
             localStorage.setItem('rol',this.sesion.rol);
-            this.router.navigate(['/home'])
+            window.location.reload();
           }else{
             this._snackBar.open(this.sesion.sms, "cerrar",{
               duration: 3000

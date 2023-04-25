@@ -1,9 +1,9 @@
 export class login {
 
     constructor(
-        public  usuario:any,
-        public password:any
-    
+        public  u:any,
+        public p:any,
+        public c:any
     
         ) {
             
