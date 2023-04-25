@@ -32,6 +32,18 @@ export interface up {
     fecha_ultima_caida: string;
     olts:oltsAsignacion[]
   }
+
+  export interface clasificacion {
+    ip: string;
+    numeroSerie: string;
+    frame: number;
+    slot: number;
+    port:number;
+    fechaActualizacion:Date;
+    descripcionAlarma:string;
+    causa:string;
+  }
+  
   export interface oltsAsignacion {
     id_olt:number;
     ip:string;
@@ -627,6 +639,11 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
       this.fechaPoleo=""
 
     }
+
+    getDetalle(ns:any){
+      localStorage.setItem("serial",ns)
+      this.dialog.open(detalleActualizacionOnt);
+    }
   }
 
   @Component({
@@ -666,3 +683,54 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
         this.dialogRef.close();
       }
     }
+
+    @Component({
+      selector: 'detalleActualizacion',
+      templateUrl: './detalleActualizacion.html',
+      styleUrls: ['./detalleOnt.component.css']
+    })
+    
+    export class detalleActualizacionOnt implements OnInit {
+      displayedColumns: string[] = ['ip', 'numeroSerie', 'frame', 'slot','port','uid','fechaActualizacion','descripcionAlarma','causa'];
+      ELEMENT_DATA4: clasificacion[] = []
+      dataSource1 = new MatTableDataSource<clasificacion>;
+      ns:any
+      @ViewChild(MatPaginator) paginator!: MatPaginator;
+      public mostrar:any;
+        constructor(
+      
+          private service: pointService,
+          private spinner: NgxSpinnerService,
+          private _snackbar: MatSnackBar
+        ) {
+         
+      
+        }
+        ngOnInit() {
+          this.mostrar = localStorage.getItem('mostrar');
+          this.ns = localStorage.getItem('serial');
+          if(this.mostrar==null||this.mostrar==undefined){
+            this.mostrar='E';
+           }
+         this.getDetalleActuacionSerie( this.mostrar,this.ns);
+        }
+        getDetalleActuacionSerie(mostrar:any,ns:any) {
+          this.spinner.show();
+          this.ELEMENT_DATA4.length = this.ELEMENT_DATA4.length -this.ELEMENT_DATA4.length
+          this.mostrar = localStorage.getItem('mostrar');
+          if(this.mostrar==undefined){
+            this.mostrar="E"
+          }
+      
+          this.service.getDetalleActuacionSerie(mostrar,ns).subscribe(
+            data => {
+              this.ELEMENT_DATA4 = data;
+              this.dataSource1 = new MatTableDataSource<clasificacion>(this.ELEMENT_DATA4);
+              this.dataSource1!.paginator = this.paginator!;
+              this.spinner.hide();
+            },
+            err => console.error(err)
+          );
+          console.log(this.dataSource1)
+        }
+      }

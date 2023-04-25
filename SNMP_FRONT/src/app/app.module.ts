@@ -24,6 +24,7 @@ import {ClasificacionComponent} from './clasificacion/clasificacion.component';
 import { BottomSheetOverviewExampleSheet} from'./menu/menu.component';
 import { DialogContentExampleDialog } from './menu/menu.component';
 import { ActualizacionComponent } from './actualizacion/actualizacion.component'
+import {detalleActualizacionOnt} from './detalleOnt/detalleOnt.component'
 import { ActualizaOntsDialog, ConsultaOltsComponent ,detalleEjecucionDialog, DialogElementsExampleDialog} from './consultaOlts/consultaOlts.component';
 import { FileSaverModule } from 'ngx-filesaver';
 import {DateFormatPipe} from './pipes/date-format.pipe'
@@ -47,7 +48,8 @@ import {DateFormatPipe} from './pipes/date-format.pipe'
     DialogElementsExampleDialog,
     detalleActualizacionDialog,
     detalleEjecucionMetricaDialog,
-    DateFormatPipe
+    DateFormatPipe,
+    detalleActualizacionOnt
 
    
 

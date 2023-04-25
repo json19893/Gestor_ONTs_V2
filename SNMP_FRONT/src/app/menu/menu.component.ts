@@ -105,6 +105,7 @@ public ses:any;
     this.ses=localStorage.getItem('cod_sesion');
     if(this.ses==1){
       this.router.navigate(['/home'])
+      
     }else{
       this.router.navigate(['/login'])
     }
@@ -226,11 +227,12 @@ public ses:any;
         localStorage.removeItem("nombreCompleto");
         localStorage.removeItem("rol");
         localStorage.removeItem('detalleOnts');
+        window.location.reload();
       },
       err => console.error(err)
       
     );
-    //window.location.reload();
+   // 
   }
 }
 

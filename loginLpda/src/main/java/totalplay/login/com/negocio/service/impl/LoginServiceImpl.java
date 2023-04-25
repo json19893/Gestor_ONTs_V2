@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 
 
 import lombok.extern.slf4j.Slf4j;
-
+import totalplay.login.com.helper.AesEncryption;
 import totalplay.login.com.negocio.Dto.RequestDto;
 import totalplay.login.com.negocio.Dto.ResponseDto;
 import totalplay.login.com.negocio.Dto.ResponseGenericoDto;
@@ -44,11 +44,16 @@ public class LoginServiceImpl implements IloginService {
 	@Override
 	public ResponseDto loginLpda(RequestDto request) throws Exception {
 		ResponseDto response = new ResponseDto();
+	
 		try {
-			long exite=usuarios.countByNombreUsuario(request.getU());
+			
+			String u=AesEncryption.decrypt(request.getU());
+			String p=AesEncryption.decrypt(request.getP());
+			
+			long exite=usuarios.countByNombreUsuario(u);
 			if(exite>0) {
-				if(request.getU().equals("amagos")||request.getU().equals("jsalgadom")) {
-					usuariosEntity usuario=	usuarios.findByNombreUsuario(request.getU());
+				if(u.equals("amagos")||u.equals("jsalgadom")) {
+					usuariosEntity usuario=	usuarios.findByNombreUsuario(u);
 					if(usuario.getSesion()==0 ) {
 						Optional<RolesEntity>  rol= roles.findById(usuario.getRol());
 						response.setCod(0);
@@ -68,7 +73,7 @@ public class LoginServiceImpl implements IloginService {
 						usuarios.save(usuario);
 						}else {
 					response.setCod(1);
-					response.setSms("Ya existe una seion activa par el usuario: "+ request.getU());
+					response.setSms("Ya existe una seion activa par el usuario: "+ u);
 					usuario.setIntentos(usuario.getIntentos()+1);
 					List<String > intentos=usuario.getIpConexionIntentos();
 					intentos.add(request.getC());
@@ -78,8 +83,8 @@ public class LoginServiceImpl implements IloginService {
 				}
 			}else {
 				
-				String res = validaUsuario(request);
-				usuariosEntity usuario=	usuarios.findByNombreUsuario(request.getU());
+				String res = validaUsuario(u,p);
+				usuariosEntity usuario=	usuarios.findByNombreUsuario(u);
 				if (res == "LDAP_SUCCESS") {
 		
 					if(usuario.getSesion()==0) {
@@ -101,7 +106,7 @@ public class LoginServiceImpl implements IloginService {
 					usuarios.save(usuario);
 			}else {
 					response.setCod(1);
-					response.setSms("Ya existe una seion activa par el usuario: "+ request.getU());
+					response.setSms("Ya existe una seion activa par el usuario: "+ u);
 					usuario.setIntentos(usuario.getIntentos()+1);
 					List<String > intentos=usuario.getIpConexionIntentos();
 					intentos.add(request.getC());
@@ -112,7 +117,7 @@ public class LoginServiceImpl implements IloginService {
 				
 				}else {
 					response.setCod(1);
-					response.setSms("El usuario: "+ request.getU()+" no tiene acceso al Directory Activo");
+					response.setSms("El usuario: "+ u+" no tiene acceso al Directory Activo");
 					usuario.setIntentos(usuario.getIntentos()+1);
 					List<String > intentos=usuario.getIpConexionIntentos();
 					intentos.add(request.getC());
@@ -125,28 +130,29 @@ public class LoginServiceImpl implements IloginService {
 			}
 			}else {
 				response.setCod(1);
-				response.setSms("El usuario: "+ request.getU()+" no tiene permitido acceder a este sistema");
+				response.setSms("El usuario: "+ u+" no tiene permitido acceder a este sistema");
 				return response;
 			}
 		
 		} catch (Exception e) {
 			response.setCod(1);
 			response.setSms("Error al consultar:: "+ e);
+			log.error("Error:: ", e);
 		}
 		return response;
 	}
 
-	public String validaUsuario(RequestDto datos) {
+	public String validaUsuario(String u, String p) {
 		String response = "";
 		Hashtable<String, String> authEnv = new Hashtable<String, String>();
-		String userName = "totalplay\\" + datos.getU();
+		String userName = "totalplay\\" + u;
 
 		String ldapURL = "ldap://10.216.20.175/DC=totalplay,DC=corp";
 		authEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 		authEnv.put(Context.PROVIDER_URL, ldapURL);
 		authEnv.put(Context.SECURITY_AUTHENTICATION, "simple");
 		authEnv.put(Context.SECURITY_PRINCIPAL, userName);
-		authEnv.put(Context.SECURITY_CREDENTIALS, datos.getP());
+		authEnv.put(Context.SECURITY_CREDENTIALS,p);
 		try {
 			@SuppressWarnings("unused")
 			DirContext authContext = new InitialDirContext(authEnv);

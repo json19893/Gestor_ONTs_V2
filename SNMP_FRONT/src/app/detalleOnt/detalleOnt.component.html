@@ -228,6 +228,8 @@
                         <mat-menu #animals="matMenu">
                           <button [hidden]="!asigna"   mat-menu-item   [matMenuTriggerFor]="poleo">Poleo metrica</button>
                           <button [hidden]="asigna" mat-menu-item   [matMenuTriggerFor]="asignacion"  >Asignación</button>
+                          <button [hidden]="!asigna" (click)="getDetalle(row.numero_serie)" mat-menu-item    >Historico de eventos</button>
+                          
                         </mat-menu>
                         <mat-menu #poleo="matMenu" >
                           <button mat-menu-item  (click)="poleoMetrica(row.numero_serie,item.id_metrica)"  *ngFor="let item of metrics" >{{item.nombre}}</button>
