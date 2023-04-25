@@ -270,10 +270,6 @@ public class monitorController extends constantes {
     @RequestMapping(value = "/actualizaEstatus", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public respuestaStatusDto cambiarEstatusOnt(@RequestBody requestEstatusUserDto datos) {
     
-      /*   bt.setFecha(LocalDateTime.now().toString());
-        bt.setModulo(DES_ACTUALIZACION_ONT);
-        bt.setUsuario(datos.getUsuario());
-        bt.setDescripcion(DESC_EVENTO_CAMBIO_ESTATUS_ONTS + datos.getLista().toString());*/
         bitacoraEventos.save(new tblBitacoraEventosEntidad(LocalDateTime.now().toString(), DES_ACTUALIZACION_ONT,datos.getUsuario(),DESC_EVENTO_CAMBIO_ESTATUS_ONTS + datos.getLista().toString()));
         respuestaStatusDto response = new respuestaStatusDto();
         if (datos != null) {
