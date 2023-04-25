@@ -12,11 +12,6 @@ public class requestEstatusUserDto {
 
 	private List<requestEstatusDto> lista;
 	private String usuario;
-	
-
-	
-	
-	
 
 
 }
