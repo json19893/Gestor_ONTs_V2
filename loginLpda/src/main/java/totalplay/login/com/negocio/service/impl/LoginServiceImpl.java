@@ -12,6 +12,8 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 
@@ -213,11 +215,11 @@ public class LoginServiceImpl implements IloginService {
 	return response;
 	}
 	
-	/*@ConditionalOnProperty(name="scheduler.enabled", matchIfMissing = true)
+	@ConditionalOnProperty(name="scheduler.enabled", matchIfMissing = true)
 	@Scheduled(fixedRate = 100)
-	public void cron() {
-		System.out.println("ejecuto::::::::::::::");
-	}*/
+	public void cierraSesion() {
+		
+	}
 
 
 }

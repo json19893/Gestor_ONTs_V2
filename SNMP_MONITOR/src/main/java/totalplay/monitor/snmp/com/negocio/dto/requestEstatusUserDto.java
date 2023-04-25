@@ -2,13 +2,12 @@ package totalplay.monitor.snmp.com.negocio.dto;
 
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Getter
-@Setter
-@ToString
+
+@Data
+@NoArgsConstructor
 public class requestEstatusUserDto {
 
 	private List<requestEstatusDto> lista;
