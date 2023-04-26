@@ -1,7 +1,6 @@
 package totalplay.monitor.snmp.com.negocio.dto;
 
 import lombok.Data;
-import lombok.ToString;
 import totalplay.monitor.snmp.com.negocio.service.impl.DiferenciaCargaManualServiceImpl;
 
 
