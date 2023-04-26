@@ -19,18 +19,6 @@ public class vwTotalOntsVipsEntidad {
 	private Integer 	id_region;
 	private Integer total_onts;
 	private String tecnologia;
-	
-	
-	
 
-
-	@Override
-	public boolean equals(Object obj) {
-		if(obj instanceof vwTotalOntsVipsEntidad) {
-			return ((vwTotalOntsVipsEntidad) obj).getIp().equals(this.getIp());
-		}
-		return false;
-	}
-	
 
 }

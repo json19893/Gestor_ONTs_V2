@@ -208,7 +208,7 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 			}
 
 		} catch (Exception e) {
-			// TODO: handle exception
+		log.error("error", e);
 		}
 
 		return response;
@@ -239,7 +239,7 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 					onts= invOLts.finOntsByIdAllVips(idOlt);
 				}
 	} catch (Exception e) {
-		log.error("Error al extraer la informaciòn ", e);
+		log.error("error", e);
 	}
 	return onts;
 	}
@@ -332,7 +332,7 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 				return inventario.getTotalesRegionesVips();
 			}
 		}catch(Exception e) {
-			
+			log.error("error", e);
 		}
 		
 		return new ArrayList<datosRegionDto>();
@@ -514,7 +514,7 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 			}
 			
 		} catch (Exception e) {
-			// TODO: handle exception
+			log.error("error", e);
 		}
 		return response;
 	}

@@ -2,13 +2,12 @@ package totalplay.snmpv2.com.negocio.services.impl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+
 import java.util.ArrayList;
-import java.util.Arrays;
+
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -40,7 +39,6 @@ import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.ConfiguracionMetricaEntity;
 import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoOltMetricaEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.IhistoricoConteoOltRepository;
-import totalplay.snmpv2.com.presentacion.MetricaController.MetricaPoleo;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosAliasEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosCpuEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosDownBytesEntity;
@@ -233,7 +231,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                     monitorPoleoOltMetrica.save(monitorPoleoOlt);
 
                 } catch (Exception e) {
-                    log.error("error:" + e);
+                    log.error("error", e);
 
                     if (!idMonitorOlt.equals("")) {
                         MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
@@ -316,7 +314,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                     break;
             }
         } catch (Exception e) {
-            log.info(e.toString());
+            log.error("error", e);
         }
         if (resultado) {
             try {
@@ -331,7 +329,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                     faltantes = getFaltantes(idMetrica, tabla, tipo, idEjecucion, olts);
                 }
             } catch (Exception e) {
-                System.out.println(e);
+                log.error("error", e);
             }
             return faltantes;
         }
@@ -434,12 +432,12 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                         }
 
                     } catch (Exception e) {
-                        log.info(e.toString());
+                        log.error("error", e);
                     }
                 }
 
             } catch (Exception e) {
-                log.info(e.toString());
+                log.error("error", e);
             }
         }
 
@@ -481,11 +479,11 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
             try {
                 auxiliarJoinEstatus.sendToInventario();
             } catch (Exception e) {
-                log.info(e.toString());
+                log.error("error", e);
             }
 
         } catch (Exception e) {
-            log.info(e.toString());
+            log.error("error", e);
         }
 
     }
@@ -546,7 +544,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
 
 
         } catch (Exception e) {
-            log.info(e.toString());
+            log.error("error", e);
         }
 
         return respuesta;

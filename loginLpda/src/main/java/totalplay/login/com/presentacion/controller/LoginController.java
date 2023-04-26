@@ -5,12 +5,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.*;
+
+import lombok.extern.slf4j.Slf4j;
 import totalplay.login.com.negocio.Dto.RequestDto;
 import totalplay.login.com.negocio.Dto.ResponseDto;
 import totalplay.login.com.negocio.Dto.ResponseGenericoDto;
 import totalplay.login.com.negocio.Dto.UsuariosRequestDto;
 import totalplay.login.com.negocio.service.IloginService;
 @RestController
+@Slf4j
 public class LoginController {
 	@Autowired
 	IloginService loginService;
@@ -21,7 +24,7 @@ public class LoginController {
 		try {
 			response=	loginService.loginLpda(request);
 		} catch (Exception e) {
-		
+			log.error("error", e);
 		}
 		return response;
 		  }

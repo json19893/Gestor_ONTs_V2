@@ -253,7 +253,7 @@ public class apiServiceImpl implements IapiService {
 				 if(respuesta.getBuffer()!=null) {
 						while ((s = respuesta.getBuffer().readLine()) != null) {
 							log.info("============= "+s+"=============");
-							 data.setPassword("accesskey372");
+							 data.setIp("accesskey372");
 							 data.setFrase("securitykey372");
 							 data.setProtocolo("DES");
 							 data.setValor("si");
@@ -345,7 +345,7 @@ public class apiServiceImpl implements IapiService {
 					}
 					res2.setId_region(olt.getId_region());
 					res2.setNumero_serie(datos.getNumSerie());
-					res2.setid_olt(olt.getId_olt());
+					res2.setId_olt(olt.getId_olt());
 					res2.setTipo(tipo);
 					res2.setEstatus(estatus);
 					res2.setSlot(Integer.parseInt(slot));

@@ -407,7 +407,7 @@ public class Utils extends Constantes {
             if (proces.getBuffer() != null) {
                 while ((s = proces.getBuffer().readLine()) != null && !response) {
                     response = true;
-                    System.out.println("valor proceso:: " + s);
+              
                     if (!s.contains(
                             "HUAWEI-XPON-MIB::hwGponDeviceOntControlRunStatus = No Such Instance currently exists at this OID")
                             && !s.contains("snmpbulkwalk: Decryption error (Sub-id not found: (top) -> sysName)")
@@ -423,9 +423,9 @@ public class Utils extends Constantes {
                 }
                 proces.getProceso().destroy();
                 Thread.sleep(100);
-                System.out.println("p.exitValue()::: " + proces.getProceso().exitValue());
+            
             }
-            // System.out.println("codigo de proceso:: "+proces.getProceso().exitValue());
+            //("codigo de proceso:: "+proces.getProceso().exitValue());
 
         } catch (IOException e) {
             log.error("Error: "+e);
@@ -446,7 +446,7 @@ public class Utils extends Constantes {
         File file = new File(ruta);
         if (file.exists()) {
             file.delete();
-            System.out.println("Deleted the file: " + file.getName());
+        
         }
     }
 }

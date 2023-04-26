@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.slf4j.Slf4j;
 import totalplay.monitor.snmp.com.negocio.dto.*;
 import totalplay.monitor.snmp.com.negocio.service.IBlockMetricService;
 import totalplay.monitor.snmp.com.negocio.service.IconsultaService;
@@ -48,7 +49,7 @@ import totalplay.monitor.snmp.com.persistencia.repository.bitacoraEventosReposit
 
 
 @RestController
-
+@Slf4j
 public class monitorController extends constantes {
     @Autowired
     ImonitorService monitorServicio;
@@ -369,7 +370,7 @@ public class monitorController extends constantes {
                 }
             }
         } catch (Exception e) {
-            System.out.println("Error:: " + e);
+     log.error("error", e);
         }
 
         return response;
@@ -387,7 +388,7 @@ public class monitorController extends constantes {
                 response = vwActualizacion.findSerieByRegexT("^" + numeroSerie);
             }
         } catch (Exception e) {
-            System.out.println("Error:: " + e);
+            log.error("error", e);
         }
 
         return response;
@@ -415,7 +416,7 @@ public class monitorController extends constantes {
             List<catOltsEntidad> lista = catalogoOlt.findAll();
             return lista;
         } catch (Exception e) {
-            System.out.println(e);
+            log.error("error", e);
             return null;
         }
 
@@ -433,7 +434,7 @@ public class monitorController extends constantes {
                 response = vwActualizacion.findSerieT(numeroSerie);
             }
         } catch (Exception e) {
-            System.out.println("Error:: " + e);
+            log.error("error", e);
         }
 
         return response;
@@ -453,6 +454,7 @@ public class monitorController extends constantes {
                 response.setMensaje("Usuario o contraseña incorrecta");
             }
         } catch (Exception e) {
+            log.error("error", e);
             response.setMensaje("Problemas al validar al usuario");
         }
 
@@ -478,6 +480,7 @@ public class monitorController extends constantes {
             response.setMensaje("OK");
             response.setSuccesss(true);
         } catch (Exception e) {
+            log.error("error", e);
             response.setMensaje("No se pudo actualizar la olt");
             response.setSuccesss(false);
         }
@@ -513,7 +516,7 @@ public class monitorController extends constantes {
             }
 
         } catch (Exception e) {
-            System.out.println(e);
+            log.error("error", e);
         }
 
         return response;
@@ -528,7 +531,7 @@ public class monitorController extends constantes {
         try {
             response = descubrimientoManual.getDetalle(LocalDate.now().toString());
         } catch (Exception e) {
-
+            log.error("error", e);
         }
 
         return response;
@@ -588,7 +591,7 @@ public class monitorController extends constantes {
             	return detalleAct.getDetalle(fecha);
             }
         } catch (Exception e) {
-            System.out.println("Error:: " + e);
+            log.error("error", e);
         }
 
         return response;
@@ -606,7 +609,7 @@ public class monitorController extends constantes {
             	return detalleAct.getDetalleBySerie(serie);
             }
         } catch (Exception e) {
-            System.out.println("Error:: " + e);
+            log.error("error", e);
         }
 
         return response;
@@ -621,7 +624,7 @@ public class monitorController extends constantes {
             response=  consulta.actualizaOnt(serie,idOlt);
 
         } catch (Exception e) {
-            System.out.println("Error:: " + e);
+            log.error("error", e);
         }
 
         return response;

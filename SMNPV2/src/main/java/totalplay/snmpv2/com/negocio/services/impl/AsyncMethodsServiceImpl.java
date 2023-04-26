@@ -109,7 +109,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 				
 				
 			} catch (Exception e) {
-				log.info("::::::::error olt "+ olt.getId_olt() );
+				log.error("::::::::error olt "+ olt.getId_olt(),e );
 			}
 		}
 		
@@ -166,7 +166,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 				
 				
 			} catch (Exception e) {
-				log.info("::::::::error olt "+ olt.getId_olt() +"  :::::::::::::::::::" + e );
+				log.error("::::::::error olt "+ olt.getId_olt() +"  :::::::::::::::::::" , e );
 			}
 		}
 		
@@ -194,7 +194,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 				
 				
 			} catch (Exception e) {
-				log.info("::::::::error olt "+ olt.getId_olt() );
+				log.error("::::::::error olt "+ olt.getId_olt(),e );
 			}
 		}
 		
@@ -221,7 +221,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 			
 			
 		} catch (Exception e) {
-			log.info("::::::::error onts empresariales "+ e );
+			log.error("::::::::error onts empresariales "+ e );
 		}
 		
 		
@@ -247,7 +247,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 			
 			
 		} catch (Exception e) {
-			log.info("::::::::error onts empresariales "+ e );
+			log.error("::::::::error onts empresariales ", e );
 		}
 		
 		
@@ -275,7 +275,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 				
 				
 			} catch (Exception e) {
-				log.info("::::::::error olt "+ olt.getId_olt() );
+				log.error("::::::::error olt "+ olt.getId_olt(),e );
 			}
 		}
 		
@@ -345,7 +345,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 				
 				
 			} catch (Exception e) {
-				log.info("::::::::error olt "+ olt.getId_olt() );
+				log.error("::::::::error olt "+ olt.getId_olt(),e );
 			}
 		}
 		
@@ -373,7 +373,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 				response.add(metrica);
 			}			
 		} catch (Exception e) {
-			// TODO: handle exception
+			log.error("error", e);
 		}
 		
 		return response;
@@ -403,7 +403,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 				response.add(metrica);
 			}			
 		} catch (Exception e) {
-			// TODO: handle exception
+			log.error("error", e);
 		}
 		
 		return response;
@@ -424,7 +424,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 			
 			
 		} catch (Exception e) {
-			log.info("::::::::error onts empresariales "+ e );
+			log.error("::::::::error onts empresariales ", e );
 		}
 		
 		
@@ -498,8 +498,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 							}
 						}
 					}
-					System.out.println("configu :" + configu);
-					System.out.println("tecnologia :" + tecnologia);
+				
 					
 					olt.setDescripcion( configu != olt.getId_configuracion() ? "Cambio configuracion, antes:" + olt.getId_configuracion() : "Sin cambio " );
 					olt.setId_configuracion(configu);
@@ -514,7 +513,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 				}
 				catOlts.save(olt);
 			} catch (Exception e) {
-				// TODO: handle exception
+				log.error("error", e);
 			}
 			
 			

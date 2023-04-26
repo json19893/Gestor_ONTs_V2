@@ -54,22 +54,6 @@ public class EncryptorHelper {
         return mEncryptor.decrypt(textEncrypt);
     }
 
-    /*@Bean(name = "encryptorBean")
-    public void stringEncryptor() {
-        String secretKey = getEnvironment().getProperty("jasypt.encryptor.secret");
-
-        PooledPBEStringEncryptor encryptor = new PooledPBEStringEncryptor();
-        SimpleStringPBEConfig config = new SimpleStringPBEConfig();
-
-        config.setPassword(secretKey);
-        config.setAlgorithm("PBEWithMD5AndDES");
-        config.setKeyObtentionIterations("1000");
-        config.setPoolSize("2");
-        config.setProviderName("SunJCE");
-        config.setSaltGeneratorClassName("org.jasypt.salt.RandomSaltGenerator");
-        config.setStringOutputType("base64");
-        encryptor.setConfig(config);
-        mEncryptor = encryptor;
-    }*/
+   
 }
 

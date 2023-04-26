@@ -159,10 +159,11 @@ public class LoginServiceImpl implements IloginService {
 			response = NamingExceptionCode.getMsgErrorCode("code 0");
 		} catch (AuthenticationException authEx) {
 			response = NamingExceptionCode.getMsgErrorCode(authEx.getMessage());
-			authEx.printStackTrace();
+			log.error("error", authEx);
 		} catch (NamingException namEx) {
 			response = NamingExceptionCode.getMsgErrorCode(namEx.getMessage());
-			namEx.printStackTrace();
+		
+			log.error("error", namEx);
 		}
 		return response;
 	}
@@ -217,15 +218,16 @@ public class LoginServiceImpl implements IloginService {
 	} catch (Exception e) {
 		response.setCod(1);
 		response.setSms("Error al cerra seión ");
+		log.error("error", e);
 	}
 	return response;
 	}
 	
-	@ConditionalOnProperty(name="scheduler.enabled", matchIfMissing = true)
+	/*@ConditionalOnProperty(name="scheduler.enabled", matchIfMissing = true)
 	@Scheduled(fixedRate = 100)
 	public void cierraSesion() {
 		
-	}
+	}*/
 
 
 }

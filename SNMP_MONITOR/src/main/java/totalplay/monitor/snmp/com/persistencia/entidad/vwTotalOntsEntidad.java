@@ -22,13 +22,7 @@ public class vwTotalOntsEntidad {
 	
 	
 	
-	@Override
-	public boolean equals(Object obj) {
-		if(obj instanceof vwTotalOntsEntidad) {
-			return ((vwTotalOntsEntidad) obj).getIp().equals(this.getIp());
-		}
-		return false;
-	}
+
 	
 
 }

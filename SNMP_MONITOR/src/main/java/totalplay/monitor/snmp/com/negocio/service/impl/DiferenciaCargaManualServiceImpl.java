@@ -3,6 +3,7 @@ package totalplay.monitor.snmp.com.negocio.service.impl;
 import lombok.Data;
 
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -29,6 +30,7 @@ import java.util.List;
  * Condicion: Una ont no puede existir en varias olts al mismo tiempo.
  */
 @Service
+@Slf4j
 public class DiferenciaCargaManualServiceImpl implements IDiferenciaCargaManualService {
 
     @Autowired

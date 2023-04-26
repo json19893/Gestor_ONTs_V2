@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 @Document(collection = "vw_total_onts_empresariales")
 @Data
 @NoArgsConstructor
-
 public class vwTotalOntsEmpresarialesEntidad {
 	@Id
 	private String	_id;	
@@ -20,16 +19,6 @@ public class vwTotalOntsEmpresarialesEntidad {
 	private Integer total_onts;
 	private String tecnologia;
 	
-	
 
-
-	@Override
-	public boolean equals(Object obj) {
-		if(obj instanceof vwTotalOntsEmpresarialesEntidad) {
-			return ((vwTotalOntsEmpresarialesEntidad) obj).getIp().equals(this.getIp());
-		}
-		return false;
-	}
-	
 
 }
