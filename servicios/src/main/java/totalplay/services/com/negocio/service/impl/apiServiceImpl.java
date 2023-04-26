@@ -230,8 +230,6 @@ public class apiServiceImpl implements IapiService {
 			String s;
 			for(catOltsEntidad olt:olts) {
 				log.info("*************************");
-				log.info("olt:: "+olt.getIp());
-			
 				
 				String comando4 = "snmpbulkwalk -v3 -l authPriv -u  KIOLAB2022 -a SHA -A AUkey#2021* -x DES -X SECkey#2120* " + olt.getIp()
 				+ " .";
@@ -383,7 +381,7 @@ public class apiServiceImpl implements IapiService {
 			ejecucionDto respuesta=null;
 			String s;
 				log.info("*************************");
-				log.info("olt:: "+ ip);
+
 				String comandoZTE1 = "snmpbulkwalk  -r 1 -t 1 -v3 -u userAGPON17 -l authPriv -a SHA -A accesskey372 -x DES -X securitykey372 " + ip + " 1.3.6.1.4.1.3902.1012.3.28.1.1.5";
 				String comandoZTE2 = "snmpbulkwalk  -r 1 -t 1 -v3 -u ITSMon03 -l authPriv -a SHA -A au*MGTm0n1t0r%03 -x DES -X sc#MGTm0n1t0r$30 " + ip + " 1.3.6.1.4.1.3902.1012.3.28.1.1.5";
 				
