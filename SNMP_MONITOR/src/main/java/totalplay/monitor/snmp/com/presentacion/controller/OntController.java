@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import totalplay.monitor.snmp.com.negocio.dto.OntsRepetidasPorOltPostRequest;
+
 import totalplay.monitor.snmp.com.negocio.dto.OntsRepetidasPorOltPostResponse;
 import totalplay.monitor.snmp.com.negocio.service.IDiferenciaCargaManualService;
 import totalplay.monitor.snmp.com.negocio.service.impl.DiferenciaCargaManualServiceImpl;
@@ -24,7 +24,7 @@ public class OntController {
      * @param request
      * @return
      */
-    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+  
     @RequestMapping(value = "/limpieza/onts/repetidas/{idOlt}", produces = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.GET)
     public ResponseEntity<OntsRepetidasPorOltPostResponse> obtenerOntsRepetidas(@PathVariable("idOlt") Integer idOlt) {
         ResponseEntity wrapperServerHttp = new ResponseEntity("", HttpStatus.OK);

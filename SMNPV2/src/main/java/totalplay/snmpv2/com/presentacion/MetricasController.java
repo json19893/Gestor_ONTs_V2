@@ -51,6 +51,7 @@ import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoMetricaEntity;
 import totalplay.snmpv2.com.persistencia.entidades.ParametrosGeneralesEntity;
 @Slf4j
 @RestController
+
 public class MetricasController extends Constantes {
 	
 	@Autowired
@@ -86,7 +87,7 @@ public class MetricasController extends Constantes {
 	}
 		
 	//@Scheduled(fixedRate = 14400000)
-	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+
 	@GetMapping(value = "/poleoMetricas", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String separatePoleo() throws Exception {
 		String response = "ok";
@@ -194,7 +195,7 @@ public class MetricasController extends Constantes {
 
 	
 		//@Scheduled(fixedRate = 14400000)
-		@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	
 		@RequestMapping(value = "/updateStatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 		public String UpdateStatus() throws Exception {
 
@@ -266,7 +267,7 @@ public class MetricasController extends Constantes {
 
 		}
 		
-		@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	
 		@PostMapping(value = "/poleoMetricasManual", produces = MediaType.APPLICATION_JSON_VALUE)
 		public GenericResponseDto poleoMetricasManual(@RequestBody DescubrimientoManualDto datos) throws Exception {
 			String response = "ok";

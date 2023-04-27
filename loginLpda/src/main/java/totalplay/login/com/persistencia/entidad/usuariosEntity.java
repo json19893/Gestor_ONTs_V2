@@ -1,5 +1,7 @@
 package totalplay.login.com.persistencia.entidad;
 
+import java.util.List;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -20,7 +22,9 @@ public class usuariosEntity {
 	private Integer sesion;
 	private String fechaRegistro;
 	private String fechaConexion;
-	
-	
+	private String ipConexion;
+	private Integer intentos;
+	private List<String> ipConexionIntentos;
 
+	
 }

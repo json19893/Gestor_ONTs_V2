@@ -223,44 +223,29 @@ public class apiServiceImpl implements IapiService {
 	@Override
 	public responseDto getConfiguracionOlt(String tecnologia) throws Exception {
 		try {
-			log.info("tecnologia:: "+tecnologia);
+	
 			List<catOltsEntidad> olts = catalogoOlts.getConfiguracionOlt();
-			 //String [] olts= {"10.180.230.12"};
+
 			ejecucionDto respuesta=null;
 			String s;
 			for(catOltsEntidad olt:olts) {
 				log.info("*************************");
 				log.info("olt:: "+olt.getIp());
-				/*String comando1 = "snmpget -v3 -l authPriv -u  userAGPON17 -a SHA -A accesskey372 -x AES -X securitykey372  " + olt
-						+ " .";
-				String comando2 = "snmpbulkwalk -v3 -l authPriv -u  ITSMon03 -a SHA -A au*MGTm0n1t0r%03 -x AES -X sc#MGTm0n1t0r$30 " + olt
-				+ " hwGponDeviceOntSn";
-				
-				String comando3 = "snmpbulkwalk -v3 -l authPriv -u  ITSMon03 -a SHA -A au\\\\*MGTm0n1t0r\\\\%03 -x AES -X sc\\\\#MGTm0n1t0r\\\\$30 " + olt
-						+ " .";*/
+			
 				
 				String comando4 = "snmpbulkwalk -v3 -l authPriv -u  KIOLAB2022 -a SHA -A AUkey#2021* -x DES -X SECkey#2120* " + olt.getIp()
 				+ " .";
 				catOtsProcesadoEntidad data=new catOtsProcesadoEntidad();
-				/*data.setId_olt(olt.getId_olt());
-				data.setId_region(olt.getId_region());
-				data.setIp(olt.getIp());
-				data.setNombre(olt.getNombre());
-				data.setTecnologia(olt.getTecnologia());*/
-				//catOltsEntidad cat=	 catalogoOlts.getOlt(olt.getId_olt());
+
 				respuesta=util.execBash(comando4,ruta);
 				
 				 if(respuesta.getBuffer()!=null) {
 						while ((s = respuesta.getBuffer().readLine()) != null) {
 							log.info("============= "+s+"=============");
-							 data.setPassword("accesskey372");
+							 data.setIp("accesskey372");
 							 data.setFrase("securitykey372");
 							 data.setProtocolo("DES");
 							 data.setValor("si");
-							 //cat.setEstatus(1);
-							 //cat.setId_configuracion(1);
-							 //cat.setTecnologia("HUAWEI");
-							 //catalogoOlts.save(cat);
 							 status.save(data);
 							 
 							 log.info("ejecuto primer comando:: "+olt);
@@ -309,8 +294,7 @@ public class apiServiceImpl implements IapiService {
 				} else if (datos.getEstatus().equals("DOWN")) {
 					estatus = 2;
 				} else {
-					//String estatusWS = pruebaONT(datos.getNumSerie(), datos.getIp());
-					//estatus = estatusWS.equals("online") ? 1 : 2;
+				
 				}
 			}
 			if (res == null) {
@@ -345,7 +329,7 @@ public class apiServiceImpl implements IapiService {
 					}
 					res2.setId_region(olt.getId_region());
 					res2.setNumero_serie(datos.getNumSerie());
-					res2.setid_olt(olt.getId_olt());
+					res2.setId_olt(olt.getId_olt());
 					res2.setTipo(tipo);
 					res2.setEstatus(estatus);
 					res2.setSlot(Integer.parseInt(slot));

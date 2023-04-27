@@ -29,8 +29,8 @@ public class EncryptorHelper {
     }
 
     public EncryptorHelper() {
-        String secretKey = System.getProperty("jasypt.encryptor.password")
-                == null ? "MYSECRET_PASSWORD" : System.getProperty("jasypt.encryptor.password");
+        String secretKey = System.getProperty("jasypt.encryptor.secret")
+                == null ? "MYSECRET_PASSWORD" : System.getProperty("jasypt.encryptor.secret");
 
         mEncryptor = new PooledPBEStringEncryptor();
         SimpleStringPBEConfig config = new SimpleStringPBEConfig();

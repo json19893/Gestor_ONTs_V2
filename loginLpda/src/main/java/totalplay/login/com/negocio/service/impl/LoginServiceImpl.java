@@ -1,6 +1,7 @@
 package totalplay.login.com.negocio.service.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Optional;
@@ -11,11 +12,13 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 
 import lombok.extern.slf4j.Slf4j;
-
+import totalplay.login.com.helper.AesEncryption;
 import totalplay.login.com.negocio.Dto.RequestDto;
 import totalplay.login.com.negocio.Dto.ResponseDto;
 import totalplay.login.com.negocio.Dto.ResponseGenericoDto;
@@ -41,31 +44,50 @@ public class LoginServiceImpl implements IloginService {
 	@Override
 	public ResponseDto loginLpda(RequestDto request) throws Exception {
 		ResponseDto response = new ResponseDto();
+	
 		try {
-			long exite=usuarios.countByNombreUsuario(request.getUsuario());
+			
+			String u=AesEncryption.decrypt(request.getU());
+			String p=AesEncryption.decrypt(request.getP());
+			
+			long exite=usuarios.countByNombreUsuario(u);
 			if(exite>0) {
-				if(request.getUsuario().equals("amagos")||request.getUsuario().equals("jsalgadom")) {
-					usuariosEntity usuario=	usuarios.findByNombreUsuario(request.getUsuario());
-				
-					//if(usuario.getSesion()==0) {
+				if(u.equals("amagos")||u.equals("jsalgadom")) {
+					usuariosEntity usuario=	usuarios.findByNombreUsuario(u);
+					if(usuario.getSesion()==0 ) {
 						Optional<RolesEntity>  rol= roles.findById(usuario.getRol());
 						response.setCod(0);
 						response.setSms("OK");
 						response.setNombreCompleto(usuario.getNombreCompleto());
 						response.setUsuario(usuario.getNombreUsuario());
 						response.setRol(rol.get().getRol());
+						
 						//response.setCadenaConexion(ult.getJWTToken(request.getUsuario()));
 						usuario.setSesion(1);
+						usuario.setIpConexion(request.getC());
 						usuario.setFechaConexion(LocalDateTime.now().toString());
-					
+						usuario.setIntentos(usuario.getIntentos()+1);
+						List<String > intentos=usuario.getIpConexionIntentos();
+						intentos.add(request.getC());
+						usuario.setIpConexionIntentos(intentos);
 						usuarios.save(usuario);
+						}else {
+					response.setCod(1);
+					response.setSms("Ya existe una seion activa par el usuario: "+ u);
+					usuario.setIntentos(usuario.getIntentos()+1);
+					List<String > intentos=usuario.getIpConexionIntentos();
+					intentos.add(request.getC());
+					usuario.setIpConexionIntentos(intentos);
+					usuarios.save(usuario);
+					return response;
+				}
 			}else {
 				
-				String res = validaUsuario(request);
+				String res = validaUsuario(u,p);
+				usuariosEntity usuario=	usuarios.findByNombreUsuario(u);
 				if (res == "LDAP_SUCCESS") {
-				usuariosEntity usuario=	usuarios.findByNombreUsuario(request.getUsuario());
-				
-				//if(usuario.getSesion()==0) {
+		
+					if(usuario.getSesion()==0) {
 					Optional<RolesEntity>  rol= roles.findById(usuario.getRol());
 					
 					response.setCod(0);
@@ -75,58 +97,73 @@ public class LoginServiceImpl implements IloginService {
 					response.setRol(rol.get().getRol());
 					//response.setCadenaConexion(ult.getJWTToken(request.getUsuario()));
 					usuario.setSesion(1);
+					usuario.setIpConexion(request.getC());
 					usuario.setFechaConexion(LocalDateTime.now().toString());
-
-	
-			
+					usuario.setIntentos(usuario.getIntentos()+1);
+					List<String > intentos=usuario.getIpConexionIntentos();
+					intentos.add(request.getC());
+					usuario.setIpConexionIntentos(intentos);
 					usuarios.save(usuario);
-				/*}else {
+			}else {
 					response.setCod(1);
-					response.setSms("Ya existe una seion activa par el usuario: "+ request.getUsuario());
+					response.setSms("Ya existe una seion activa par el usuario: "+ u);
+					usuario.setIntentos(usuario.getIntentos()+1);
+					List<String > intentos=usuario.getIpConexionIntentos();
+					intentos.add(request.getC());
+					usuario.setIpConexionIntentos(intentos);
+					usuarios.save(usuario);
 					return response;
-				}*/
+				}
 				
 				}else {
 					response.setCod(1);
-					response.setSms("El usuario: "+ request.getUsuario()+" no tiene acceso al Directory Activo");
+					response.setSms("El usuario: "+ u+" no tiene acceso al Directory Activo");
+					usuario.setIntentos(usuario.getIntentos()+1);
+					List<String > intentos=usuario.getIpConexionIntentos();
+					intentos.add(request.getC());
+					usuario.setIpConexionIntentos(intentos);
+					usuarios.save(usuario);
 					return response;
 				}
+				
 				
 			}
 			}else {
 				response.setCod(1);
-				response.setSms("El usuario: "+ request.getUsuario()+" no tiene permitido acceder a este sistema");
+				response.setSms("El usuario: "+ u+" no tiene permitido acceder a este sistema");
 				return response;
 			}
 		
 		} catch (Exception e) {
 			response.setCod(1);
-			response.setSms("Error al consultar");
+			response.setSms("Error al consultar:: "+ e);
+			log.error("Error:: ", e);
 		}
 		return response;
 	}
 
-	public String validaUsuario(RequestDto datos) {
+	public String validaUsuario(String u, String p) {
 		String response = "";
 		Hashtable<String, String> authEnv = new Hashtable<String, String>();
-		String userName = "totalplay\\" + datos.getUsuario();
+		String userName = "totalplay\\" + u;
 
 		String ldapURL = "ldap://10.216.20.175/DC=totalplay,DC=corp";
 		authEnv.put(Context.INITIAL_CONTEXT_FACTORY, "com.sun.jndi.ldap.LdapCtxFactory");
 		authEnv.put(Context.PROVIDER_URL, ldapURL);
 		authEnv.put(Context.SECURITY_AUTHENTICATION, "simple");
 		authEnv.put(Context.SECURITY_PRINCIPAL, userName);
-		authEnv.put(Context.SECURITY_CREDENTIALS, datos.getPassword());
+		authEnv.put(Context.SECURITY_CREDENTIALS,p);
 		try {
 			@SuppressWarnings("unused")
 			DirContext authContext = new InitialDirContext(authEnv);
 			response = NamingExceptionCode.getMsgErrorCode("code 0");
 		} catch (AuthenticationException authEx) {
 			response = NamingExceptionCode.getMsgErrorCode(authEx.getMessage());
-			authEx.printStackTrace();
+			log.error("error", authEx);
 		} catch (NamingException namEx) {
 			response = NamingExceptionCode.getMsgErrorCode(namEx.getMessage());
-			namEx.printStackTrace();
+		
+			log.error("error", namEx);
 		}
 		return response;
 	}
@@ -162,11 +199,34 @@ public class LoginServiceImpl implements IloginService {
 		}
 		return response;
 	}
+
+	@Override
+	public ResponseDto logout(String u) throws Exception {
+		ResponseDto response = new ResponseDto();
+		try {
+			response.setCod(0);
+			response.setSms("OK");
+		
+		usuariosEntity usuario=	usuarios.findByNombreUsuario(u);
+		usuario.setIntentos(0);
+		usuario.setFechaConexion("");
+		usuario.setIpConexion("");
+		List<String> inCo=new ArrayList<>();
+		usuario.setIpConexionIntentos(inCo);
+		usuario.setSesion(0);
+		usuarios.save(usuario);
+	} catch (Exception e) {
+		response.setCod(1);
+		response.setSms("Error al cerra seión ");
+		log.error("error", e);
+	}
+	return response;
+	}
 	
 	/*@ConditionalOnProperty(name="scheduler.enabled", matchIfMissing = true)
 	@Scheduled(fixedRate = 100)
-	public void cron() {
-		System.out.println("ejecuto::::::::::::::");
+	public void cierraSesion() {
+		
 	}*/
 
 

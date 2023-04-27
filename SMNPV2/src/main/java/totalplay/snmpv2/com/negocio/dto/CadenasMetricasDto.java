@@ -5,8 +5,7 @@ import java.io.BufferedReader;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import totalplay.snmpv2.com.persistencia.entidades.CatConfiguracionEntity;
-import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
+
 
 @Data
 @NoArgsConstructor

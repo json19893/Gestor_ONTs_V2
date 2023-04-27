@@ -32,20 +32,12 @@ public class MongoConnection extends AbstractMongoClientConfiguration {
         EncryptorHelper encryptorHelper = EncryptorHelper.getINSTANCE();
         String uriDesencripter = encryptorHelper.deencryptString(getUriConnection());
 
-        //String uri = "mongodb://localhost:27017/";
-        System.out.println("uri encriptada: " + getUriConnection());
-        System.out.println("uri desencriptada: " + uriDesencripter);
-        //String textx = "mongodb://superAdmin:pass1234@10.180.199.76:27017/";
-        //System.out.println("texto a encriptar: " + textx);
-        //System.out.println("texto encriptado: " + encryptorHelper.encryptString(textx));
-
         if (uriDesencripter.isEmpty() && uriDesencripter == null) {
             new Exception("La uri para la conexion de mongo esta vacia");
         }
 
         MongoClient client = MongoClients.create(uriDesencripter);
-        //ListDatabasesIterable<Document> databases = client.listDatabases();
-        //databases.forEach(System.out::println);
+
         return client;
     }
 }

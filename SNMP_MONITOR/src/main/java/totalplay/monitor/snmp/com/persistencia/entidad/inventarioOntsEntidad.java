@@ -38,12 +38,5 @@ public class inventarioOntsEntidad {
 	private boolean error;
 	
 	
-	@Override
-	public boolean equals(Object obj) {
-		if(obj instanceof inventarioOntsEntidad) {
-			return ((inventarioOntsEntidad) obj).getNumero_serie().equals(this.getNumero_serie());
-		}
-		return false;
-	}
 
 }
