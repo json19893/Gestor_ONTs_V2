@@ -14,6 +14,7 @@ import totalplay.snmpv2.com.negocio.services.IpoleoMetricasService;
 
 @RestController
 @Slf4j
+
 public class MetricaController {
     public static final int RESOURCE_NOT_FOUND = 5;
     public static final int SNMP_COMMAND_ERROR = 1;
@@ -45,8 +46,8 @@ public class MetricaController {
      * @param request
      * @return ResponseEntity<?> Respuesta: Es una envoltura donde contiene un codigo de estatus http junto con la respuesta del servidor
      */
-    @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
-    @RequestMapping(value = "/metrica/poleo", produces = MediaType.APPLICATION_JSON_VALUE, method = {RequestMethod.GET, RequestMethod.POST})
+ 
+    @GetMapping(value = "/metrica/poleo", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<?> getMetricaByNum_serial(@RequestBody RequestPostMetrica request) {
         ResponseEntity<GenericResponseDto> responseWrapperServer = null;
         GenericResponseDto response = new GenericResponseDto();

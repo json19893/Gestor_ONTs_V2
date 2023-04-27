@@ -10,20 +10,15 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import java.net.InetAddress;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
-
 import lombok.extern.slf4j.Slf4j;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
 import totalplay.snmpv2.com.negocio.dto.EjecucionDto;
-import totalplay.snmpv2.com.negocio.dto.GenericPoleosDto;
-import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
+
 import totalplay.snmpv2.com.negocio.dto.configuracionDto;
 
 @Slf4j
@@ -367,7 +362,7 @@ public class Utils extends Constantes {
             }
 
         } catch (Exception e) {
-            // TODO: handle exception
+         log.error("Error", e);
         }
 
         return response;
@@ -407,7 +402,7 @@ public class Utils extends Constantes {
             if (proces.getBuffer() != null) {
                 while ((s = proces.getBuffer().readLine()) != null && !response) {
                     response = true;
-                    System.out.println("valor proceso:: " + s);
+              
                     if (!s.contains(
                             "HUAWEI-XPON-MIB::hwGponDeviceOntControlRunStatus = No Such Instance currently exists at this OID")
                             && !s.contains("snmpbulkwalk: Decryption error (Sub-id not found: (top) -> sysName)")
@@ -423,13 +418,13 @@ public class Utils extends Constantes {
                 }
                 proces.getProceso().destroy();
                 Thread.sleep(100);
-                System.out.println("p.exitValue()::: " + proces.getProceso().exitValue());
+            
             }
-            // System.out.println("codigo de proceso:: "+proces.getProceso().exitValue());
+            //("codigo de proceso:: "+proces.getProceso().exitValue());
 
         } catch (IOException e) {
             log.error("Error: "+e);
-            log.error("error:" + e);
+    ;
 
         }
 
@@ -446,7 +441,7 @@ public class Utils extends Constantes {
         File file = new File(ruta);
         if (file.exists()) {
             file.delete();
-            System.out.println("Deleted the file: " + file.getName());
+        
         }
     }
 }

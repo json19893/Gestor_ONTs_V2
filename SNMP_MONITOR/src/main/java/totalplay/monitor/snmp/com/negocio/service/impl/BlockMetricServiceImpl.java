@@ -2,9 +2,11 @@
 package totalplay.monitor.snmp.com.negocio.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.geo.Metric;
 import org.springframework.stereotype.Service;
-import totalplay.monitor.snmp.com.negocio.dto.ResponseGetBlockMetricDto;
+
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import totalplay.monitor.snmp.com.negocio.dto.ResponsePostBlockMetricDto;
 import totalplay.monitor.snmp.com.negocio.dto.responseDto;
 import totalplay.monitor.snmp.com.negocio.service.IBlockMetricService;
@@ -13,10 +15,11 @@ import totalplay.monitor.snmp.com.persistencia.repository.ITConfigMetricsReposit
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+
 
 
 @Service
+@Slf4j
 public class BlockMetricServiceImpl implements IBlockMetricService {
     private String BLOCK1 = "block1";
     private List<GroupBlockMetric> blockMetric1;
@@ -27,6 +30,8 @@ public class BlockMetricServiceImpl implements IBlockMetricService {
     private List<Metrica> metricaList3;
     private List<Metrica> metricaList4;
 
+    @Data
+    @NoArgsConstructor
     class Metrica {
         private int idMetrica;
         private String metrica;
@@ -36,22 +41,7 @@ public class BlockMetricServiceImpl implements IBlockMetricService {
             this.metrica = metrica;
         }
 
-        public int getIdMetrica() {
-            return idMetrica;
-        }
-
-        public void setIdMetrica(int idMetrica) {
-            this.idMetrica = idMetrica;
-        }
-
-        public String getMetrica() {
-            return metrica;
-        }
-
-        public void setMetrica(String metrica) {
-            this.metrica = metrica;
-        }
-
+        
         @Override
         public String toString() {
             return "Metrica{" +
@@ -60,34 +50,18 @@ public class BlockMetricServiceImpl implements IBlockMetricService {
                     '}';
         }
     }
-
+    @Data
+    @NoArgsConstructor
     class GroupBlockMetric {
         private int idBlock;
         private List<ConfiguracionMetricaEntity> metricList;
 
-        public GroupBlockMetric() {
-        }
-
+     
         public GroupBlockMetric(int idBlock, List<ConfiguracionMetricaEntity> metricList) {
             this.idBlock = idBlock;
             this.metricList = metricList;
         }
 
-        public int getIdBlock() {
-            return idBlock;
-        }
-
-        public void setIdBlock(int idBlock) {
-            this.idBlock = idBlock;
-        }
-
-        public List<ConfiguracionMetricaEntity> getMetricList() {
-            return metricList;
-        }
-
-        public void setMetricList(List<ConfiguracionMetricaEntity> metricList) {
-            this.metricList = metricList;
-        }
 
         @Override
         public String toString() {
@@ -100,31 +74,14 @@ public class BlockMetricServiceImpl implements IBlockMetricService {
 
 
     //Objeto de puras llaves
+    @Data
+    @NoArgsConstructor
     class BlockMetricRelationship {
         private int idblock;
         private List<Integer> metricids;
 
         public BlockMetricRelationship(int idblock, List<Integer> metricids) {
             this.idblock = idblock;
-            this.metricids = metricids;
-        }
-
-        public BlockMetricRelationship() {
-        }
-
-        public int getIdblock() {
-            return idblock;
-        }
-
-        public void setIdblock(int idblock) {
-            this.idblock = idblock;
-        }
-
-        public List<Integer> getMetricids() {
-            return metricids;
-        }
-
-        public void setMetricids(List<Integer> metricids) {
             this.metricids = metricids;
         }
 
@@ -209,6 +166,7 @@ public class BlockMetricServiceImpl implements IBlockMetricService {
             List<ConfiguracionMetricaEntity> configMetricaList = repository.findAll();
             response.setEntity(configMetricaList);
         } catch (Exception ex) {
+            log.error("error", ex);
             response.setCod(1);
             response.setSms("Error");
         }

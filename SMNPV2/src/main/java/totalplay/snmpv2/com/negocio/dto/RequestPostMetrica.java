@@ -10,7 +10,7 @@ import java.time.LocalTime;
 import java.time.ZoneId;
 
 @Data
-@ToString
+
 public class RequestPostMetrica implements Serializable {
     private String numero_serie;
     private Integer idMetrica;

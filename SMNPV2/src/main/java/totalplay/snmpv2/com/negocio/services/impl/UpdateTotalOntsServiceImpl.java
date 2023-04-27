@@ -3,7 +3,8 @@ package totalplay.snmpv2.com.negocio.services.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
-import totalplay.snmpv2.com.negocio.dto.CambioManualOntOltRequest;
+
+import lombok.extern.slf4j.Slf4j;
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.negocio.services.IUpdateTotalOntsService;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
@@ -16,6 +17,7 @@ import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsRepository;
 import java.util.List;
 
 @Service
+@Slf4j
 public class UpdateTotalOntsServiceImpl implements IUpdateTotalOntsService {
     @Autowired
     ITotalOntsRepository IOntsrepository;
@@ -50,6 +52,7 @@ public class UpdateTotalOntsServiceImpl implements IUpdateTotalOntsService {
             }
             IOltRepository.saveAll(catOlts);
         } catch (Exception ex) {
+            log.error("error", ex);
             response.setCod(0);
             response.setSms("Error: Hubo un error en el servidor");
         }

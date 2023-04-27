@@ -1,13 +1,12 @@
 package totalplay.monitor.snmp.com.negocio.dto;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsEntidad;
 
-@Getter
-@Setter
-@ToString
+@Data
+@NoArgsConstructor
+
 public class totalesOntsEmpDto {
 	
 	private String tecnologia;
@@ -16,36 +15,7 @@ public class totalesOntsEmpDto {
 	private Integer abajo;
 	private Integer sin_informacion;
 	
-	public String getTecnologia() {
-		return tecnologia;
-	}
-	public void setTecnologia(String tecnologia) {
-		this.tecnologia = tecnologia;
-	}
-	public Integer getArriba() {
-		return arriba;
-	}
-	public void setArriba(Integer arriba) {
-		this.arriba = arriba;
-	}
-	public Integer getAbajo() {
-		return abajo;
-	}
-	public void setAbajo(Integer abajo) {
-		this.abajo = abajo;
-	}
-	public Integer getSin_informacion() {
-		return sin_informacion;
-	}
-	public void setSin_informacion(Integer sin_informacion) {
-		this.sin_informacion = sin_informacion;
-	}
-	public Integer getTotal() {
-		return total;
-	}
-	public void setTotal(Integer total) {
-		this.total = total;
-	}
+	
 	
 	@Override
 	public boolean equals(Object obj) {

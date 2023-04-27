@@ -3,15 +3,14 @@ package totalplay.snmpv2.com.persistencia.entidades;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import totalplay.snmpv2.com.negocio.dto.GenericPoleosDto;
 
 @Document(collection = "tb_poleos_prof_name")
-@Getter
-@Setter
-@ToString
+@Data
+@NoArgsConstructor
+
 public class PoleosProfNameEntity extends GenericPoleosDto {
 	
 }

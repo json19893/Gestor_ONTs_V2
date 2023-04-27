@@ -2,14 +2,13 @@ package totalplay.monitor.snmp.com.persistencia.entidad;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Document(collection = "tb_diferencias")
-@Getter
-@Setter
-@ToString
+@Data
+@NoArgsConstructor
+
 public class tblDiferenciasEntidad {
 	
 	private String _id;
@@ -21,68 +20,5 @@ public class tblDiferenciasEntidad {
 	private String id_ejecucion;
 	private Integer estatus;
 
-	public String get_id() {
-		return _id;
-	}
-
-	public void set_id(String _id) {
-		this._id = _id;
-	}
-
-	public Integer getId_ont() {
-		return id_ont;
-	}
-
-	public void setId_ont(Integer id_ont) {
-		this.id_ont = id_ont;
-	}
-
-	public String getNumero_serie() {
-		return numero_serie;
-	}
-
-	public void setNumero_serie(String numero_serie) {
-		this.numero_serie = numero_serie;
-	}
-
-	public String getOid() {
-		return oid;
-	}
-
-	public void setOid(String oid) {
-		this.oid = oid;
-	}
-
-	public String getFecha_descubrimiento() {
-		return fecha_descubrimiento;
-	}
-
-	public void setFecha_descubrimiento(String fecha_descubrimiento) {
-		this.fecha_descubrimiento = fecha_descubrimiento;
-	}
-
-	public Integer getid_olt() {
-		return id_olt;
-	}
-
-	public void setid_olt(Integer id_olt) {
-		this.id_olt = id_olt;
-	}
-
-	public String getId_ejecucion() {
-		return id_ejecucion;
-	}
-
-	public void setId_ejecucion(String id_ejecucion) {
-		this.id_ejecucion = id_ejecucion;
-	}
-
-	public Integer getEstatus() {
-		return estatus;
-	}
-
-	public void setEstatus(Integer estatus) {
-		this.estatus = estatus;
-	}
-
+	
 }

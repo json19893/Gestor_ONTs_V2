@@ -3,15 +3,14 @@ package totalplay.monitor.snmp.com.persistencia.entidad;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 
 @Document(collection = "tb_poleos_cpu")
-@Getter
-@Setter
-@ToString
+@Data
+@NoArgsConstructor
+
 public class poleosCpuEntidad{
 	@Id
 	private String _id;

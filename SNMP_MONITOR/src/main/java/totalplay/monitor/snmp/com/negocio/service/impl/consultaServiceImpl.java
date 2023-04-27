@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import lombok.extern.slf4j.Slf4j;
 import totalplay.monitor.snmp.com.negocio.dto.dataRegionResponseDto;
 import totalplay.monitor.snmp.com.negocio.dto.requestEstatusDto;
 import totalplay.monitor.snmp.com.negocio.dto.responseDto;
@@ -48,8 +49,6 @@ import totalplay.monitor.snmp.com.persistencia.entidad.poleosProfNameEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.poleosTimeOutEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.poleosUpBytesEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.poleosUpPacketsEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.vwTotalOntsEmpresarialesEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.vwTotalOntsEntidad;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IdetalleActualizacionRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IdiferenciasManualRepository;
@@ -72,6 +71,7 @@ import totalplay.monitor.snmp.com.persistencia.repository.IvwTotalOntsEmpresaria
 import totalplay.monitor.snmp.com.persistencia.repository.IvwTotalOntsRepositorio;
 
 @Service
+@Slf4j
 public class consultaServiceImpl extends utils implements IconsultaService {
 
 	@Autowired
@@ -144,10 +144,11 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 			response.put("data", data);
 
 		} catch (Exception e) {
+			log.error("error", e);
 			response.put("message", "Error al conseguir en nùmero de serie");
 		}
-		// System.out.println(olt.getId_olt());
-		// System.out.println(ont.getNumero_serie());
+		//(olt.getId_olt());
+		//(ont.getNumero_serie());
 		return response;
 	}
 
@@ -205,7 +206,8 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 			responseMonitoreo.setTotalesRegionEmp(oltsEmp);
 			responseMonitoreo.setTotalesRegionVips(oltsVip);
 		} catch (Exception e) {
-			response.setMessage("Error al cargar los datos de la base " + e);
+			response.setMessage("Error al cargar los datos de la base ");
+			log.error("error", e);
 			return response;
 		}
 
@@ -302,8 +304,8 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 						resPdm.setActualizacion(6);
 						resPdm.setTipo(d.getTipo());
 						
-						if(olt !=null &&  olt.getId_olt().intValue() == resPdm.getid_olt().intValue()) {
-							resPdm.setid_olt(olt.getId_olt());
+						if(olt !=null &&  olt.getId_olt().intValue() == resPdm.getId_olt().intValue()) {
+							resPdm.setId_olt(olt.getId_olt());
 							resPdm.setFrame(d.getFrame());
 							resPdm.setSlot(d.getSlot());
 							resPdm.setPort(d.getPort());
@@ -341,7 +343,7 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 			response.setData(noAct);
 			
 		} catch (Exception e) {
-			System.out.println("Error a actualizar estatus: " + e);
+			log.error("error", e);
 			response.setCod(1);
 			response.setSms("Error al acualizar " + e);
 		}
@@ -356,16 +358,9 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 		List<catOltsEntidad> response = new ArrayList<catOltsEntidad>();
 		try {
 			response = catalogoOlts.findCatOltsByEstatus(1);
-			
-			
-			/*response.setMessage("Exito");
-			response.setSuccess(true);
-			response.setEstatusONTs(respuestaONT);*/
 
 		} catch (Exception e) {
-			/*System.out.println("Error a actualizar estatus: " + e);
-			response.setSuccess(false);
-			response.setMessage("Error al acualizar estatus");*/
+			log.error("error", e);
 		}
 		return response;
 	}
@@ -431,6 +426,7 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 			}
 		} catch (Exception e) {
 			response.setMessage("No se pudo localizar la ont");
+			log.error("error", e);
 		}
 
 		return response;
@@ -443,12 +439,9 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 		responseMetricasDto response = new responseMetricasDto();
 		
 		try {
-			String idEjecucion  =  "640774190ba5db75b4cb89d3";//monitor.getLastId().get_id();
+			String idEjecucion  =monitor.getLastId().get_id(); // "640774190ba5db75b4cb89d3";//
 			
-			
-			
-			//(poleo.*.idEjecucion, idOlt+oid\(idEjecucion, idOlt, oid\))(\.getValor\(\))
-			//poleosLastUpTimeEntidad poleo =  poleoLastUpTime.getMetrica(idEjecucion, idOlt, oid);
+				
 			
 			poleosLastUpTimeEntidad poleoLastUpTimeV = poleoLastUpTime.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
 			poleosUpBytesEntidad poleoUpBytesV = poleoUpBytes.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
@@ -477,7 +470,9 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 			
 			
 		}catch(Exception e) {
+			log.error("error", e);
 			return null;
+		
 		}
 		
 		return response;
@@ -496,7 +491,7 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 			   
 			}
 		} catch (Exception e) {
-			// TODO: handle exception
+			log.error("error", e);
 		}
 
 	return archivo;
@@ -536,6 +531,7 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 		} catch (Exception e) {
 			response.setCod(1);
 			response.setSms("Error al actualizar la Ont "+ e);
+			log.error("error", e);
 		}
 		return response;
 	}

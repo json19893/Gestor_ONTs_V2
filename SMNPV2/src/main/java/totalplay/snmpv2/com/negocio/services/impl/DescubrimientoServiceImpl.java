@@ -60,6 +60,7 @@ public class DescubrimientoServiceImpl extends Constantes implements Idescubrimi
 			}
 
 		} catch (Exception e) {
+			log.error("error", e);
 			return CompletableFuture.completedFuture(new GenericResponseDto(EJECUCION_ERROR, 1));
 		}
 
@@ -104,6 +105,7 @@ public class DescubrimientoServiceImpl extends Constantes implements Idescubrimi
 			/*CompletableFuture<GenericResponseDto> estatus=genericMetrics.poleo(configuracion, idProceso, oid, 1,olt ,estatusTemporalEntity.class);
 			CompletableFuture.allOf(estatus);*/
 		} catch (Exception e) {
+			log.error("error", e);
 			if(manual){
 				registro.setDescripcion(FIN_ERROR_PROCESO_MANUAL+" "+e);
 				registro.setEstatus(2);

@@ -2,15 +2,14 @@ package totalplay.monitor.snmp.com.negocio.dto;
 
 import java.util.ArrayList;
 
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import totalplay.monitor.snmp.com.persistencia.entidad.monitoreoOltEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.monitoreoRegionEntidad;
 
-@Getter
-@Setter
-@ToString
+@Data
+@NoArgsConstructor
+
 public class ipsDto {	
     private String ip;
     private String errorlevel;

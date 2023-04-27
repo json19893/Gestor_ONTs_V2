@@ -1,27 +1,23 @@
 package totalplay.snmpv2.com.negocio.services.impl;
-import java.io.IOException;
-import java.time.LocalDateTime;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import totalplay.snmpv2.com.configuracion.Constantes;
-import totalplay.snmpv2.com.configuracion.Utils;
-import totalplay.snmpv2.com.negocio.dto.CadenasMetricasDto;
-import totalplay.snmpv2.com.negocio.dto.EjecucionDto;
-import totalplay.snmpv2.com.negocio.dto.GenericPoleosDto;
+
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.negocio.dto.LimpiezaManualDto;
 import totalplay.snmpv2.com.negocio.services.IasyncMethodsService;
-import totalplay.snmpv2.com.negocio.services.IlimpiezaCadena;
+
 import totalplay.snmpv2.com.negocio.services.IlimpiezaOntsService;
 import totalplay.snmpv2.com.negocio.services.IpoleoMetricasService;
-import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsErroneas;
+
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsPdmRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
@@ -29,24 +25,22 @@ import totalplay.snmpv2.com.persistencia.repositorio.IinventarioPuertosRepositor
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorActualizacionEstatusRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorEjecucionRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorPoleoRepository;
-import totalplay.snmpv2.com.persistencia.entidades.inventarioOntsErroneas;
-import org.springframework.scheduling.annotation.Async;
+
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IdiferenciasManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IdiferenciasRepository;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.DiferenciasManualEntity;
-import totalplay.snmpv2.com.persistencia.repositorio.IhistoricoConteoOltRepository;
+
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioAuxTransRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsAuxManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsAuxRepository;
-import totalplay.snmpv2.com.persistencia.entidades.HistoricoConteosOltsEntity;
+
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxManualEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsPdmEntity;
-import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsTmpEntity;
-import totalplay.snmpv2.com.persistencia.entidades.InventarioPuertosEntity;
+
 import totalplay.snmpv2.com.persistencia.entidades.MonitorEjecucionEntity;
 
 @Slf4j
@@ -113,6 +107,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			if(monitor  != null)
 				updateDescripcion(monitor, EJECUCION_EXITOSA+"INVENTARIO PUERTOS");
 		}catch (Exception e) {
+			log.error("error", e);
 			if(monitor  != null)
 				updateDescripcion(monitor, EJECUCION_ERROR+"INVENTARIO PUERTOS");
 		}
@@ -151,7 +146,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			 try {
 				 inventarioTmp.sendToAux();		
 			 }catch(Exception e) {
-				 
+				log.error("error", e); 
 			 }
 			//Obtener las difencias que van al inventario auxiliar
 			 //
@@ -199,7 +194,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 				inventarioOnts.sentToResp();
 				
 			}catch (Exception e) {
-				log.info("Falló el respaldo del inventario "+e);
+				log.error("Falló el respaldo del inventario "+e);
 			}
 			
 			//Cambiar el inventario por inventario auxliar
@@ -209,7 +204,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 				inventarioAux.sendToInventario();
 				
 			}catch (Exception e) {
-				log.info("Falló la actualización del inventario "+e);
+				log.error("Falló la actualización del inventario "+e);
 			}
 			 
 		} catch (Exception e) {
@@ -266,7 +261,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			saveOnts(inventarioAuxManual.getInv());
 			log.info("FIN");
 		}catch (Exception e) {
-			log.info(e.toString());
+			log.error(e.toString());
 		}
 	}
 	
@@ -303,7 +298,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 				inventarioTrans.outToInvAux();
 		
 		}catch (Exception e) {
-			log.info(e.toString());
+			log.error(e.toString());
 		}
 		inventarioTrans.deleteAll();
 		
@@ -343,7 +338,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			inventarioAux.saveAll(repetidos);
 			
 		} catch (Exception e) {
-			log.info(e.toString());
+			log.error(e.toString());
 		}
 		
 	}
@@ -382,7 +377,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			
 			
 		} catch (Exception e) {
-			log.info(e.toString());
+			log.error(e.toString());
 		}
 		
 	}
@@ -412,7 +407,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			CompletableFuture.allOf(thredOnts.toArray(new CompletableFuture[thredOnts.size()])).join();
 			
 		} catch (Exception e) {
-			log.info(e.toString());
+			log.error(e.toString());
 		}
 		
 	}
@@ -442,7 +437,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			CompletableFuture.allOf(thredOnts.toArray(new CompletableFuture[thredOnts.size()])).join();
 			
 		} catch (Exception e) {
-			log.info(e.toString());
+			log.error(e.toString());
 		}
 		
 	}
