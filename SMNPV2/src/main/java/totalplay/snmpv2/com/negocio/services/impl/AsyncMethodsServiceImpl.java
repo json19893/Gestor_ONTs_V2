@@ -27,10 +27,13 @@ import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasRepositor
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioAuxTransRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsAuxManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsAuxRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsNCERepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsPdmRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioPuertosRepository;
+import totalplay.snmpv2.com.persistencia.vertica.entidades.BmsGestorOraVerticaEntity;
+
 import org.springframework.scheduling.annotation.Async;
 
 import totalplay.snmpv2.com.persistencia.entidades.AuxiliarJoinEstatusEntity;
@@ -38,6 +41,7 @@ import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.FaltantesEstatusEntity;
 import totalplay.snmpv2.com.persistencia.entidades.FaltantesMetricasEntity;
 import totalplay.snmpv2.com.persistencia.entidades.FaltantesMetricasManualEntity;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioNCEEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsPdmEntity;
@@ -87,6 +91,9 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 	IinventarioOntsAuxManualRepository inventarioAuxManual;
 	@Autowired
 	IcatOltsRepository catOlts;
+	@Autowired
+	IinventarioOntsNCERepository inventarioNCE;
+	
 	
 	Utils util=new Utils();
 	
@@ -239,6 +246,32 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 				LocalDateTime now = LocalDateTime.now(); 
 				
 				inventarioPdm.deleteAll(onts);
+				
+				int seconds = (int) ChronoUnit.SECONDS.between(now, LocalDateTime.now());
+				log.info("::::::::    onts empresariales guardas   :::::::::::::::  "+ seconds);
+				
+			
+			
+			
+		} catch (Exception e) {
+			log.info("::::::::error onts empresariales "+ e );
+		}
+		
+		
+		return null;
+		
+	} 
+	
+	
+	@Override
+	@Async("taskExecutor2")
+	public CompletableFuture<GenericResponseDto> deleteInventario(List<InventarioOntsEntity> onts ){
+		
+		try {
+			
+				LocalDateTime now = LocalDateTime.now(); 
+				
+				inventario.deleteAll(onts);
 				
 				int seconds = (int) ChronoUnit.SECONDS.between(now, LocalDateTime.now());
 				log.info("::::::::    onts empresariales guardas   :::::::::::::::  "+ seconds);
@@ -524,6 +557,37 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 		
 	}
 	
+	@Override
+	@Async("taskExecutor2")
+	public CompletableFuture<GenericResponseDto> saveOntsNCE(List<BmsGestorOraVerticaEntity> onts) throws Exception {
+		List<InventarioNCEEntity> res = new   ArrayList<InventarioNCEEntity>();
+		
+		for(BmsGestorOraVerticaEntity o: onts) {
+			
+			InventarioNCEEntity aux= new InventarioNCEEntity();
+			
+			aux.setCIA(o.getCIA());
+			aux.setCreate_time(o.getCreate_time());
+			aux.setEquipment_id(o.getEquipment_id());
+			aux.setEtiqueta_ont(o.getEtiqueta_ont());
+			aux.setFrame(o.getFrame());
+			aux.setId_ont(o.getId_ont());
+			aux.setIp_olt(o.getIp_olt());
+			aux.setNombre_olt(o.getNombre_olt());
+			aux.setNombre_ont(o.getNombre_ont());
+			aux.setPort(o.getPort());
+			aux.setSlot(o.getSlot());
+			aux.setSn(o.getSn());
+			aux.setStatus(o.getStatus());
+			aux.setUser_vlan(o.getUser_vlan());
+			res.add( aux );
+			
+		}
+		
+		inventarioNCE.insert(res);
+		
+		return null;
+	}
 	
 	private void saveErrores(int idMetrica, List<GenericPoleosDto> onts) {
 		

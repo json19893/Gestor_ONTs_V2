@@ -450,7 +450,6 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 			//(poleo.*.idEjecucion, idOlt+oid\(idEjecucion, idOlt, oid\))(\.getValor\(\))
 			//poleosLastUpTimeEntidad poleo =  poleoLastUpTime.getMetrica(idEjecucion, idOlt, oid);
 			
-			 System.out.println(idEjecucion);
 			poleosLastUpTimeEntidad poleoLastUpTimeV = poleoLastUpTime.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
 			poleosUpBytesEntidad poleoUpBytesV = poleoUpBytes.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
 			poleosDownBytesEntidad poleoDownBytesV = poleoDownBytes.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);

@@ -416,8 +416,8 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 		}
 		
 	}
-	
-	private void saveOnts(List<InventarioOntsEntity> inventario) {
+	@Override
+	public void saveOnts(List<InventarioOntsEntity> inventario) {
 		log.info(":::::::::::::::::::::::::: Inserta inventario  "+ ":::::::::::::::::::::::");
 		
 		try {

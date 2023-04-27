@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import org.apache.commons.lang.ArrayUtils;
+//import org.apache.commons.lang.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
@@ -27,6 +27,7 @@ import totalplay.snmpv2.com.negocio.services.IGenericMetrics;
 import totalplay.snmpv2.com.negocio.services.IasyncMethodsService;
 import totalplay.snmpv2.com.negocio.services.IpoleoMetricasService;
 import totalplay.snmpv2.com.persistencia.entidades.*;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.*;
 import org.springframework.scheduling.annotation.Async;
 import totalplay.snmpv2.com.persistencia.repositorio.IauxiliarJoinEstatusRepository;
@@ -35,28 +36,8 @@ import totalplay.snmpv2.com.persistencia.repositorio.IconfiguracionMetricaReposi
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesEstatusRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasRepository;
-import totalplay.snmpv2.com.persistencia.entidades.CatConfiguracionEntity;
-import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
-import totalplay.snmpv2.com.persistencia.entidades.ConfiguracionMetricaEntity;
-import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoOltMetricaEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.IhistoricoConteoOltRepository;
 import totalplay.snmpv2.com.presentacion.MetricaController.MetricaPoleo;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosAliasEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosCpuEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosDownBytesEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosDownPacketsEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosDropDownPacketsEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosDropUpPacketsEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosEstatusEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosFrameSlotPortEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosLastDownCauseEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosLastDownTimeEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosLastUpTimeEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosMemoryEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosProfNameEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosTimeOutEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosUpBytesEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosUpPacketsEntity;
 
 
 @Slf4j
