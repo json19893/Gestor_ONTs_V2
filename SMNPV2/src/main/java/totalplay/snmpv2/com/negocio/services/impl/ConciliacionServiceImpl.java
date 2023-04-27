@@ -80,14 +80,18 @@ public class ConciliacionServiceImpl extends Constantes implements Iconnciliacio
 	
 	
 	public CompletableFuture<GenericResponseDto> updateTables() {
-		/*String idEjecucion = ejecucion.findFirstByOrderByIdDesc().getId();
+		String idEjecucion = ejecucion.findFirstByOrderByIdDesc().getId();
 		System.out.println("Inicia la bùsqueda de faltantes");
+		
 		List<InventarioOntsEntity> ontsInv = inventarioNCE.getFaltantesInv(idEjecucion);
 		limpieza.saveOnts(ontsInv);
+		
 		System.out.println("Inicia la bùsqueda de sobrantes");
-		*/List<InventarioOntsRespNCEEntity>  ontsNCE = inventario.getSobrantesInv();
+		
+		List<InventarioOntsRespNCEEntity>  ontsNCE = inventario.getSobrantesInv();
 		List<InventarioOntsEntity> invSobrantes = inventario.eliminarSobrantes();
-		inventarioRespNCE.insert(ontsNCE);
+		
+		inventarioRespNCE.insert(ontsNCE);		
 		deleteInv(invSobrantes);
 		return null;
 	}
@@ -131,19 +135,25 @@ public class ConciliacionServiceImpl extends Constantes implements Iconnciliacio
 	}
 	
 	private void deleteInv(List<InventarioOntsEntity> onts) {
-		
-		List<CompletableFuture<GenericResponseDto>> thredOlts = new ArrayList<CompletableFuture<GenericResponseDto>>();
-		Integer MaxOnts = (onts.size() /40)+ 1;
-		for(int i = 0; i < onts.size(); i += MaxOnts) {
-			Integer limMax = i + MaxOnts;
-			if (limMax >= onts.size()) {
-				limMax = onts.size();
+		System.out.println("Entrò eiminar");
+		try {
+			List<CompletableFuture<GenericResponseDto>> thredOlts = new ArrayList<CompletableFuture<GenericResponseDto>>();
+			Integer MaxOnts = (onts.size() /40) + 1;
+			for(int i = 0; i < onts.size(); i += MaxOnts) {
+				
+				Integer limMax = i + MaxOnts;
+				System.out.println("Entrò " +limMax);
+				if (limMax >= onts.size()) {
+					limMax = onts.size();
+				}
+				List<InventarioOntsEntity> segmentOlts = new ArrayList<InventarioOntsEntity>(onts.subList(i, limMax));
+				CompletableFuture<GenericResponseDto> executeProcess = asyncMethods.deleteInventario(segmentOlts);
+				thredOlts.add(executeProcess);
 			}
-			List<InventarioOntsEntity> segmentOlts = new ArrayList<InventarioOntsEntity>(onts.subList(i, limMax));
-			CompletableFuture<GenericResponseDto> executeProcess = asyncMethods.deleteInventario(segmentOlts);
-			thredOlts.add(executeProcess);
+			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
+		}catch (Exception e) {
+			log.info(e.toString());
 		}
-		CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
 	}
 	
 	

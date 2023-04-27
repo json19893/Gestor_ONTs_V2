@@ -60,7 +60,7 @@ public class IntegracionController extends Constantes {
 		
 		try {
 			//Se obtienen y actualizan las ip's
-			/*List<CatOltsVerticaEntity> olts =  repositorioOlts.getUniqueIps();
+			List<CatOltsVerticaEntity> olts =  repositorioOlts.getUniqueIps();
 			conciliacion.saveIps(olts);
 			
 			System.out.println("iniciò");		
@@ -96,7 +96,7 @@ public class IntegracionController extends Constantes {
 			}
 			//Se libera la memoria
 			onts=null;
-			*/		
+					
 			conciliacion.updateTables();
 		}catch (Exception e) {
 			return "Error Al hacer la conciliaciòn";

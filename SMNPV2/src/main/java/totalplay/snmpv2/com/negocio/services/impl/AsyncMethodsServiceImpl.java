@@ -269,12 +269,14 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 		
 		try {
 			
+				System.out.println("Entrò  deleteAll");
+			
 				LocalDateTime now = LocalDateTime.now(); 
 				
 				inventario.deleteAll(onts);
 				
 				int seconds = (int) ChronoUnit.SECONDS.between(now, LocalDateTime.now());
-				log.info("::::::::    onts empresariales guardas   :::::::::::::::  "+ seconds);
+				log.info("::::::::    onts eliminadas  :::::::::::::::  "+ seconds);
 				
 			
 			
