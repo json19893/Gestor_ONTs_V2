@@ -43,7 +43,7 @@ public class apiServiceImpl implements IapiService {
 	@Autowired
 	IinventarioOntsTempRepositorio onts2;
     @Autowired
-    InventarioOntRespRepository ontsInventarioRespaldoRepository;
+    IinventarioOntsRespNCERepository IInventarioOntsRespNCERepository;
 	@Autowired
 	IcatOltsProcesadoRepositorio status;
 	@Autowired
@@ -153,13 +153,13 @@ public class apiServiceImpl implements IapiService {
                             olt.getId_olt());
 
                     //Si esta vacio la lista busca en la tabla de respaldos:
-                    List<InventarioOntResp> ontInventarioRespaldo = new ArrayList<>();
+                    List<InventarioOntsRespNCEEntity> ontInventarioRespaldoNCE = new ArrayList<>();
                     if (res.isEmpty()) {
-                        ontInventarioRespaldo = ontsInventarioRespaldoRepository
+                        ontInventarioRespaldoNCE = IInventarioOntsRespNCERepository
                                 .getOntsRespaldo(olt.getId_olt(), d.getUid(), d.getFrame(), d.getPort(), d.getSlot());
                     }
 
-                    if (res.isEmpty() && ontInventarioRespaldo.isEmpty()) {
+                    if (res.isEmpty() && ontInventarioRespaldoNCE.isEmpty()) {
                         na.setCausa("No existe una ont asociada a los criterios de busqueda");
                         na.setNumeroSerie("na");
                         na.setIp(d.getIp());
@@ -173,16 +173,16 @@ public class apiServiceImpl implements IapiService {
                         actualizadas.add(na);
                     } else {
                         if (res.isEmpty()
-                                && !ontInventarioRespaldo.isEmpty()) {
-                            //Adaptar la lista de objetos para que funcionen con el bloque logico en comun (logica del negocio):
+                                && !ontInventarioRespaldoNCE.isEmpty()) {
+                            //Adapta la lista de objetos para que funcionen con el bloque logico en comun (logica del negocio):
                             inventarioOntsEntidad tmp;
                             res = new ArrayList<>();
-                            for (InventarioOntResp ontResp : ontInventarioRespaldo) {
+                            for (InventarioOntsRespNCEEntity ontResp : ontInventarioRespaldoNCE) {
                                 tmp = new inventarioOntsEntidad();
                                 tmp.set_id(ontResp.get_id());
                                 tmp.setNumero_serie(ontResp.getNumero_serie());
                                 tmp.setOid(ontResp.getOid());
-                                tmp.setFecha_descubrimiento(util.getDate());
+                                tmp.setFecha_descubrimiento(ontResp.getFecha_descubrimiento());
                                 tmp.setId_olt(ontResp.getId_olt());
                                 tmp.setEstatus(ontResp.getEstatus());
                                 tmp.setId_ejecucion(ontResp.getId_ejecucion());
@@ -235,8 +235,8 @@ public class apiServiceImpl implements IapiService {
                                 actualizadas.add(na);
                             }
                             if (onts.save(r) != null) {
-                                if (ontsInventarioRespaldoRepository.findById(r.get_id()).isPresent()) {
-                                    ontsInventarioRespaldoRepository.deleteById(r.get_id());
+                                if (IInventarioOntsRespNCERepository.findById(r.get_id()).isPresent()) {
+                                    IInventarioOntsRespNCERepository.deleteById(r.get_id());
                                 }
                             }
                         }
