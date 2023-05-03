@@ -182,7 +182,7 @@ public class apiServiceImpl implements IapiService {
                                 tmp.set_id(ontResp.get_id());
                                 tmp.setNumero_serie(ontResp.getNumero_serie());
                                 tmp.setOid(ontResp.getOid());
-                                tmp.setFecha_descubrimiento(ontResp.getFecha_descubrimiento());
+                                tmp.setFecha_descubrimiento(util.getDate());
                                 tmp.setId_olt(ontResp.getId_olt());
                                 tmp.setEstatus(ontResp.getEstatus());
                                 tmp.setId_ejecucion(ontResp.getId_ejecucion());
@@ -206,7 +206,7 @@ public class apiServiceImpl implements IapiService {
                             if (d.getEstatus().equals("UP") || d.getEstatus().equals("CLEAR")) {
                                 r.setEstatus(1);
                                 r.setDescripcionAlarma(d.getDescripcionAlarma());
-                                r.setFecha_descubrimiento(LocalDateTime.now().toString());
+                                r.setFecha_descubrimiento(util.getDate());
                                 r.setActualizacion(1);
                                 na.setCausa("Actualizacion a UP");
                                 na.setNumeroSerie(r.getNumero_serie());
@@ -221,7 +221,7 @@ public class apiServiceImpl implements IapiService {
                             } else {
                                 r.setEstatus(2);
                                 r.setDescripcionAlarma(d.getDescripcionAlarma());
-                                r.setFecha_descubrimiento(LocalDateTime.now().toString());
+                                r.setFecha_descubrimiento(util.getDate());
                                 r.setActualizacion(2);
                                 na.setCausa("Actualizacion a DOWN");
                                 na.setNumeroSerie(r.getNumero_serie());
@@ -340,7 +340,7 @@ public class apiServiceImpl implements IapiService {
 				if (res2 == null) {
 					catOltsEntidad olt = catalogoOlts.getIp(datos.getIp());
 					if (olt == null) {
-						//Guardado de la nueva ont
+						//Guardado de la nueva olt
 						olt=saveOlt(datos.getIp(), nombreOlt);
 						tecnolgia=olt.getTecnologia();
 					}
@@ -348,7 +348,7 @@ public class apiServiceImpl implements IapiService {
 					res2 = saveOntPdm(olt, Integer.parseInt(frame), Integer.parseInt(slot), Integer.parseInt(port), datos.getNumSerie(), estatus, tipo); 
 					resEstatus = res2.getEstatus().toString();
 				} else {
-					res2.setFecha_descubrimiento(LocalDateTime.now().toString());
+					res2.setFecha_descubrimiento(util.getDate());
 					res2.setTipo(res2.getTipo() == "E" ? res2.getTipo() : tipo);
 					res2.setEstatus(estatus);
 					onts2.save(res2);
@@ -357,6 +357,7 @@ public class apiServiceImpl implements IapiService {
 			} else if(resResp==null) {
 				res.setTipo(res.getTipo() == "E" ? res.getTipo() : tipo);
 				res.setActualizacion(3);
+				res.setFecha_modificacion(util.getDate());
 				//res.setFecha_descubrimiento(LocalDateTime.now().toString());
 				onts.save(res);
 				resEstatus = res.getEstatus().toString();
@@ -368,6 +369,7 @@ public class apiServiceImpl implements IapiService {
 				
 				ontAux.setTipo(resResp.getTipo() == "E" ? resResp.getTipo() : tipo);
 				ontAux.setActualizacion(3);
+				ontAux.setFecha_modificacion(util.getDate());
 				ontAux.set_id(null);
 				
 				ontsResp.delete(resResp);
@@ -582,7 +584,7 @@ public class apiServiceImpl implements IapiService {
 		res2.setFrame(frame);
 		res2.setDescripcionAlarma("Estado Inicial");
 		res2.setTecnologia(olt.getTecnologia());
-		res2.setFecha_descubrimiento(LocalDateTime.now().toString());
+		res2.setFecha_descubrimiento(util.getDate());
 		res2.setLastDownTime("---");
 		onts2.save(res2);
 		

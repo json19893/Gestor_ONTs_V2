@@ -1,5 +1,7 @@
 package totalplay.services.com.persistencia.entidad;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,7 +18,7 @@ public class inventarioOntsTempEntidad {
 	private String _id;
 	private String numero_serie;
 	private String oid;
-	private String fecha_descubrimiento;
+	private Date fecha_descubrimiento;
 	private Integer id_olt;
 	private Integer estatus;
 	private String id_ejecucion;
