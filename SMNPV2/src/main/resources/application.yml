@@ -1,0 +1,12 @@
+dbvertica:
+  datasource:
+    url: jdbc:vertica://10.180.249.33:5433/us_consultas_bms?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC
+    username: us_consultas_bms
+    password: JIS8YX75jZGH85FuiZ$
+    driverClassName: com.vertica.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect

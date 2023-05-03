@@ -20,4 +20,10 @@ public interface IcatOltsRepository extends MongoRepository<CatOltsEntity, Strin
 			"{'$match':{ip: {$in : ?0} } }"
 			})
 	List<CatOltsEntity> getOltsByIp(@Param("idOLts") List<String> idOLts);
+	
+	@Aggregation(pipeline = {
+			 "{$sort: {id_olt: -1 } }"
+			,"{$limit: 1 }"
+			})
+	CatOltsEntity getLastIdOlt();
 }
