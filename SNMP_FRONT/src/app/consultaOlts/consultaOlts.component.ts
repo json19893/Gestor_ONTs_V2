@@ -506,7 +506,7 @@ export class DialogElementsExampleDialog  implements OnInit   {
    blo3:Imetricas []=[];
    blo4:Imetricas []=[];
    sb:Imetricas []=[];
-   blo:Bloques[]=[{bloque:1,nombre:"Bloque 1"},{bloque:2,nombre:"Bloque 2"},{bloque:3,nombre:"Bloque 3"},{bloque:4,nombre:"Bloque 4"},{bloque:5,nombre:"Sin bloque asignado"}]
+   blo:Bloques[]=[{bloque:1,nombre:"Identificación ONTs"},{bloque:2,nombre:"Estatus ONTs"},{bloque:3,nombre:"Performance ONTs"},{bloque:4,nombre:"otro"},{bloque:5,nombre:"Sin bloque asignado"}]
  
   constructor(
     private service: pointService,
@@ -586,7 +586,7 @@ ngOnInit() {
         case 2:
           this.blo2.push(val)
           break;
-        case 3:
+       case 3:
           this.blo3.push(val)
           break;
         case 4:

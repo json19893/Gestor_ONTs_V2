@@ -38,9 +38,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter{
 
 	@Override
 	public void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable().authorizeRequests().antMatchers("/**").permitAll()
-		.antMatchers(HttpMethod.GET,"/ddd/**").hasAnyRole("ADMIN", "USER");
-		//.anyRequest().authenticated().and().cors().configurationSource(corsConfigurationSource());
+		http.csrf().disable().authorizeRequests().antMatchers("/Totalplay/login-lpda/login/").permitAll()
+		.antMatchers(HttpMethod.GET,"/Totalplay/snmp-monitor/**","/Totalplay/snmpv2/**").hasAnyRole("ADMIN", "USER")
+		.anyRequest().authenticated().and().cors().configurationSource(corsConfigurationSource());
 		
 		
 		

@@ -24,11 +24,12 @@ import totalplay.services.com.negocio.dto.respuestaStatusDto;
 import totalplay.services.com.negocio.service.IapiService;
 
 @RestController
+@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 public class apiController {
 	@Autowired
 	IapiService apiService;
 
-	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+
 	@PostMapping(value = "/getNumeroSerie", produces = MediaType.APPLICATION_JSON_VALUE)
 	public respuestaDto getNumeroSerie(@RequestBody requestDto datos) throws Exception {
 		respuestaDto response = apiService.getNumeroSerie(datos);
@@ -36,7 +37,7 @@ public class apiController {
 		return response;
 	}
 
-	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	
 	@PutMapping(value = "/putStatusOnt", produces = MediaType.APPLICATION_JSON_VALUE)
 	public respuestaStatusDto putStatusOnt(@RequestBody List<requestEstatusDto> datos) throws Exception {
 		respuestaStatusDto response = apiService.putStatusOnt(datos);
@@ -44,7 +45,7 @@ public class apiController {
 		return response;
 	}
 	
-	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+
 	@GetMapping(value = "/getConfiguracionOlt/{tecnologia}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public responseDto getConfiguracionOlt(@PathVariable("tecnologia") String tecnologia) throws Exception {
 		responseDto response = apiService.getConfiguracionOlt(tecnologia);
@@ -52,15 +53,16 @@ public class apiController {
 		return response;
 	}
 	
-	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+
 	@PostMapping(value = "/altas/altaOnts", produces = MediaType.APPLICATION_JSON_VALUE)
 	public respuestaDto altaOnts(@RequestBody requestAltaOnts datos) throws Exception {
-		
-		respuestaDto response = apiService.altaOnts(datos);
+		respuestaDto response =new respuestaDto();
+		if (datos!=null){
+			response = apiService.altaOnts(datos);
+		}
 		return response;
 	}
 	
-	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@PostMapping(value = "/altas/validaEstatus", produces = MediaType.APPLICATION_JSON_VALUE)
 	public respuestaDto validaONT(@RequestBody requestAltaOnts datos) throws Exception {
 		respuestaDto response = apiService.validaONT(datos);
