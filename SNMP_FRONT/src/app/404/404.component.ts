@@ -1,4 +1,5 @@
 import { Component, OnInit} from '@angular/core';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 
 @Component({
@@ -9,12 +10,14 @@ styleUrls: ['./404.component.css']
 })
 export class ErrorComponent implements OnInit {
     constructor(
-
+        private spinner:NgxSpinnerService
     ){
 
     }
     ngOnInit() {
-      
+        setTimeout(() => {
+            this.spinner.hide();
+          }, 500);
     }
 
     }

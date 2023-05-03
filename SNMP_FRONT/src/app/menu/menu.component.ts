@@ -126,7 +126,7 @@ public ses:any;
     }
     this.usuario =localStorage.getItem('usuario');
     this.rol =localStorage.getItem('rol');
-   switch ( this.rol) {
+ /*  switch ( this.rol) {
      case 'Administrador':
        this.acceso=true
        break;
@@ -136,7 +136,7 @@ public ses:any;
          case 'Usuario':
            this.acceso=false
            break;
-   }
+   }*/
   }
   mouseenter() {
     if (!this.isExpanded) {
@@ -308,7 +308,7 @@ export class DialogContentExampleDialog implements OnInit {
     this.mostrar = localStorage.getItem('mostrar');
     this.usuario =localStorage.getItem('usuario');
     this.rol =localStorage.getItem('rol');
-   switch ( this.rol) {
+ /*  switch ( this.rol) {
      case 'Administrador':
        this.acceso=true
        break;
@@ -318,7 +318,7 @@ export class DialogContentExampleDialog implements OnInit {
          case 'Usuario':
            this.acceso=false
            break;
-   }
+   }*/
   }
 
   openBottomSheet1() {
