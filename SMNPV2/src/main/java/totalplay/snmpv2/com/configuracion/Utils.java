@@ -8,7 +8,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.net.InetAddress;
 
@@ -443,5 +446,9 @@ public class Utils extends Constantes {
             file.delete();
         
         }
+    }
+    
+    public Date getDate() {
+    	return Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS));
     }
 }

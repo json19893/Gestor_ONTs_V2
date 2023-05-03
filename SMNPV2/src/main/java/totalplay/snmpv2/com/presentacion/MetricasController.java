@@ -109,16 +109,15 @@ public class MetricasController extends Constantes {
 			//monitorMetrica.deleteAll();
 			//monitorOlt.deleteAll();
 			
-			//Se crea un nuevo registro para el monitor			
+			//Se crea un nuevo registro para el monitor		
 			idMonitorPoleo = monitorPoleo.save(new MonitorPoleoEntity(LocalDateTime.now().toString(), null,INICIO_DESC+"POLEO" , INICIO)).getId();
-			
 			
 			
 			List<CatOltsEntity> olts = catOlts.findByEstatus(1);
 			List<CompletableFuture<String>> regionSegmentOnts;
 			List<CompletableFuture<String>> regionSegmentOntsEmpresariales;
 			
-			for(int j=3;j<=16;j++) {
+			for(int j=2;j<=16;j++) {
 				
 				activas = confMetricas.getCountActive(j);
 				
@@ -130,7 +129,7 @@ public class MetricasController extends Constantes {
 					
 					regionSegmentOnts = new ArrayList<CompletableFuture<String>>();			
 					
-					Integer maxOnts = (olts.size() /50) + 1;
+					Integer maxOnts = (olts.size() /110) + 1;
 					
 					for (int i = 0; i < olts.size(); i += maxOnts) {
 						Integer limMax = i + maxOnts;
@@ -144,15 +143,16 @@ public class MetricasController extends Constantes {
 					}
 		
 					CompletableFuture.allOf(regionSegmentOnts.toArray(new CompletableFuture[regionSegmentOnts.size()])).join();
-					
+			
 					//Obtener las empresariales no poeladas y mandarlas con otro servicio
 					ontsEmpresariales =  poleoMetricas.getOntsFaltantes(j,idMonitorPoleo, true, false, "auxiliar", 2, null);
 					monitPoleoMetrica.setOntsSnmp(ontsEmpresariales.size());
+					log.info(ontsEmpresariales.size()+"---------------------------------------------");
 					
 					if(ontsEmpresariales != null) {
 						log.info("::::::::::::::::::::::::::::::Se hace el cruce de faltantes para " + ontsEmpresariales.size() );
 						regionSegmentOntsEmpresariales = new ArrayList<CompletableFuture<String>>();
-						maxOntsEmpresariales = (ontsEmpresariales.size()/50) + 1;
+						maxOntsEmpresariales = (ontsEmpresariales.size()/110) + 1;
 						
 						for (int i = 0; i < ontsEmpresariales.size(); i += maxOntsEmpresariales) {
 							log.info("--------------------------------------------"+i+"------------------------------------");
@@ -178,8 +178,6 @@ public class MetricasController extends Constantes {
 					
 				}
 			}
-			
-			
 		} catch (Exception e) {
 			log.info("error:" + e);
 			response = "error:::" + e;

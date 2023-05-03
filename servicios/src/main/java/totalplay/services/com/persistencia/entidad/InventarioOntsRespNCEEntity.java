@@ -1,17 +1,18 @@
-package totalplay.snmpv2.com.negocio.dto;
+package totalplay.services.com.persistencia.entidad;
 
 import java.util.Date;
 
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
-import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
+@Document(collection = "tb_inventario_onts_resp_nce")
 @Data
 @NoArgsConstructor
-public class GenericPoleosDto {
+public class InventarioOntsRespNCEEntity  {
 	@Id
 	private String _id;
 	private String oid;
@@ -35,6 +36,12 @@ public class GenericPoleosDto {
 	private String indexFSP;
 	private String descripcion;
 	private boolean error;
+	private String alias;
+	private String tipo; 
+	private String lastDownTime;
+	private String descripcionAlarma;
+	private Integer actualizacion;
+	private Integer vip;
+	private String fecha_actualizacion;
 	
-
 }

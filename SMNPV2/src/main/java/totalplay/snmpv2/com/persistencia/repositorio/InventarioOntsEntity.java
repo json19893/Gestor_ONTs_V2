@@ -1,4 +1,4 @@
-package totalplay.snmpv2.com.persistencia.entidades;
+package totalplay.snmpv2.com.persistencia.repositorio;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,7 +18,6 @@ public class InventarioOntsEntity extends GenericPoleosDto {
 	private String descripcionAlarma;
 	private Integer actualizacion;
 	private Integer vip;
-	
-	
+	private String fecha_actualizacion;
 	
 }

@@ -7,6 +7,7 @@ import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsPdmEntity;
+import totalplay.snmpv2.com.persistencia.vertica.entidades.BmsGestorOraVerticaEntity;
 
 import java.io.IOException;
 import java.util.List;
@@ -23,4 +24,6 @@ public interface IasyncMethodsService {
 	CompletableFuture<GenericResponseDto> getFaltantesMetricas(List<CatOltsEntity> olts, String tabla, String joinField, int tipo, String idEjecucion, int idMetrica);
 	CompletableFuture<GenericResponseDto> saveInventario(List<InventarioOntsEntity> onts );
 	CompletableFuture<GenericResponseDto> putConfiguracion(List<CatOltsEntity> olts) throws Exception;
+	CompletableFuture<GenericResponseDto> saveOntsNCE(List<BmsGestorOraVerticaEntity> onts) throws Exception;
+	CompletableFuture<GenericResponseDto> deleteInventario(List<InventarioOntsEntity> onts );
 }

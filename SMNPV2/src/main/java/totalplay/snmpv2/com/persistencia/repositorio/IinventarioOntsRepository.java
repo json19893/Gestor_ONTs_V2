@@ -1,6 +1,7 @@
 package totalplay.snmpv2.com.persistencia.repositorio;
 
 import org.springframework.data.mongodb.repository.Aggregation;
+import org.springframework.data.mongodb.repository.Meta;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +17,7 @@ import totalplay.snmpv2.com.persistencia.entidades.InventarioAuxTransEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxManualEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsRespNCEEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsTmpEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioPuertosEntity;
 
@@ -330,6 +332,7 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 			  + "			localField:\"id_olt\",\n"
 			  + "			foreignField:\"id_olt\",\n"
 			  + "			pipeline:[\n"
+			  + "			    {$match:{id_metrica: ?5 }},\n"
 			  + "			    {$match:{id_poleo: ?4 }}\n"
 			  + "			],"
 			  + "			as: \"monitor\",\n"
@@ -402,7 +405,7 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 			+ "        }\n"
 			+ "}\n"
 			, " {$unset: ['_id', \"onts.ont.olt\", \"onts.ont.monitor\", \"onts.ont.olts\", \"onts.ont.configuracion\", \"onts.ont.ont\", \"errores._id\"]}"})
-	List<FaltantesDto> getFaltantesMetricas(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt, @Param("table") String table, @Param("join") String join, @Param("idEjecucion") String  idEjecucion);
+	List<FaltantesDto> getFaltantesMetricas(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt, @Param("table") String table, @Param("join") String join, @Param("idEjecucion") String  idEjecucion, @Param("metrica") Integer  metrica);
 
 
 	@Aggregation(pipeline = {
@@ -558,4 +561,58 @@ List<FaltantesMetricasManualEntity> getFaltantesMetricasManual(@Param("idRegion"
 
 	@Aggregation(pipeline = {"{$match:{$and:[{id_olt:?0},{oid:?1}]}}"})
 	InventarioOntsEntity getOntByOid(@Param("idOlt") Integer idOlt, @Param("oid") String oid);
+	
+	@Aggregation(pipeline = {
+			//  "{$match:{numero_serie:'48575443E853D9A7'}}"
+			  "{\r\n"
+			+ "		\"$lookup\":{\r\n"
+			+ "			from: \"tb_inventario_onts_nce\",\r\n"
+			+ "			localField: \"numero_serie\",\r\n"
+			+ "            foreignField: \"sn\",\r\n"
+			+ "			as: \"onts\",\r\n"
+			+ "		}			\r\n"
+			+ "	}\r\n"
+			, "	{ $match:{onts:{$eq:[]}} }"
+			, " {\n"
+			+ "		\"$lookup\":{\n"
+			+ "			from: \"tb_inventario_onts_resp_nce\",\n"
+			+ "			localField: \"numero_serie\",\n"
+			+ "            foreignField: \"numero_serie\",\n"
+			+ "			as: \"nce\",\n"
+			+ "		}			\n"
+			+ "	}\n"
+			, "	{ $match:{onts:{$eq:[]}} }\n"
+			, "	{ $match:{nce:{$eq:[]}} }"
+			, " {$unset:[_id]}"
+		})
+	@Meta(allowDiskUse = true)
+	List<InventarioOntsRespNCEEntity> getSobrantesInv();
+	
+	
+	@Aggregation(pipeline = {
+			//  "{$match:{numero_serie:'48575443E853D9A7'}}"
+			  "{\r\n"
+			+ "		\"$lookup\":{\r\n"
+			+ "			from: \"tb_inventario_onts_nce\",\r\n"
+			+ "			localField: \"numero_serie\",\r\n"
+			+ "            foreignField: \"sn\",\r\n"
+			+ "			as: \"onts\",\r\n"
+			+ "		}			\r\n"
+			+ "	}\r\n"
+			, "	{ $match:{onts:{$eq:[]}} }"
+			, " {\n"
+			+ "		\"$lookup\":{\n"
+			+ "			from: \"tb_inventario_onts_resp_nce\",\n"
+			+ "			localField: \"numero_serie\",\n"
+			+ "            foreignField: \"numero_serie\",\n"
+			+ "			as: \"nce\",\n"
+			+ "		}			\n"
+			+ "	}\n"
+			, "	{ $match:{onts:{$eq:[]}} }\n"
+			, "	{ $match:{nce:{$eq:[]}} }"
+		})
+	@Meta(allowDiskUse = true)
+	List<InventarioOntsEntity> eliminarSobrantes();
+	
+	
 }

@@ -38,6 +38,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
 	IcatOltsRepository catOltRepository;
     @Autowired
     IhistoricoConteoOltRepository historicoOlt;
+    
     Utils util=new Utils();
     @Value("${ruta.archivo.txt}")
     private String ruta;    
@@ -64,7 +65,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                 		T metrica = entidad.getConstructor().newInstance();
                         metrica.setOid(proces.getOid());
                         metrica.setError(true);
-                        metrica.setFecha_poleo( Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS)) );
+                        metrica.setFecha_descubrimiento(util.getDate());
                         metrica.setId_olt(idOlt);
                         metrica.setValor(proces.isSinOid() ? "No se cuenta con Oid para polear":"Problemas al polear la olt");
                         metrica.setId_metrica(idmetrica);
@@ -125,7 +126,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                                     metrica.setSlot(Integer.parseInt(ifname[1]));
                                     metrica.setFrame(Integer.parseInt(ifname[0]));
                                     metrica.setOid(val[0].replaceAll("=", "").trim());
-                                    metrica.setFecha_poleo( Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS)) );
+                                    metrica.setFecha_descubrimiento(util.getDate());
                                     metrica.setId_olt(idOlt);
                                     metrica.setValor(val[1].trim());
                                     metrica.setId_metrica(idmetrica);
@@ -137,7 +138,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                                 }
                             } else {
                                 
-                                metrica.setFecha_poleo( Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS)) );
+                                metrica.setFecha_descubrimiento( util.getDate() );
                                 metrica.setId_olt(idOlt);
                                 if(idmetrica == 0) {
                                 	
@@ -190,7 +191,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                                 // log.info("vall "+val[0].trim());
 	                           inventarioOntsErroneas erroneasEntidad=new inventarioOntsErroneas();
 	                           erroneasEntidad.setEstatus(1);
-	                           erroneasEntidad.setFecha_poleo( Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS))  );
+	                           erroneasEntidad.setFecha_descubrimiento( util.getDate());
 	                           erroneasEntidad.setId_olt(idOlt);
 	                           erroneasEntidad.setId_ejecucion(IdEjecucion);
 	                           erroneasEntidad.setId_region(idRegion);
@@ -226,7 +227,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                         	metrica = entidad.getConstructor().newInstance();
 	                        metrica.setOid(proces.getOid());
 	                        metrica.setError(true);
-	                        metrica.setFecha_poleo( Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS)) );
+	                        metrica.setFecha_descubrimiento( util.getDate() );
 	                        metrica.setId_olt(idOlt);
 	                        metrica.setValor( s.split("=").length >1 ? s.split("=")[1]:s );
 	                        metrica.setId_metrica(idmetrica);
@@ -258,7 +259,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                             	T metrica = entidad.getConstructor().newInstance();
 		                        metrica.setOid(proces.getOid());
 		                        metrica.setError(true);
-		                        metrica.setFecha_poleo( Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS)) );
+		                        metrica.setFecha_descubrimiento( util.getDate());
 		                        metrica.setId_olt(idOlt);
 		                        metrica.setValor(line + " || " + proces.getComando());
 		                        metrica.setId_metrica(idmetrica);
@@ -313,7 +314,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
 		                		T metrica = entidad.getConstructor().newInstance();
 		                        metrica.setOid(proces.getOid());
 		                        metrica.setError(true);
-		                        metrica.setFecha_poleo( Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS)) );
+		                        metrica.setFecha_descubrimiento(util.getDate());
 		                        metrica.setId_olt(idOlt);
 		                        metrica.setValor(s.equals("") ? e.toString(): s.split("=").length >1 ? s.split("=")[1]:s );
 		                        metrica.setId_metrica(idmetrica);

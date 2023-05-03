@@ -186,8 +186,8 @@ public class DescubrimientoController extends Constantes {
 			Integer MaxOlts = (olts.size() /40) + 1;
 			List<CompletableFuture<GenericResponseDto>> thredOlts = new ArrayList<CompletableFuture<GenericResponseDto>>();
 			
-			for (int i = 0; i < olts.size(); i += valMaxOlts) {
-				Integer limMax = i + valMaxOlts;
+			for (int i = 0; i < olts.size(); i += MaxOlts) {
+				Integer limMax = i + MaxOlts;
 				if (limMax >= olts.size()) {
 					limMax = olts.size();
 				}

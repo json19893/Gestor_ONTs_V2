@@ -6,6 +6,10 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 
 import lombok.extern.slf4j.Slf4j;
 import totalplay.services.com.negocio.dto.ejecucionDto;
@@ -50,6 +54,10 @@ public class util {
 	
 	public static boolean isBlankOrNull(String str) {
 	    return (str == null || "".equals(str.trim()));
+	}
+	
+	public Date getDate() {
+		return Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS));
 	}
 
 }
