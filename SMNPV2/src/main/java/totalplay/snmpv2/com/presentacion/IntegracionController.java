@@ -60,10 +60,12 @@ public class IntegracionController extends Constantes {
 		
 		try {
 			//Se obtienen y actualizan las ip's
+			log.info("Se inicia la actualizaciòn de inventarios");
 			List<CatOltsVerticaEntity> olts =  repositorioOlts.getUniqueIps();
 			conciliacion.saveIps(olts);
 			
-			System.out.println("iniciò");		
+			log.info("Termina la actualizaciòn de inventarios");
+			
 			
 			inventarioNCE.deleteAll();
 		

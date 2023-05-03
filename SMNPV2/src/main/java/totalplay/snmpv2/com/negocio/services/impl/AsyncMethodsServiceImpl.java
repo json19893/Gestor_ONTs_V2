@@ -336,7 +336,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 					switch(tipo) {
 						case 1:
 							//List respPrueba;
-							respPrueba = inventario.getFaltantesMetricas(olt.getId_region(),  olt.getId_olt(), tabla, joinField, idEjecucion);
+							respPrueba = inventario.getFaltantesMetricas(olt.getId_region(),  olt.getId_olt(), tabla, joinField, idEjecucion, idMetrica);
 							//faltantesMetricas.insert(respPrueba);
 							
 							//guardar en la tabla de poleos
@@ -352,7 +352,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 						case 2:
 							
 							//List respPrueba;
-							respPrueba = inventario.getFaltantesMetricas(olt.getId_region(),  olt.getId_olt(), tabla, joinField, idEjecucion);
+							respPrueba = inventario.getFaltantesMetricas(olt.getId_region(),  olt.getId_olt(), tabla, joinField, idEjecucion, idMetrica);
 							//faltantesMetricas.insert(respPrueba);
 							
 							//guardar en la tabla de poleos
@@ -374,7 +374,7 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 									
 						
 					int seconds = (int) ChronoUnit.SECONDS.between(now, LocalDateTime.now());
-					log.info("::::::::olt "+ olt.getId_olt() +"   :::::::::::::::  "+ seconds);
+					//log.info("::::::::olt "+ olt.getId_olt() +"   :::::::::::::::  "+ seconds);
 					
 				
 				
