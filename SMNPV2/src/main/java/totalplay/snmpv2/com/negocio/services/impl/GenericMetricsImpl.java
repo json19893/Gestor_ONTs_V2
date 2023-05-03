@@ -87,13 +87,17 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 	
 	
 	Utils utls=new Utils();
+	
 	@Value("${ruta.archivo.shell}")
 	private String ruta;
 	@Value("${ruta.archivo.txt}")
 	private String ruta2;
-
 	@Value("${ruta.archivo.metrica}")
 	private String ruta3;
+	
+//	private String ruta2="/home/implementacion/ecosistema/manual/descubrimiento.txt";
+//	private String ruta3="/home/implementacion/ecosistema/manual/metrica.txt";
+//	private String	ruta="/home/implementacion/ecosistema/comandos/";
 
 	@Override																					
 	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error,boolean manual) throws IOException, NoSuchFieldException, NoSuchMethodException {
@@ -192,7 +196,11 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 				String logevent = configuracion.getTrazaEventos();
 				logevent += "[ " + getCurrentDateTime() + " ] "+ " ERROR "+ " [Hubo un error en el proceso SNMPGET]" + "\n";
 				configuracion.setTrazaEventos(logevent);
-				configuracion.getManejarResultadoComando().writterLogOnDiskMetrica(ruta3, configuracion, data.get(0),1,metrica,comando);
+				try {
+					configuracion.getManejarResultadoComando().writterLogOnDiskMetrica(ruta3, configuracion, data.get(0),1,metrica,comando);
+				}catch (Exception j) {
+					// TODO: handle exception
+				}
 				log.error(EJECUCION_ERROR, e);
 				return CompletableFuture.completedFuture(new GenericResponseDto("error", 1));
 			}finally {

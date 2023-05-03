@@ -16,4 +16,5 @@ public interface IlimpiezaOntsService {
 	void updateDescripcion(MonitorEjecucionEntity monitor, String descripcion);
 	void LimpiezaManual(List<CatOltsEntity> olts, MonitorEjecucionEntity monitor);
 	void saveOnts(List<InventarioOntsEntity> inventario);
+	void deleteInventarioPdm();
 }

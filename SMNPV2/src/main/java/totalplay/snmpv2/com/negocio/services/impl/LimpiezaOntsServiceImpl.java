@@ -382,7 +382,8 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 		
 	}
 	
-	private void deleteInventarioPdm() {
+	@Override
+	public void deleteInventarioPdm() {
 		log.info(":::::::::::::::::::::::::: Eliminar inventario de PDM "+ ":::::::::::::::::::::::");
 		
 		try {

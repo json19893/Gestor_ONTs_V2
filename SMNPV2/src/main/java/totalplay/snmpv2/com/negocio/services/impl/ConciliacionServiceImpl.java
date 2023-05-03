@@ -80,6 +80,7 @@ public class ConciliacionServiceImpl extends Constantes implements Iconnciliacio
 	
 	
 	public CompletableFuture<GenericResponseDto> updateTables() {
+		inventarioRespNCE.deleteAll();
 		String idEjecucion = ejecucion.findFirstByOrderByIdDesc().getId();
 		System.out.println("Inicia la bùsqueda de faltantes");
 		
@@ -93,6 +94,8 @@ public class ConciliacionServiceImpl extends Constantes implements Iconnciliacio
 		
 		inventarioRespNCE.insert(ontsNCE);		
 		deleteInv(invSobrantes);
+		
+		limpieza.deleteInventarioPdm();
 		return null;
 	}
 

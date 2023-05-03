@@ -332,6 +332,7 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 			  + "			localField:\"id_olt\",\n"
 			  + "			foreignField:\"id_olt\",\n"
 			  + "			pipeline:[\n"
+			  + "			    {$match:{id_metrica: ?5 }},\n"
 			  + "			    {$match:{id_poleo: ?4 }}\n"
 			  + "			],"
 			  + "			as: \"monitor\",\n"
@@ -404,7 +405,7 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 			+ "        }\n"
 			+ "}\n"
 			, " {$unset: ['_id', \"onts.ont.olt\", \"onts.ont.monitor\", \"onts.ont.olts\", \"onts.ont.configuracion\", \"onts.ont.ont\", \"errores._id\"]}"})
-	List<FaltantesDto> getFaltantesMetricas(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt, @Param("table") String table, @Param("join") String join, @Param("idEjecucion") String  idEjecucion);
+	List<FaltantesDto> getFaltantesMetricas(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt, @Param("table") String table, @Param("join") String join, @Param("idEjecucion") String  idEjecucion, @Param("metrica") Integer  metrica);
 
 
 	@Aggregation(pipeline = {

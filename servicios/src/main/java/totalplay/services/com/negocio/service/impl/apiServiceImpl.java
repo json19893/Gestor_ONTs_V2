@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -30,6 +31,7 @@ import totalplay.services.com.negocio.dto.respuestaStatusDto;
 import totalplay.services.com.negocio.service.IapiService;
 import totalplay.services.com.negocio.utils.GetToken;
 import totalplay.services.com.negocio.utils.util;
+import totalplay.services.com.persistencia.entidad.InventarioOntsRespNCEEntity;
 import totalplay.services.com.persistencia.entidad.catOltsEntidad;
 import totalplay.services.com.persistencia.entidad.catOtsProcesadoEntidad;
 import totalplay.services.com.persistencia.entidad.detalleActualizacionesEntidad;
@@ -39,6 +41,7 @@ import totalplay.services.com.persistencia.repositorio.IcatOltsProcesadoReposito
 import totalplay.services.com.persistencia.repositorio.IcatOltsRepositorio;
 import totalplay.services.com.persistencia.repositorio.IdetalleActualizacionRepositorio;
 import totalplay.services.com.persistencia.repositorio.IinventarioOntsRepositorio;
+import totalplay.services.com.persistencia.repositorio.IinventarioOntsRespNCERepository;
 import totalplay.services.com.persistencia.repositorio.IinventarioOntsTempRepositorio;
 
 
@@ -55,6 +58,9 @@ public class apiServiceImpl implements IapiService {
 	IcatOltsRepositorio catalogoOlts;
 	@Autowired
 	IdetalleActualizacionRepositorio detalleRepositorio;
+	@Autowired
+	IinventarioOntsRespNCERepository ontsResp;
+	
 	@Value("${ruta.archivo.shell}")
 	private String ruta;
 	util util = new util();
@@ -169,7 +175,7 @@ public class apiServiceImpl implements IapiService {
 							if (d.getEstatus().equals("UP") || d.getEstatus().equals("CLEAR")) {
 								r.setEstatus(1);
 								r.setDescripcionAlarma(d.getDescripcionAlarma());
-								r.setFecha_descubrimiento(LocalDateTime.now().toString());
+								r.setFecha_descubrimiento(util.getDate());
 								r.setActualizacion(1);
 								na.setCausa("Actualizacion a UP");
 								na.setNumeroSerie(r.getNumero_serie());
@@ -184,7 +190,7 @@ public class apiServiceImpl implements IapiService {
 							} else {
 								r.setEstatus(2);
 								r.setDescripcionAlarma(d.getDescripcionAlarma());
-								r.setFecha_descubrimiento(LocalDateTime.now().toString());
+								r.setFecha_descubrimiento(util.getDate());
 								r.setActualizacion(2);
 								na.setCausa("Actualizacion a DOWN");
 								na.setNumeroSerie(r.getNumero_serie());
@@ -285,6 +291,7 @@ public class apiServiceImpl implements IapiService {
 			String nombreOlt = util.isBlankOrNull(datos.getNombreOlt()) ? "" : datos.getNombreOlt();
 			int estatus = 2;
 			inventarioOntsEntidad res = onts.getONT(datos.getNumSerie());
+			InventarioOntsRespNCEEntity resResp = ontsResp.getONT(datos.getNumSerie());
 			if (util.isBlankOrNull(datos.getEstatus())) {
 				//String estatusWS = pruebaONT(datos.getNumSerie(), datos.getIp());
 				//estatus = estatusWS.equals("online") ? 1 : 2;
@@ -297,49 +304,17 @@ public class apiServiceImpl implements IapiService {
 				
 				}
 			}
-			if (res == null) {
+			if (res == null &&  resResp == null) {
 				inventarioOntsTempEntidad res2 = onts2.getONT(datos.getNumSerie());
 				if (res2 == null) {
-					res2 = new inventarioOntsTempEntidad();
 					catOltsEntidad olt = catalogoOlts.getIp(datos.getIp());
 					if (olt == null) {
-						Integer idOlt = catalogoOlts.getIdOltMAX().getId_olt() + 1;
-						catOltsEntidad olt1 = new catOltsEntidad();
-						if (pruebaOLT(datos.getIp(), 1)) {
-							olt1.setId_configuracion(1);
-							tecnolgia = "HUAWEI";
-						} else if (pruebaOLT(datos.getIp(), 2)) {
-							olt1.setId_configuracion(2);
-							tecnolgia = "HUAWEI";
-						} else if (pruebaOLT(datos.getIp(), 3)) {
-							olt1.setId_configuracion(3);
-							tecnolgia = "ZTE";
-						} else if (pruebaOLT(datos.getIp(), 4)) {
-							olt1.setId_configuracion(4);
-							tecnolgia = "ZTE";
-						}
-						olt1.setId_region(11);
-						olt1.setId_olt(idOlt);
-						olt1.setTecnologia(tecnolgia);
-						olt1.setNombre(nombreOlt);
-						olt1.setIp(datos.getIp());
-						olt1.setEstatus(1);
-						catalogoOlts.save(olt1);
-						olt = olt1;
+						//Guardado de la nueva ont
+						olt=saveOlt(datos.getIp(), nombreOlt);
+						tecnolgia=olt.getTecnologia();
 					}
-					res2.setId_region(olt.getId_region());
-					res2.setNumero_serie(datos.getNumSerie());
-					res2.setId_olt(olt.getId_olt());
-					res2.setTipo(tipo);
-					res2.setEstatus(estatus);
-					res2.setSlot(Integer.parseInt(slot));
-					res2.setPort(Integer.parseInt(port));
-					res2.setFrame(Integer.parseInt(frame));
-					res2.setDescripcionAlarma("Estado Inicial");
-					res2.setTecnologia(olt.getTecnologia());
-					res2.setFecha_descubrimiento(LocalDateTime.now().toString());
-					res2.setLastDownTime("---");
-					onts2.save(res2);
+					//Seteo de valores y guardado de la ont en pdm					
+					res2 = saveOntPdm(olt, Integer.parseInt(frame), Integer.parseInt(slot), Integer.parseInt(port), datos.getNumSerie(), estatus, tipo); 
 					resEstatus = res2.getEstatus().toString();
 				} else {
 					res2.setFecha_descubrimiento(LocalDateTime.now().toString());
@@ -348,13 +323,27 @@ public class apiServiceImpl implements IapiService {
 					onts2.save(res2);
 					resEstatus = res2.getEstatus().toString();
 				}
-			} else {
+			} else if(resResp==null) {
 				res.setTipo(res.getTipo() == "E" ? res.getTipo() : tipo);
-				//res.setEstatus(estatus);
 				res.setActualizacion(3);
-				res.setFecha_descubrimiento(LocalDateTime.now().toString());
+				//res.setFecha_descubrimiento(LocalDateTime.now().toString());
 				onts.save(res);
 				resEstatus = res.getEstatus().toString();
+			}else {
+				
+				
+				inventarioOntsEntidad ontAux = new inventarioOntsEntidad();
+				BeanUtils.copyProperties(ontAux, resResp);
+				
+				ontAux.setTipo(resResp.getTipo() == "E" ? resResp.getTipo() : tipo);
+				ontAux.setActualizacion(3);
+				ontAux.set_id(null);
+				
+				ontsResp.delete(resResp);
+				onts.save(ontAux);
+				
+				
+				resEstatus = ontAux.getEstatus().toString();
 			}
 			response.setCod(0);
 			response.setSms("Exito");
@@ -517,6 +506,56 @@ public class apiServiceImpl implements IapiService {
 		} catch (Exception e) {
 		}
 		return estatusWS;
+	}
+	
+	private catOltsEntidad saveOlt(String ip, String nombreOlt ) {
+		
+		String tecnologia="";
+		Integer idOlt = catalogoOlts.getIdOltMAX().getId_olt() + 1;
+		catOltsEntidad olt1 = new catOltsEntidad();
+		if (pruebaOLT(ip, 1)) {
+			olt1.setId_configuracion(1);
+			tecnologia = "HUAWEI";
+		} else if (pruebaOLT(ip, 2)) {
+			olt1.setId_configuracion(2);
+			tecnologia = "HUAWEI";
+		} else if (pruebaOLT(ip, 3)) {
+			olt1.setId_configuracion(3);
+			tecnologia = "ZTE";
+		} else if (pruebaOLT(ip, 4)) {
+			olt1.setId_configuracion(4);
+			tecnologia = "ZTE";
+		}
+		olt1.setId_region(11);
+		olt1.setId_olt(idOlt);
+		olt1.setTecnologia(tecnologia);
+		olt1.setNombre(nombreOlt);
+		olt1.setIp(ip);
+		olt1.setEstatus(1);
+		catalogoOlts.save(olt1);
+		return olt1;
+		
+	}
+	
+	private inventarioOntsTempEntidad saveOntPdm(catOltsEntidad olt, Integer frame, Integer slot, Integer port, String serie, Integer estatus, String tipo ) {
+		
+		inventarioOntsTempEntidad res2 = new inventarioOntsTempEntidad();
+		
+		res2.setId_region(olt.getId_region());
+		res2.setNumero_serie(serie);
+		res2.setId_olt(olt.getId_olt());
+		res2.setTipo(tipo);
+		res2.setEstatus(estatus);
+		res2.setSlot(slot);
+		res2.setPort(port);
+		res2.setFrame(frame);
+		res2.setDescripcionAlarma("Estado Inicial");
+		res2.setTecnologia(olt.getTecnologia());
+		res2.setFecha_descubrimiento(LocalDateTime.now().toString());
+		res2.setLastDownTime("---");
+		onts2.save(res2);
+		
+		return res2;
 	}
 
 
