@@ -400,6 +400,9 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 		Integer totaEmpresarial = response.getTotalHuaweiEmp()+response.getTotalZteEmp()+response.getTotalFhEmp();
 		
 		for (totalesTecnologiaDto tecnologia : totalesRegion) {
+			if(tecnologia.getTecnologia() == null){
+				continue;
+			}
 			switch (tecnologia.getTecnologia()) {
 			case "HUAWEI":
 				response.setTotalHuawei(tecnologia.getTotal() != null ? tecnologia.getTotal() : 0);
