@@ -13,6 +13,7 @@ import totalplay.monitor.snmp.com.negocio.service.impl.DiferenciaCargaManualServ
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/v2")
 public class OntController {
     @Autowired
