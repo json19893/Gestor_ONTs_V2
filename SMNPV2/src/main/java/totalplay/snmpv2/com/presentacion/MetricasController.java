@@ -86,7 +86,7 @@ public class MetricasController extends Constantes {
 		parametrosGenerales.save(params);
 	}
 		
-	//@Scheduled(fixedRate = 14400000)
+	@Scheduled(fixedRate = 14400000)
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@GetMapping(value = "/poleoMetricas", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String separatePoleo() throws Exception {
@@ -192,7 +192,7 @@ public class MetricasController extends Constantes {
 	}
 
 	
-		//@Scheduled(fixedRate = 14400000)
+		//@Scheduled(fixedRate =3600000)
 		@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 		@RequestMapping(value = "/updateStatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 		public String UpdateStatus() throws Exception {

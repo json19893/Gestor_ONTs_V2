@@ -28,7 +28,7 @@ public class IEstadoOntsResumenServiceImpl implements IEstadoOntsResumenService 
     ImonitorService negocio;
 
     //Agrega un cron para ejecutar cada dos minutos
-    @Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 2000)
     public void process() {
         System.out.println("Ejecutando proceso");
         //Estructura principal: top-level
