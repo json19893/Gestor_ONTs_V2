@@ -11,10 +11,11 @@ public class Task {
     IEnvoltorioOntsTotalesActivoRepositorio repositorio;
 
     //Que se borre la tabla cada 10 minutos
-    @Scheduled(fixedDelay = 600000)
+    /*@Scheduled(fixedDelay = 600000)
     public void dropCollectionEstatusHistoryTmp() {
         if(repositorio.count() > 0){
+            //Noo borrar actualizarlo
             repositorio.deleteAll();
         }
-    }
+    }*/
 }
