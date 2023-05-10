@@ -103,12 +103,12 @@ public ses:any;
 
   ngOnInit() {
     this.ses=localStorage.getItem('cod_sesion');
-    if(this.ses==1){
+ /*   if(this.ses==1){
       this.router.navigate(['/home'])
       
     }else{
       this.router.navigate(['/login'])
-    }
+    }*/
     this.mostrar = localStorage.getItem('mostrar'); // se creo una variable en localStorage, con Get es para mostrar 
     this.usuario = localStorage.getItem('usuario');
    

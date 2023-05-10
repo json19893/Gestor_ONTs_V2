@@ -77,7 +77,7 @@ public class DescubrimientoController extends Constantes {
 	@Value("${ruta.archivo.txt}")
 	private String ruta;
 	
-
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@GetMapping("/descubrimiento")
 	public GenericResponseDto getDescubrimientoOnts() throws IOException {
 		String idProceso="";
@@ -139,7 +139,7 @@ public class DescubrimientoController extends Constantes {
 			}
 			return thredOlts;
 	}
-
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@PostMapping("/descubrimientoManual")
 	public GenericResponseDto descubrimientoManual(@RequestBody DescubrimientoManualDto datos) throws Exception {
 
@@ -175,7 +175,7 @@ public class DescubrimientoController extends Constantes {
 		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
 	}
 	
-
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@GetMapping("/updateConfiguration")
 	public GenericResponseDto updateConfiguration() throws Exception {
 

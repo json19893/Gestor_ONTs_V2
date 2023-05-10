@@ -8,9 +8,9 @@ import { IpGuard } from './IpGuard';
 
 
 const routes: Routes = [
-    {path:'', component:MenuComponent , canActivate: [IpGuard]},
+    {path:'', component:MenuComponent },
    // {path:'login',component:LoginComponent},
-   {path:'home',component:MenuComponent,canActivate: [IpGuard]},
+   {path:'home',component:MenuComponent},
     {path:'error',component:ErrorComponent},
     {path:'**',component:ErrorComponent}
    ];

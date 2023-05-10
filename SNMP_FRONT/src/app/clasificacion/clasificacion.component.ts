@@ -135,9 +135,9 @@ export class ClasificacionComponent implements OnInit {
 
     if (this.dataT == null) {
       this.getTecnAsn('T');
-      this.getTotales('T')
+     this.getTotales('T')
     }if (this.dataV == null ) {
-      this.getTecnAsn('V');
+     this.getTecnAsn('V');
       this.getTotales('V')
 
     }
@@ -149,9 +149,9 @@ export class ClasificacionComponent implements OnInit {
     else if (this.mostrar == 'V') {
       this.llenaTabla(this.dataV, this.mostrar);
     }else {
-      this.getTecnAsn('E');
+     this.getTecnAsn('E');
       this.llenaTabla(this.dataE, this.mostrar);
-      this.getTotales('E')
+   this.getTotales('E')
     }
 
     window.addEventListener("keydown", function (event) {

@@ -35,7 +35,7 @@ public class OltsController {
     @Autowired
     IinventarioOntsRepository ontsRepository;
 
- 
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @GetMapping(value = "/olts/actualizartotales", produces = MediaType.APPLICATION_JSON_VALUE)
     public GenericResponseDto actualizarTotalOntsPorOlt() {
         return service.updateTotalOntsFromOlts();
@@ -44,7 +44,7 @@ public class OltsController {
     /**
      * Este servicio cambia una ont de olt.
      */
-
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @PostMapping(value = "/ont/cambiar/olt", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity cambiarOntdeOlt(@RequestBody CambioManualOntOltRequest request) {
         CambioManualOntOltResponse response = new CambioManualOntOltResponse();

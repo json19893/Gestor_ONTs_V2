@@ -18,15 +18,6 @@ public class SpringbootServicioZuulServerApplication {
 		SpringApplication.run(SpringbootServicioZuulServerApplication.class, args);
 	}
 	
-	
-	@Bean
-	public WebMvcConfigurer corsConfigurer() {
-		return new WebMvcConfigurer() {
-			@Override
-			public void addCorsMappings(CorsRegistry registry) {
-				registry.addMapping("/greeting-javaconfig").allowedOrigins("*");
-			}
-		};
-	}
+
 
 }
