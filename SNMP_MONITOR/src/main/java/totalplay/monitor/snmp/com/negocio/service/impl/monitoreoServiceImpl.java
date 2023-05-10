@@ -437,14 +437,14 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 		List<tblMonitoreoEjecucionEntidad> fe = monitorEjecucion.findAll();
 		response.setUltimaActualizacion(fe.get(0).getFecha_fin());
 		
-	     String fecha=fe.get(0).getFecha_fin();
+	     String fecha=fe.get(0).getFecha_fin().toString();
 	       fecha=fecha.replace("T"," ");
 	      
 	       
 	       DateTimeFormatter formateador = DateTimeFormatter.ofPattern( "yyyy-MM-dd HH:mm:ss.SSS" );
 	       LocalDateTime dateTime = LocalDateTime.parse(fecha, formateador );
 	       dateTime = dateTime.plusDays(1);
-	       response.setProximoDescubrimiento(dateTime.toString());    
+	       response.setProximoDescubrimiento(dateTime);
 	     
 	    if(tipo.equals("E")) {
            response.setConteoPdmOnts( inventarioPdm.finOntsByTotalE()+ inventario.findTotalCambiosE());
