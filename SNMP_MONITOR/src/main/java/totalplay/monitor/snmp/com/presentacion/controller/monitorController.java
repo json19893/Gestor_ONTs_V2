@@ -4,12 +4,14 @@ package totalplay.monitor.snmp.com.presentacion.controller;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -23,29 +25,14 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
 import totalplay.monitor.snmp.com.negocio.dto.*;
 import totalplay.monitor.snmp.com.negocio.service.IBlockMetricService;
+import totalplay.monitor.snmp.com.negocio.service.IProcesamientoTotalesOntService;
 import totalplay.monitor.snmp.com.negocio.service.IconsultaService;
 import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
+import totalplay.monitor.snmp.com.negocio.service.procesobatch.IEstadoOntsResumenService;
 import totalplay.monitor.snmp.com.negocio.util.constantes;
-import totalplay.monitor.snmp.com.persistencia.entidad.catConfiguracionEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.catOltsEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.detalleActualizacionesEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.estatusPoleoManualEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.tblBitacoraEventosEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.usuariosEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.vwActualizacionEntidad;
-import totalplay.monitor.snmp.com.persistencia.repository.IcatConfiguracionRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IdetalleActualizacionRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsPdmRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.ImonitorPoleoManualRepository;
-import totalplay.monitor.snmp.com.persistencia.repository.ImonitorPoleoRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.ItblDescubrimientoManualRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IusuariosRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IvwActualizacionRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IvwTotalOntsRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.bitacoraEventosRepository;
+import totalplay.monitor.snmp.com.negocio.util.utils;
+import totalplay.monitor.snmp.com.persistencia.entidad.*;
+import totalplay.monitor.snmp.com.persistencia.repository.*;
 
 
 @RestController
@@ -89,7 +76,10 @@ public class monitorController extends constantes {
 
     @Autowired
     IBlockMetricService BlockMetricService;
-
+    @Autowired
+    IEstadoOntsResumenService estadoOntsResumenService;
+    @Autowired
+    IEnvoltorioOntsTotalesActivoRepositorio repositorioOntEstatusTotales;
     /**
      * Mètodo que busca las olts, sus totales por tecnologìa y las onts
      * empresariales por regiòn,
@@ -216,17 +206,42 @@ public class monitorController extends constantes {
      * @param tipo: T (totales), E (Empresariales), V (Vips)
      * @return retorna una estructura totalesActivoDto
      **/
-    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+
     @RequestMapping(value = "/getTotalesActivo/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public totalesActivoDto getTotalesActivo(@PathVariable("tipo") String tipo) throws Exception {
+        //Le pega directo a la logica del negocio:
+        //Obtener la fecha de la peticion
+
+        LocalTime timeRequestClient = utils.getDateTime().toLocalTime();
 
         if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+            //Busco el ultmo resumen en la base de datos:
+            List<EnvoltorioOntsTotalesActivoEntidad> resumenEstadoOntsList = new ArrayList<>();
 
-            return monitorServicio.getTotalesActivo(tipo);
+            resumenEstadoOntsList = repositorioOntEstatusTotales.findAll(Sort.by(Sort.Direction.DESC, "id"));
+            EnvoltorioOntsTotalesActivoEntidad resumenEstadoOnts = new EnvoltorioOntsTotalesActivoEntidad();
+
+            if(resumenEstadoOntsList.size() == 0 || resumenEstadoOntsList == null){
+                //Ejectua el proceso y settear la lista
+                estadoOntsResumenService.process();
+                resumenEstadoOntsList = repositorioOntEstatusTotales.findAll(Sort.by(Sort.Direction.DESC, "id"));
+            }
+
+            resumenEstadoOnts = resumenEstadoOntsList.get(0);
+
+            if (tipo.equals(resumenEstadoOnts.getTotalesOntsActivas().getTipo())) {
+                return resumenEstadoOnts.getTotalesOntsActivas().getResumenStatusOnts();
+            }
+
+            if (tipo.equals(resumenEstadoOnts.getTotalesOntsActivasVips().getTipo())) {
+                return resumenEstadoOnts.getTotalesOntsActivasVips().getResumenStatusOnts();
+            }
+
+            if (tipo.equals(resumenEstadoOnts.getTotalesOnstsActivasEmpresariales().getTipo())) {
+                return resumenEstadoOnts.getTotalesOnstsActivasEmpresariales().getResumenStatusOnts();
+            }
         }
-
         return null;
-
     }
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getDatosMonitoreo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
