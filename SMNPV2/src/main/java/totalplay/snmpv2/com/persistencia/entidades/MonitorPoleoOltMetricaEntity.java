@@ -1,5 +1,7 @@
 package totalplay.snmpv2.com.persistencia.entidades;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -16,13 +18,13 @@ public class MonitorPoleoOltMetricaEntity {
 	private String id;
 	private Integer id_olt;
 	private Integer id_metrica;
-	private String fecha_inicio;
-	private String fecha_fin;
+	private Date fecha_inicio;
+	private Date fecha_fin;
 	private String id_poleo;
 	private String resultado;
 	private boolean error;
 
-	public MonitorPoleoOltMetricaEntity(Integer id_olt, Integer id_metrica, String fecha_inicio, String id_poleo) {
+	public MonitorPoleoOltMetricaEntity(Integer id_olt, Integer id_metrica, Date fecha_inicio, String id_poleo) {
 		super();
 		this.id_olt = id_olt;
 		this.id_metrica = id_metrica;

@@ -75,6 +75,9 @@ public class MetricasController extends Constantes {
 	@Autowired
 	ImonitorPoleoManualRepository monitorPoleoManual;
 	
+	Utils util= new Utils();
+	
+	
 	
 	@Scheduled(cron = "0 2 0 * * *", zone = "CST")
 	private void cleanDatabase() {
@@ -106,11 +109,9 @@ public class MetricasController extends Constantes {
 		
 		try {
 			
-			//monitorMetrica.deleteAll();
-			//monitorOlt.deleteAll();
 			
 			//Se crea un nuevo registro para el monitor		
-			idMonitorPoleo = monitorPoleo.save(new MonitorPoleoEntity(LocalDateTime.now().toString(), null,INICIO_DESC+"POLEO" , INICIO)).getId();
+			idMonitorPoleo = monitorPoleo.save(new MonitorPoleoEntity(util.getDate(), null,INICIO_DESC+"POLEO" , INICIO)).getId();
 			
 			
 			List<CatOltsEntity> olts = catOlts.findByEstatus(1);
@@ -123,7 +124,7 @@ public class MetricasController extends Constantes {
 				
 				if(activas>0){
 					
-					monitPoleoMetrica = monitorMetrica.save(new MonitorPoleoMetricaEntity(Integer.valueOf(j),LocalDateTime.now().toString(),idMonitorPoleo));
+					monitPoleoMetrica = monitorMetrica.save(new MonitorPoleoMetricaEntity(Integer.valueOf(j),util.getDate(),idMonitorPoleo));
 					idMonitorMetrica = monitPoleoMetrica.getId(); 
 					//monitPoleoMetrica = monitorMetrica.getMonitorMetrica(idMonitorMetrica);
 					
@@ -173,7 +174,7 @@ public class MetricasController extends Constantes {
 						
 					}
 					
-					monitPoleoMetrica.setFecha_fin(LocalDateTime.now().toString());
+					monitPoleoMetrica.setFecha_fin(util.getDate());
 					monitorMetrica.save(monitPoleoMetrica);					
 					
 				}
@@ -183,7 +184,7 @@ public class MetricasController extends Constantes {
 			response = "error:::" + e;
 		}finally {
 			MonitorPoleoEntity monitor = monitorPoleo.getMonitorPoleo(idMonitorPoleo);
-			monitor.setFecha_fin(LocalDateTime.now().toString());
+			monitor.setFecha_fin(util.getDate());
 			monitorPoleo.save(monitor);
 		}
 
@@ -206,7 +207,7 @@ public class MetricasController extends Constantes {
 			
 			try {
 				
-				idMonitorPoleo = monitorEstatus.save(new MonitorActualizacionEstatusEntity(LocalDateTime.now().toString(), INICIO_PUT_ESTATUS)).getId();
+				idMonitorPoleo = monitorEstatus.save(new MonitorActualizacionEstatusEntity(util.getDate(), INICIO_PUT_ESTATUS)).getId();
 				List<CatOltsEntity> olts = catOlts.findByEstatus(1);
 				ArrayList<CompletableFuture<String>> regionSegmentOnts = new ArrayList<CompletableFuture<String>>();			
 				
@@ -255,7 +256,7 @@ public class MetricasController extends Constantes {
 				estatus = "ERRONEO";
 			} finally {
 				 MonitorActualizacionEstatusEntity monitEstatus = monitorEstatus.getMonitorEstatus(idMonitorPoleo);
-				 monitEstatus.setFechaFin(LocalDateTime.now().toString());
+				 monitEstatus.setFechaFin(util.getDate());
 				 monitEstatus.setDescripcion(estatus);
 				 monitorEstatus.save(monitEstatus);
 			}
@@ -307,7 +308,7 @@ public class MetricasController extends Constantes {
 				//Se crea un nuevo registro para el monitor
 				//idMonitorPoleo = monitorPoleo.getLastFinishId().getId();
 				idMonitorPoleo = monitorPoleo.findFirstByOrderByIdDesc().getId();
-				idMonitorPoleoManual = monitorPoleoManual.save(new MonitorPoleoManualEntity(LocalDateTime.now().toString(), null,INICIO_DESC+"POLEO" , INICIO, bloque, idMonitorPoleo )).getId();
+				idMonitorPoleoManual = monitorPoleoManual.save(new MonitorPoleoManualEntity(util.getDate(), null,INICIO_DESC+"POLEO" , INICIO, bloque, idMonitorPoleo )).getId();
 				
 				
 				
@@ -324,7 +325,7 @@ public class MetricasController extends Constantes {
 					
 					if(activas>0){
 						
-						idMonitorMetrica = monitorMetrica.save(new MonitorPoleoMetricaEntity(Integer.valueOf(j),LocalDateTime.now().toString(),idMonitorPoleo)).getId();
+						idMonitorMetrica = monitorMetrica.save(new MonitorPoleoMetricaEntity(Integer.valueOf(j),util.getDate(),idMonitorPoleo)).getId();
 						monitPoleoMetrica = monitorMetrica.getMonitorMetrica(idMonitorMetrica);
 						
 						regionSegmentOnts = new ArrayList<CompletableFuture<String>>();			
@@ -344,10 +345,10 @@ public class MetricasController extends Constantes {
 						
 						CompletableFuture.allOf(regionSegmentOnts.toArray(new CompletableFuture[regionSegmentOnts.size()])).join();
 						
-						
+						monitPoleoMetrica.setStop(LocalDateTime.now().toString());
 						//Obtener las onts poeladas y mandarlas con otro servicio
-						ontsEmpresariales =  poleoMetricas.getOntsFaltantes(j,idMonitorPoleo, true, false, "auxiliar_poleo_manual", 1, olts);
-//						monitPoleoMetrica.setOntsSnmp(ontsEmpresariales.size());
+						ontsEmpresariales =  poleoMetricas.getOntsFaltantes(j,idMonitorPoleo, true, false, "auxiliar_poleo_manual", 1, olts);						
+						monitPoleoMetrica.setOntsSnmp(ontsEmpresariales.size());
 						
 						if(ontsEmpresariales != null) {
 							regionSegmentOntsEmpresariales = new ArrayList<CompletableFuture<String>>();
@@ -387,7 +388,7 @@ public class MetricasController extends Constantes {
 			}finally {
 				if(!idMonitorPoleoManual.equals("")) {
 					MonitorPoleoManualEntity monitor = monitorPoleoManual.getMonitorPoleo(idMonitorPoleoManual);
-					monitor.setFecha_fin(LocalDateTime.now().toString());
+					monitor.setFecha_fin(util.getDate());
 					monitor.setEstatus(estatusPoleo);
 					monitorPoleoManual.save(monitor);
 				}

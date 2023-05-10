@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import java.util.ArrayList;
-
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -134,7 +134,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
     @Async("taskExecutor2")
     public CompletableFuture<String> executeProcess(List<CatOltsEntity> olts, String idMonitorPoleo, int idMetrica) throws Exception {
 
-        String fechaInicio = LocalDate.now().toString();
+        Date fechaInicio = util.getDate();
         String hilo = Thread.currentThread().getName();
         Integer estatusPoleo = FALLIDO;
         ConfiguracionMetricaEntity confMetrica;
@@ -153,7 +153,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                     if (monitor != null)
                         idMonitorOlt = monitor.getId();
                     else
-                        idMonitorOlt = monitorPoleoOltMetrica.save(new MonitorPoleoOltMetricaEntity(idOlt, Integer.valueOf(idMetrica), LocalDateTime.now().toString(), idMonitorPoleo)).getId();
+                        idMonitorOlt = monitorPoleoOltMetrica.save(new MonitorPoleoOltMetricaEntity(idOlt, Integer.valueOf(idMetrica), util.getDate(), idMonitorPoleo)).getId();
 
 
                     AggregationOperation match = Aggregation.match(Criteria.where("id_olt").is(idOlt));
@@ -222,7 +222,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
 
                     MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
                     monitorPoleoOlt.setFecha_inicio(fechaInicio);
-                    monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
+                    monitorPoleoOlt.setFecha_fin(util.getDate());
                     monitorPoleoOlt.setError(metrica.get().getSms().equals("0") || metrica.get().getSms().equals("error") || metrica.get().getSms().equals("Sin metrica"));
                     monitorPoleoOlt.setResultado(metrica.get().getSms());
 
@@ -234,7 +234,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                     if (!idMonitorOlt.equals("")) {
                         MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
                         monitorPoleoOlt.setFecha_inicio(fechaInicio);
-                        monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
+                        monitorPoleoOlt.setFecha_fin(util.getDate());
                         monitorPoleoOlt.setError(true);
 
                         monitorPoleoOltMetrica.save(monitorPoleoOlt);
@@ -508,7 +508,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
 
             Integer maxOnts = (oltsInventario.size() / 42) + 1;
 
-            maxOnts = (oltsInventario.size() / 42) + 1;
+            maxOnts = (oltsInventario.size() / 1);// + 1;
 
             for (int i = 0; i < oltsInventario.size(); i += maxOnts) {
                 Integer limMax = i + maxOnts;
