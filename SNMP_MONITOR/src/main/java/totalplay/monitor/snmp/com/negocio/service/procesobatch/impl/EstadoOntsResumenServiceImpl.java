@@ -11,7 +11,9 @@ import totalplay.monitor.snmp.com.negocio.service.procesobatch.IEstadoOntsResume
 import totalplay.monitor.snmp.com.persistencia.entidad.EnvoltorioOntsTotalesActivoEntidad;
 import totalplay.monitor.snmp.com.persistencia.repository.IEnvoltorioOntsTotalesActivoRepositorio;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static totalplay.monitor.snmp.com.negocio.util.constantes.*;
@@ -21,7 +23,7 @@ import static totalplay.monitor.snmp.com.negocio.util.constantes.ONT_VIP;
  *
  */
 @Service
-public class IEstadoOntsResumenServiceImpl implements IEstadoOntsResumenService {
+public class EstadoOntsResumenServiceImpl implements IEstadoOntsResumenService {
     @Autowired
     IEnvoltorioOntsTotalesActivoRepositorio repositorio;
     @Autowired
@@ -30,7 +32,10 @@ public class IEstadoOntsResumenServiceImpl implements IEstadoOntsResumenService 
     //Agrega un cron para ejecutar cada dos minutos
     @Scheduled(fixedDelay = 5000)
     public void process() {
-        System.out.println("Ejecutando proceso");
+        //System.out.println("Ejecutando proceso");
+        //Meter el tiempo que tomo para actualizar:
+        long time1 = System.currentTimeMillis();
+
         //Estructura principal: top-level
         EnvoltorioOntsTotalesActivoEntidad envoltura = new EnvoltorioOntsTotalesActivoEntidad();
         envoltura.setDate(LocalDateTime.now());
@@ -53,13 +58,32 @@ public class IEstadoOntsResumenServiceImpl implements IEstadoOntsResumenService 
             envoltura.setTotalesOntsActivasVips(resumenEstadoOntVip);
 
             //Finalmente se persiste la informacion procesada:
-            EnvoltorioOntsTotalesActivoEntidad persistence = repositorio.save(envoltura);
-            if (persistence != null) {
-                System.out.println("Resumen persistido en el repositorio");
+            List<EnvoltorioOntsTotalesActivoEntidad> document = repositorio.findAll();
+            if(document.size() == 0){
+                EnvoltorioOntsTotalesActivoEntidad persistence = repositorio.save(envoltura);
+                if (persistence != null) {
+                    //System.out.println("Resumen persistido en el repositorio");
+                }
             }
+
+            EnvoltorioOntsTotalesActivoEntidad res = document.get(0);
+            res.setDate(LocalDateTime.now());
+            res.setTotalesOntsActivas(resumenEstadoOntTotales);
+            res.setTotalesOnstsActivasEmpresariales(resumenEstadoOntEmpresariales);
+            res.setTotalesOntsActivasVips(resumenEstadoOntVip);
+            EnvoltorioOntsTotalesActivoEntidad updated = repositorio.save(res);
+
+            if (updated != null) {
+                //System.out.println("Resumen actualizado en el repositorio");
+            }
+            long time2 = System.currentTimeMillis();
+            long totalTime = time2 - time1;
+            double minutos = (totalTime / (double) 1000);
+            DecimalFormat df = new DecimalFormat("#.##");
+
+            //System.out.println("El proceso actualizacion del resumen: estatus de onts tomo: " +  df.format(minutos)  + " segundos en terminar la ejecuccion.");
         } catch (Exception ex) {
-            ex.printStackTrace();
-            System.out.println("Error");
+                System.out.println("Error en el proceso para crear los resumenes de estatus para las onts. Reintentando... en 5 segundos");
         }
     }
 

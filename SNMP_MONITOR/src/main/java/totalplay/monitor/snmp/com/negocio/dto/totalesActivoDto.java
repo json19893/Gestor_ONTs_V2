@@ -1,5 +1,6 @@
 package totalplay.monitor.snmp.com.negocio.dto;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.Data;
@@ -18,8 +19,8 @@ public class totalesActivoDto {
 	public Integer totalAbajoHuawei;
 	public Integer totalAbajoZte;
 	public Integer totalAbajoFh;
-	public String  ultimaActualizacion;
-	public String  proximoDescubrimiento;
+	public LocalDateTime ultimaActualizacion;
+	public LocalDateTime proximoDescubrimiento;
 	public Integer conteoPdmOnts;
 	public Integer totalHuaweiEmp;
 	public Integer totalZteEmp;
