@@ -36,6 +36,7 @@ import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesEstatusRepository
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IhistoricoConteoOltRepository;
+import totalplay.snmpv2.com.presentacion.MetricaController.MetricaPoleo;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosAliasEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosCpuEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosDownBytesEntity;
@@ -646,7 +647,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
 
         utilerias = new Utils();
         configuracionPoleo = utilerias.getConfiguracion(out.getMappedResults());
-        System.out.println(ont);
+
 
         final String BASE_COMMAND = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + TIME_OUT_VALUE
                 + SPACE + configuracionPoleo.getVersion() + USER_NAME + configuracionPoleo.getUserName() + LEVEL
@@ -670,7 +671,8 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
             String copyString = finalLogEventos;
             String valor = "";
             try{
-                valor = obtenerValor(metrica, result, ont);
+
+                valor = obtenerValor(metrica, result);
                 log.info("################# ::"+valor);
             }catch (Exception e){
                 log.error("Error: "+e);
@@ -689,42 +691,64 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
             util.crearArchivos(ruta, c.getTrazaEventos());
         });
 
+
+        //String resultado = configuracionPoleo.getManejarResultadoComando().getCommandResponse("10");
+        //System.out.println(resultado);
+
         CompletableFuture<GenericResponseDto> metricaAsyncProcess = new CompletableFuture<>();
         boolean errorOlt = false;
 
         metricaAsyncProcess = poleoMetricasUtilsService
-                .dispatcherAsyncPoleoMetrica(configuracionPoleo, idMonitorPoleo, request.getIdMetrica(),
-                        olt.getId_olt(),false,oid,false,false);
+                .dispatcherAsyncPoleoMetrica(
+                        configuracionPoleo,
+                        idMonitorPoleo,
+                        request.getIdMetrica(),
+                        olt.getId_olt(),
+                        false,
+                        oid,
+                        false,
+                        false);
 
-        MonitorPoleoOltMetricaEntity monitor;
-        String idMonitorOlt = "";
+//        MonitorPoleoOltMetricaEntity monitor;
+//        String idMonitorOlt = "";
 
-        monitor = monitorPoleoOltMetrica.getMonitorExist(idMonitorPoleo, idMetrica, olt.getId_olt());
-        if (monitor != null)
-            idMonitorOlt = monitor.getId();
-        else
-             idMonitorOlt = monitorPoleoOltMetrica.save(new MonitorPoleoOltMetricaEntity(idOlt, Integer.valueOf(idMetrica), LocalDateTime.now().toString(), idMonitorPoleo)).getId();
-
-        GenericResponseDto asyncReponse = metricaAsyncProcess.get();
-        asyncReponse.setSms("Se ejecuto correctamente la metrica");
-        asyncReponse.setCod(0);
+//        monitor = monitorPoleoOltMetrica.getMonitorExist(idMonitorPoleo, idMetrica, olt.getId_olt());
+//        if (monitor != null)
+//            idMonitorOlt = monitor.getId();
+//        else
+//            idMonitorOlt = monitorPoleoOltMetrica.save(new MonitorPoleoOltMetricaEntity(idOlt, Integer.valueOf(idMetrica), LocalDateTime.now().toString(), idMonitorPoleo)).getId();
 
         boolean isErrorAsyncProcess
-                = metricaAsyncProcess.get().getSms().equals("error")  || metricaAsyncProcess.get().getSms().equals("Sin metrica");
+                = metricaAsyncProcess.get().getSms().equals("0")
+                || metricaAsyncProcess.get().getSms().equals("error")
+                || metricaAsyncProcess.get().getSms().equals("Sin metrica");
 
-        MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
-        monitorPoleoOlt.setFecha_inicio(fechaInicio);
-        monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
-        monitorPoleoOlt.setError(isErrorAsyncProcess);
-        monitorPoleoOlt.setResultado(metricaAsyncProcess.get().getSms());
+        if (isErrorAsyncProcess) {
+//            MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
+//            monitorPoleoOlt.setFecha_inicio(fechaInicio);
+//            monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
+//            monitorPoleoOlt.setError(true);
+//
+//            monitorPoleoOltMetrica.save(monitorPoleoOlt);
+            //Lanza una excepcion
+            throw new RuntimeException("Error: No asigno el id process para el proceso de metrica");
+        }
 
+//        MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
+//        monitorPoleoOlt.setFecha_inicio(fechaInicio);
+//        monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
+//        monitorPoleoOlt.setError(isErrorAsyncProcess);
+//        monitorPoleoOlt.setResultado(metricaAsyncProcess.get().getSms());
 
-        return asyncReponse;
+        GenericResponseDto res = metricaAsyncProcess.get();
+        res.setSms("Se ejecuto correctamente la metrica");
+        res.setCod(0);
+        return res;
     }
 
-    private String obtenerValor(Integer metrica, Object result, InventarioOntsEntity ont) {
+    private String obtenerValor(Integer metrica, Object result) {
         String valor = "";
-        InventarioOntsEntity inv = ont;
+        InventarioOntsEntity inv=new InventarioOntsEntity();
         switch (metrica) {
             case RUN_STATUS:
                 PoleosEstatusEntity me = (PoleosEstatusEntity) result;
@@ -747,7 +771,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
             case LAST_UP_TIME:
                 PoleosLastUpTimeEntity me2 = (PoleosLastUpTimeEntity) result;
                 valor = me2.getValor();
-
+                
                 break;
             case LAST_DOWN_TIME:
                 PoleosLastDownTimeEntity me3 = (PoleosLastDownTimeEntity) result;
