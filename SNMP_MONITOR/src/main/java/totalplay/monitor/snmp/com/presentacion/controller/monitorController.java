@@ -206,7 +206,7 @@ public class monitorController extends constantes {
      * @param tipo: T (totales), E (Empresariales), V (Vips)
      * @return retorna una estructura totalesActivoDto
      **/
-
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getTotalesActivo/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public totalesActivoDto getTotalesActivo(@PathVariable("tipo") String tipo) throws Exception {
         //Le pega directo a la logica del negocio:
