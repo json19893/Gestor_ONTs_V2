@@ -1,5 +1,7 @@
 package totalplay.snmpv2.com.persistencia.entidades;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -12,10 +14,10 @@ import lombok.NoArgsConstructor;
 public class MonitorActualizacionEstatusEntity {
 	@Id
 	private String id;
-	private String fechaInicio;
-	private String fechaFin;
+	private Date fechaInicio;
+	private Date fechaFin;
 	private String descripcion;
-	public MonitorActualizacionEstatusEntity(String fechaInicio, String descripcion) {
+	public MonitorActualizacionEstatusEntity(Date fechaInicio, String descripcion) {
 		super();
 		this.fechaInicio = fechaInicio;
 		this.descripcion = descripcion;

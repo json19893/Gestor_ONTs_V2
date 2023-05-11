@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 import java.util.ArrayList;
-
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -87,7 +87,7 @@ public class DescubrimientoController extends Constantes {
 			log.info("================== "+INICIO_DESC+" DESCUBRIMIENTO ====================================");
 			inventarioTmp.deleteAll();
 			inventarioErroneas.deleteAll();
-			String fechaInicio = LocalDateTime.now().toString();
+			Date fechaInicio = util.getDate();
 			List<CatOltsEntity> olts=new ArrayList<CatOltsEntity>();
 			List<CompletableFuture<GenericResponseDto>> thredOlts=new ArrayList<CompletableFuture<GenericResponseDto>>();
 			monitorDescubrimiento = monitor.save(new MonitorEjecucionEntity(INICIO_DESC+"DESCUBRIMIENTO",fechaInicio,null,INICIO));
@@ -108,13 +108,13 @@ public class DescubrimientoController extends Constantes {
 			limpiezaOnts.getInventarioaux(monitorDescubrimiento);
 			updateTotales.updateTotalOntsFromOlts();
 			monitorDescubrimiento.setDescripcion(FINAL_EXITO+" DESCUBRIMIENTO & LIMPIEZA");
-			monitorDescubrimiento.setFecha_fin( LocalDateTime.now().toString());
+			monitorDescubrimiento.setFecha_fin( util.getDate());
 			monitor.save(monitorDescubrimiento);
 			
 		} catch (Exception e) {
 			Optional<MonitorEjecucionEntity> monitorEnt=monitor.findById(idProceso);
 			monitorEnt.get().setDescripcion(EJECUCION_ERROR + e);
-			monitorEnt.get().setFecha_fin( LocalDateTime.now().toString());
+			monitorEnt.get().setFecha_fin( util.getDate());
 			monitor.save(monitorEnt.get());
 			log.error(EJECUCION_ERROR, e);
 			return new GenericResponseDto(EJECUCION_ERROR + e, 1);
@@ -204,7 +204,15 @@ public class DescubrimientoController extends Constantes {
 	}
 
 	
+	@GetMapping("/auxiliar")
+	public String auxiliar() throws Exception {
+		EncryptorHelper encryptorHelper = EncryptorHelper.getINSTANCE();
+	    String uriDesencripter = encryptorHelper.encryptString("mongodb://superAdmin:pass1234@10.180.199.76:27017/");
+		return uriDesencripter;
+	}
 
+	
+	
 	
 	
 }

@@ -95,9 +95,6 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 	@Value("${ruta.archivo.metrica}")
 	private String ruta3;
 	
-//	private String ruta2="/home/implementacion/ecosistema/manual/descubrimiento.txt";
-//	private String ruta3="/home/implementacion/ecosistema/manual/metrica.txt";
-//	private String	ruta="/home/implementacion/ecosistema/comandos/";
 
 	@Override																					
 	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error,boolean manual) throws IOException, NoSuchFieldException, NoSuchMethodException {
