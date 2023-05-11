@@ -451,4 +451,8 @@ public class Utils extends Constantes {
     public Date getDate() {
     	return Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(6,ChronoUnit.HOURS));
     }
+    
+    public static boolean isBlankOrNull(String str) {
+	    return (str == null || "".equals(str.trim()));
+	}
 }
