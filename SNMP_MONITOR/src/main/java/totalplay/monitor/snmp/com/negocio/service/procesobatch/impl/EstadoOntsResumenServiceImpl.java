@@ -33,7 +33,7 @@ public class EstadoOntsResumenServiceImpl implements IEstadoOntsResumenService {
     @Scheduled(fixedDelay = 2000)
     public void process() {
         //System.out.println("Ejecutando proceso");
-        //Meter el tiempo que tomo para actualizar:
+        //Meter el tiempo que tomo para actualizar:+ 
         long time1 = System.currentTimeMillis();
 
         //Estructura principal: top-level

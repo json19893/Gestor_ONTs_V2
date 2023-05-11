@@ -1,8 +1,12 @@
 package totalplay.monitor.snmp.com.negocio.service.impl;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -359,11 +363,16 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 	@Override
 	public totalesActivoDto getTotalesActivo(String tipo) throws Exception {
 		totalesActivoDto response = new totalesActivoDto();
-
+		response.setTotalHuawei(new Integer(0));
+		response.setTotalZte(new Integer(0));
+		response.setTotalFh(new Integer(0));
 		List<totalesTecnologiaDto> totalesRegion = null;
 		List<totalesOntsEmpDto> result = null;
 		Integer totalOnts = 0;
-		
+		Integer total=0;
+		try {
+			
+	
 		if (tipo.compareTo("T") == 0) {
 			totalesRegion = catOltsRepositorio.getTotalesTecnologiaT();
 		}else if(tipo.compareTo("E") == 0 ){
@@ -371,7 +380,7 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 		}else {
 			totalesRegion = catOltsRepositorio.getTotalesTecnologiaVips();
 		}
-	
+	log.info("totalesRegion::: "+ totalesRegion.toString());
 		result = inventario.getAllOntEmp();
 		
 		if(result != null) {
@@ -437,14 +446,11 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 		List<tblMonitoreoEjecucionEntidad> fe = monitorEjecucion.findAll();
 		response.setUltimaActualizacion(fe.get(0).getFecha_fin());
 		
-	     String fecha=fe.get(0).getFecha_fin().toString();
-	       fecha=fecha.replace("T"," ");
-	      
-	       
-	       DateTimeFormatter formateador = DateTimeFormatter.ofPattern( "yyyy-MM-dd HH:mm:ss.SSS" );
-	       LocalDateTime dateTime = LocalDateTime.parse(fecha, formateador );
-	       dateTime = dateTime.plusDays(1);
-	       response.setProximoDescubrimiento(dateTime);
+	     Date fecha=fe.get(0).getFecha_fin();
+	 
+		   Instant instant = fecha.toInstant();
+		   Instant nextDay = instant.plus(1, ChronoUnit.DAYS);
+	       response.setProximoDescubrimiento(Date.from(nextDay));
 	     
 	    if(tipo.equals("E")) {
            response.setConteoPdmOnts( inventarioPdm.finOntsByTotalE()+ inventario.findTotalCambiosE());
@@ -455,8 +461,9 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 	    	 totalOnts = inventario.finOntsByTotal()+inventarioPdm.finOntsByTotalT();
 	    	 response.setConteoPdmOnts( inventarioPdm.finOntsByTotalT()+ inventario.findTotalCambiosT());
 	    }
-
-		Integer total = response.getTotalHuawei() + response.getTotalZte() + response.getTotalFh();
+	
+		
+		total	 = response.getTotalHuawei().intValue() + response.getTotalZte().intValue()  + response.getTotalFh().intValue() ;
 		List<totalGraficaDto> grafica = new ArrayList<totalGraficaDto>();
 		for (int i = 1; i <= 3; i++) {
 			totalGraficaDto t = new totalGraficaDto();
@@ -482,6 +489,9 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 			grafica.add(t);
 		}
 		response.setGrafica(grafica);
+	} catch (Exception e) {
+		log.error("Error:  ", e);
+	}
 		return response;
 	}
 
