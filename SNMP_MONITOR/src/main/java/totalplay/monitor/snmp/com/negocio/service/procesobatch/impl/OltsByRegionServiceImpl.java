@@ -1,6 +1,7 @@
 package totalplay.monitor.snmp.com.negocio.service.procesobatch.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import totalplay.monitor.snmp.com.negocio.dto.*;
 import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
@@ -12,7 +13,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 import static totalplay.monitor.snmp.com.negocio.util.constantes.*;
 
@@ -27,33 +27,85 @@ public class OltsByRegionServiceImpl implements IOltsByRegionService {
     IEnvoltorioGetOltsByRegionRepository repositorio;
 
     @Override
+    @Scheduled(fixedDelay = 10000)
     public void process() throws Exception {
-        System.out.printf("Inicia el proceso");
+        System.out.printf("Inicia el proceso consulta estatus regiones onts");
         try {
             List<EnvoltorioTopLevelRegionAuxiliarDto> result = obtenerOltsPorRegion();
 
-            EnvoltorioGetOltsByRegionEntidad entity = new EnvoltorioGetOltsByRegionEntidad();
+            List<EnvoltorioGetOltsByRegionEntidad> entityList = new ArrayList<>();
+            EnvoltorioGetOltsByRegionEntidad entity;
+
             for (EnvoltorioTopLevelRegionAuxiliarDto regionResumen : result) {
+                entity = new EnvoltorioGetOltsByRegionEntidad();
+
                 int idRegion = regionResumen.getIdRegion();
                 switch (idRegion) {
-                    case 1: entity.setRegion1(regionResumen);
+                    case 1:
+                        entity = adapterObjeto(regionResumen);
                         break;
-                    case 2: entity.setRegion2(regionResumen);
+                    case 2:
+                        entity = adapterObjeto(regionResumen);
                         break;
-                    case 3: entity.setRegion3(regionResumen);
+                    case 3:
+                        entity = adapterObjeto(regionResumen);
+                        break;
+                    case 4:
+                        entity = adapterObjeto(regionResumen);
+                        break;
+                    case 5:
+                        entity = adapterObjeto(regionResumen);
+                        break;
+                    case 6:
+                        entity = adapterObjeto(regionResumen);
+                        break;
+                    case 7:
+                        entity = adapterObjeto(regionResumen);
+                        break;
+                    case 8:
+                        entity = adapterObjeto(regionResumen);
+                        break;
+                    case 9:
+                        entity = adapterObjeto(regionResumen);
+                        break;
+                    case 10:
+                        entity = adapterObjeto(regionResumen);
+                        break;
+                    case 11:
+                        entity = adapterObjeto(regionResumen);
                         break;
                 }
+                //Agregar a una lista
+                entityList.add(entity);
             }
-
-            repositorio.save(entity);
-            System.out.println("pp /n");
+            persistirDocumentos(entityList);
+            System.out.printf("Finalizo el proceso consulta estatus regiones onts");
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 
-    private EnvoltorioGetOltsByRegionEntidad adaptarEntity(){
-        return null;
+    public void persistirDocumentos(List<EnvoltorioGetOltsByRegionEntidad> entityList) {
+        for (EnvoltorioGetOltsByRegionEntidad entity : entityList) {
+            //Pregunta si existe la entidad:
+            EnvoltorioGetOltsByRegionEntidad existe = repositorio.obtenerEntidad(entity.getIdRegion());
+            if (existe != null) {
+                entity.setId(existe.getId());
+            }
+            repositorio.save(entity);
+        }
+    }
+
+    private EnvoltorioGetOltsByRegionEntidad adapterObjeto(EnvoltorioTopLevelRegionAuxiliarDto regionResumen) {
+        EnvoltorioGetOltsByRegionEntidad entity = new EnvoltorioGetOltsByRegionEntidad();
+        entity.setIdRegion(regionResumen.getIdRegion());
+        entity.setFechaPoleo(regionResumen.getFechaPoleo());
+        entity.setNombreRegion(regionResumen.getNombreRegion());
+        entity.setDescripcion(regionResumen.getDescripcion());
+        entity.setRegionOntTodoEstatus(regionResumen.getRegionOntTodoEstatus());
+        entity.setRegionOntEmpresarialesEstatus(regionResumen.getRegionOntTodoEstatus());
+        entity.setRegionOntVipsEstatus(regionResumen.getRegionOntVipsEstatus());
+        return entity;
     }
 
     //Mete otro nivel
@@ -71,15 +123,17 @@ public class OltsByRegionServiceImpl implements IOltsByRegionService {
         CompletableFuture<EnvoltorioResumenOltsbyRegionEstatus> future = new CompletableFuture<>();
 
         for (int region = 0; region <= 11; region++) {
+            int regionOne = region + 1;
             //Necesito otro nivel- segundo nivel detalle region:
             regionAux = new EnvoltorioTopLevelRegionAuxiliarDto();
 
-            regionAux.setIdRegion(region+1);
-            regionAux.setNombreRegion("Region" + region);
+            regionAux.setIdRegion(regionOne);
+            regionAux.setFechaPoleo(LocalDateTime.now());
+            regionAux.setNombreRegion("Region" + regionOne);
             regionAux.setDescripcion("Resumen del estado de las onts de una region");
 
             for (String auxTipo : tipoOnt) {
-                future = subproceso(region, auxTipo, false);
+                future = subproceso(regionOne, auxTipo, false);
                 listaAsyncrona.add(future);
             }
 
