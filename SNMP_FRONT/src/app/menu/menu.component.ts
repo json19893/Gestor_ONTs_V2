@@ -103,12 +103,12 @@ public ses:any;
 
   ngOnInit() {
     this.ses=localStorage.getItem('cod_sesion');
- /*   if(this.ses==1){
+    if(this.ses==1){
       this.router.navigate(['/home'])
       
     }else{
       this.router.navigate(['/login'])
-    }*/
+    }
     this.mostrar = localStorage.getItem('mostrar'); // se creo una variable en localStorage, con Get es para mostrar 
     this.usuario = localStorage.getItem('usuario');
    
@@ -126,7 +126,7 @@ public ses:any;
     }
     this.usuario =localStorage.getItem('usuario');
     this.rol =localStorage.getItem('rol');
- /*  switch ( this.rol) {
+   switch ( this.rol) {
      case 'Administrador':
        this.acceso=true
        break;
@@ -136,7 +136,7 @@ public ses:any;
          case 'Usuario':
            this.acceso=false
            break;
-   }*/
+   }
   }
   mouseenter() {
     if (!this.isExpanded) {

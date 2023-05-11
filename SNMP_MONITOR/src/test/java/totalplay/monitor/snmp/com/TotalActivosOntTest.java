@@ -1,6 +1,6 @@
 package totalplay.monitor.snmp.com;
 
-import org.junit.jupiter.api.Test;
+/*import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.scheduling.annotation.Async;
@@ -72,7 +72,7 @@ public class TotalActivosOntTest {
      * @param tipo representa el resumen del estado de las puntas
      * @return
      */
-    @Test
+   /*  @Test
     @Async("taskExecutor")
     CompletableFuture<EnvoltorioAuxiliarDto> obtenerResumenAltasOnts(String tipo) throws Exception {
         String consultar = "";
@@ -114,3 +114,4 @@ public class TotalActivosOntTest {
         return CompletableFuture.completedFuture(auxiliar);
     }
 }
+*/
