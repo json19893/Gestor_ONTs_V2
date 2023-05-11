@@ -31,8 +31,10 @@ import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsNCERepositor
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsPdmRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsViejoGestorRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioPuertosRepository;
 import totalplay.snmpv2.com.persistencia.vertica.entidades.BmsGestorOraVerticaEntity;
+import totalplay.snmpv2.com.persistencia.vertica.entidades.OntsViejoGestorEntity;
 
 import org.springframework.scheduling.annotation.Async;
 
@@ -45,6 +47,7 @@ import totalplay.snmpv2.com.persistencia.entidades.InventarioNCEEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsPdmEntity;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsViejoGestorEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioPuertosEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosAliasEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosCpuEntity;
@@ -93,6 +96,8 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 	IcatOltsRepository catOlts;
 	@Autowired
 	IinventarioOntsNCERepository inventarioNCE;
+	@Autowired
+	IinventarioOntsViejoGestorRepository inventarioViejo;
 	
 	
 	Utils util=new Utils();
@@ -661,5 +666,32 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 		}
 		
 	} 
+	
+	@Override
+	@Async("taskExecutor2")
+	public CompletableFuture<GenericResponseDto> saveOntsViejoGestor(List<OntsViejoGestorEntity> onts) throws Exception{
+		List<InventarioOntsViejoGestorEntity> res = new   ArrayList<InventarioOntsViejoGestorEntity>();
+		try {
+			for(OntsViejoGestorEntity o: onts) {
+				InventarioOntsViejoGestorEntity inv = new InventarioOntsViejoGestorEntity();
+				
+				inv.setEstatus(Integer.parseInt( util.isBlankOrNull(o.getEstatus()) ? "0": o.getEstatus() ));
+				inv.setFrame(Integer.parseInt(util.isBlankOrNull(o.getFrame()) ? "0": o.getEstatus() ));
+				inv.setIp_olt(o.getIp_olt());
+				inv.setLast_down_cause(o.getLast_down_cause());
+				inv.setLast_down_time(o.getLast_down_time().equals("inalcanzable")? "":o.getLast_down_time());
+				inv.setNumero_serie(o.getNumero_serie());
+				inv.setPort(Integer.parseInt(util.isBlankOrNull(o.getPort()) ? "0": o.getEstatus() ));
+				inv.setSlot(Integer.parseInt(util.isBlankOrNull(o.getSlot() ) ? "0": o.getEstatus() ));		
+				
+				res.add(inv);
+			}
+			
+			inventarioViejo.insert(res);
+		}catch (Exception e) {
+			log.info(e.toString());
+		}
+		return null;
+	}
 	
 }

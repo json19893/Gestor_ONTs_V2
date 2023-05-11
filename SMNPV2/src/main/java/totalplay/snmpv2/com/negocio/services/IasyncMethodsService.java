@@ -8,6 +8,7 @@ import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsPdmEntity;
 import totalplay.snmpv2.com.persistencia.vertica.entidades.BmsGestorOraVerticaEntity;
+import totalplay.snmpv2.com.persistencia.vertica.entidades.OntsViejoGestorEntity;
 
 import java.io.IOException;
 import java.util.List;
@@ -26,4 +27,5 @@ public interface IasyncMethodsService {
 	CompletableFuture<GenericResponseDto> putConfiguracion(List<CatOltsEntity> olts) throws Exception;
 	CompletableFuture<GenericResponseDto> saveOntsNCE(List<BmsGestorOraVerticaEntity> onts) throws Exception;
 	CompletableFuture<GenericResponseDto> deleteInventario(List<InventarioOntsEntity> onts );
+	CompletableFuture<GenericResponseDto> saveOntsViejoGestor(List<OntsViejoGestorEntity> onts) throws Exception;
 }
