@@ -38,9 +38,7 @@ public class OltsByRegionServiceImpl implements IOltsByRegionService {
 
             for (EnvoltorioTopLevelRegionAuxiliarDto regionResumen : result) {
                 entity = new EnvoltorioGetOltsByRegionEntidad();
-
-                int idRegion = regionResumen.getIdRegion();
-                switch (idRegion) {
+                switch (regionResumen.getIdRegion()) {
                     case 1:
                         entity = adapterObjeto(regionResumen);
                         break;
@@ -103,7 +101,7 @@ public class OltsByRegionServiceImpl implements IOltsByRegionService {
         entity.setNombreRegion(regionResumen.getNombreRegion());
         entity.setDescripcion(regionResumen.getDescripcion());
         entity.setRegionOntTodoEstatus(regionResumen.getRegionOntTodoEstatus());
-        entity.setRegionOntEmpresarialesEstatus(regionResumen.getRegionOntTodoEstatus());
+        entity.setRegionOntEmpresarialesEstatus(regionResumen.getRegionOntEmpresarialesEstatus());
         entity.setRegionOntVipsEstatus(regionResumen.getRegionOntVipsEstatus());
         return entity;
     }
@@ -122,7 +120,7 @@ public class OltsByRegionServiceImpl implements IOltsByRegionService {
         List<CompletableFuture<EnvoltorioResumenOltsbyRegionEstatus>> listaAsyncrona = new ArrayList<>();
         CompletableFuture<EnvoltorioResumenOltsbyRegionEstatus> future = new CompletableFuture<>();
 
-        for (int region = 0; region <= 11; region++) {
+        for (int region = 0; region < 11; region++) {
             int regionOne = region + 1;
             //Necesito otro nivel- segundo nivel detalle region:
             regionAux = new EnvoltorioTopLevelRegionAuxiliarDto();
