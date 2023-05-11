@@ -82,6 +82,9 @@ public class monitorController extends constantes {
     IEnvoltorioOntsTotalesActivoRepositorio repositorioOntEstatusTotales;
     @Autowired
     IEnvoltorioGetOltsByRegionRepository getOltsByRegionRepository;
+
+    @Autowired
+    ITotalesByTecnologiaRepository totalesByTecnologiaRepository;
     /**
      * Mètodo que busca las olts, sus totales por tecnologìa y las onts
      * empresariales por regiòn,
@@ -206,11 +209,14 @@ public class monitorController extends constantes {
     public List<datosRegionDto> getTotalesByTecnologia(@PathVariable("tipo") String tipo) throws Exception {
 
         if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+            TotalesByTecnologiaEntidad existe = totalesByTecnologiaRepository.getEntity(tipo);
+
+            if(existe != null){
+                return existe.getResumenStatusOnts();
+            }
             return monitorServicio.getTotalesByTecnologia(tipo);
         }
-
         return null;
-
     }
 
     /**
