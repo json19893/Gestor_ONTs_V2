@@ -80,6 +80,11 @@ public class monitorController extends constantes {
     IEstadoOntsResumenService estadoOntsResumenService;
     @Autowired
     IEnvoltorioOntsTotalesActivoRepositorio repositorioOntEstatusTotales;
+    @Autowired
+    IEnvoltorioGetOltsByRegionRepository getOltsByRegionRepository;
+
+    @Autowired
+    ITotalesByTecnologiaRepository totalesByTecnologiaRepository;
     /**
      * Mètodo que busca las olts, sus totales por tecnologìa y las onts
      * empresariales por regiòn,
@@ -96,8 +101,19 @@ public class monitorController extends constantes {
 
         if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
             try {
+                EnvoltorioGetOltsByRegionEntidad region = getOltsByRegionRepository.obtenerEntidad(idRegion);
+                if(region !=null){
+                    switch (tipo){
+                        case "T":
+                            return region.getRegionOntTodoEstatus().getResumenStatusOnts();
+                        case "E":
+                            return region.getRegionOntEmpresarialesEstatus().getResumenStatusOnts();
+                        case "V":
+                            return region.getRegionOntVipsEstatus().getResumenStatusOnts();
+                    }
+                }
 
-                response = monitorServicio.getOltsByRegion(idRegion, tipo, false);
+                //response = monitorServicio.getOltsByRegion(idRegion, tipo, false);
             } catch (Exception e) {
 
             }
@@ -193,11 +209,14 @@ public class monitorController extends constantes {
     public List<datosRegionDto> getTotalesByTecnologia(@PathVariable("tipo") String tipo) throws Exception {
 
         if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+            TotalesByTecnologiaEntidad existe = totalesByTecnologiaRepository.getEntity(tipo);
+
+            if(existe != null){
+                return existe.getResumenStatusOnts();
+            }
             return monitorServicio.getTotalesByTecnologia(tipo);
         }
-
         return null;
-
     }
 
     /**
