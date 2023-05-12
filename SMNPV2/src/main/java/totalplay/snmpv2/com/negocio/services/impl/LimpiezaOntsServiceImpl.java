@@ -169,11 +169,11 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			 //hacer el cruce de estatus
 			String idPoleo =  monitorPoleo.getLastFinishId().getId();
 			updateDescripcion(monitor, INICIO_DESC+" CRUCES  MÈTRICAS");
-			crucesMetricas(1,idEjecucion, "auxiliar", null, false );
-			crucesMetricas(2,idPoleo, "auxiliar", null, false  );
-			crucesMetricas(4,idPoleo, "auxiliar", null, false );
-			crucesMetricas(14,idPoleo, "auxiliar", null, false  );
-			crucesMetricas(16,idPoleo, "auxiliar", null, false );
+			crucesMetricas(1,idEjecucion, "auxiliar_descubrimiento", null, false );
+			crucesMetricas(2,idPoleo, "auxiliar_descubrimiento", null, false  );
+			crucesMetricas(4,idPoleo, "auxiliar_descubrimiento", null, false );
+			crucesMetricas(14,idPoleo, "auxiliar_descubrimiento", null, false  );
+			crucesMetricas(16,idPoleo, "auxiliar_descubrimiento", null, false );
 			
 			//Obtener los faltantes de inventario
 			updateDescripcion(monitor, INICIO_DESC+" OBTENER  FALTANTES");
