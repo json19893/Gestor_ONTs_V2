@@ -1,4 +1,4 @@
-package totalplay.services.com.negocio.utils;
+package totalplay.services.com.negocio.service;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
