@@ -148,8 +148,9 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			 }catch(Exception e) {
 				log.error("error", e); 
 			 }
+			 
 			//Obtener las difencias que van al inventario auxiliar
-			 //
+//NO	 //
 //			 log.info(":::::::::::::::::::::::::: get diferecias  :::::::::::::::::::::::");
 //			 updateDescripcion(monitor, INICIO_DESC+" OBTENER DIFERENCIAS DEFINITIVAS");
 //			 diferenciaFinales =  diferencias.findDiferencias();

@@ -54,6 +54,7 @@ public interface IinventarioOntsViejoGestorRepository extends MongoRepository<In
 			  + "						{\n"
 			  + "							numero_serie:'$numero_serie',\n"
 			  + "							id_olt:'$olt.id_olt',\n"
+			  + "							id_region:'$olt.id_region',\n"
 			  + "							frame:'$frame',\n"
 			  + "							slot:'$slot',\n"
 			  + "							port:'$port',\n"
