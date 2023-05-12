@@ -2,15 +2,17 @@ package totalplay.services.com.persistencia.entidad;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-@Document(collection = "cat_olts")
+@Document(collection = "tbl_cat_olts_viejas")
 @Getter
 @Setter
 @ToString
-public class catOltsEntidad {
+public class catOltsInventarioEntidad {
+
 	@Id
 	private String _id;
 	private Integer id_olt;
@@ -95,11 +97,12 @@ public class catOltsEntidad {
 	}
 	@Override
 	public boolean equals(Object obj) {
-		if(obj instanceof catOltsEntidad) {
-			return ((catOltsEntidad)obj).getIp().equals(this.getIp());
+		if(obj instanceof catOltsInventarioEntidad) {
+			return ((catOltsInventarioEntidad)obj).getIp().equals(this.getIp());
 		}
 		return false;
 	}
 
 
+	
 }

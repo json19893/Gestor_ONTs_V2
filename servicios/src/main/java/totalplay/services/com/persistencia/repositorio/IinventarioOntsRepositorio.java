@@ -17,7 +17,7 @@ import totalplay.services.com.persistencia.entidad.inventarioOntsEntidad;
 @Repository
 public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOntsEntidad, String> {
 	
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'frame':?0},{'port':?1},{'slot':?2},{'uid':?3},{'id_olt':?4}]}}" })
+	@Aggregation(pipeline = { "{'$match':{'$and':[{'frame':?0},{'port':?1},{'slot':?2},{'uid':?3},{'id_olts':?4}]}}" })
 	List <inventarioOntsEntidad> getNumeroSerie(
 				@Param("frame") Integer frame, 
 				@Param("port") Integer port,
@@ -25,7 +25,7 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 				@Param("uid") String uid,
 				@Param("idOlt") Integer idOlt);
 	
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'frame':?0},{'port':?1},{'slot':?2},{'uid':?3},{'id_olt':?4}]}}" })
+	@Aggregation(pipeline = { "{'$match':{'$and':[{'frame':?0},{'port':?1},{'slot':?2},{'uid':?3},{'id_olts':?4}]}}" })
 	List <inventarioOntsEntidad>  getOnt(
 				@Param("frame") Integer frame, 
 				@Param("port") Integer port,
@@ -38,6 +38,9 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 	
 	@Query(value="{'numero_serie': ?0}")
 	inventarioOntsEntidad getONT(String numSerie);
+	
+	@Query(value="{'id_olts': ?0}")
+	List <inventarioOntsEntidad> getONTbyOlt(Integer idOlt);
 	
 
 }
