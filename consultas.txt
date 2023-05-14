@@ -1,0 +1,80 @@
+Consultas
+1. consulta para agregar oid, indesx, indexFSP, uid, puerto a las onts migradas del viejo gestor
+2. Consulta para actualizar la tacnología con base en su olt
+3. Consulta para cambiar fecha de string a date
+
+
+------------------------------------------------------------------------------------------------
+1. Consulta para agregar oid, indesx, indexFSP, uid, puerto a las onts migradas del viejo gestor
+NOTA: mandaron onts repetidas, solo se actualizan las que tengan una coincidencia única
+------------------------------------------------------------------------------------------------
+ db.tb_inventario_onts.aggregate([
+     {$match:{$or:[{oid:null},{oid:""} ] } },
+      {
+		"$lookup":{
+			from: "aux_ajustes",
+			localField:"numero_serie",
+			foreignField:"Num_Serie",
+			as: "inventario",
+		}
+    }, 
+    {$match:{$expr:{$eq:[{$size:"$inventario"}, 1]}}},
+    {$unwind:"$inventario"},
+    { $set:{ oid:{ $concat: [ "$inventario.ObjectId", ".","$inventario.OntId" ] } } },
+    {$match:{oid:{$ne:null}}}, 
+    {
+        $set:{
+            uid:"$inventario.OntId",
+            id_puerto:"$inventario.ObjectId",
+            index:{ $concat: [ { $toString: "$id_olt"} , "-","$oid" ] },
+            indexFSP:{ $concat: [ { $toString: "$id_olt"} , "-","$inventario.ObjectId" ] }
+        }
+    },
+    {$unset:"inventario"},
+    { $merge: { into: "tb_inventario_onts", on: "_id", whenMatched: "replace", whenNotMatched: "insert" } }
+    
+
+])
+
+------------------------------------------------------------------------------------------------
+2. Consulta para actualizar la tacnología con base en su olt
+------------------------------------------------------------------------------------------------
+db.tb_inventario_onts.aggregate([
+    {$match:{tecnologia:null}},
+    {
+   	    "$lookup":{
+			from: "cat_olts",
+			localField:"id_olt",
+			foreignField:"id_olt",
+			as: "ont",
+		}			
+	},
+	{$unwind:"$ont"},
+	{$set:{tecnologia:"$ont.tecnologia"}},
+	{$unset:['ont']},
+	 {$merge: { into: "tb_inventario_onts", on: "_id", whenMatched: "replace", whenNotMatched: "insert" } }
+])
+
+------------------------------------------------------------------------------------------------
+3. Consulta para cambiar fecha de string a date
+NOTA: El ejemplo es para la tabla tb_inventario_onts_pdm
+	hay que cambiar el campo --> fecha_descubrimiento
+	y----->  dateString: '$fecha_descubrimiento'
+------------------------------------------------------------------------------------------------
+
+db.tb_inventario_onts_pdm.aggregate([
+    {$match:{fecha_descubrimiento:{ $type : "string" }}},
+     {
+         $set:{
+            fecha_descubrimiento: {
+              $dateFromString: {
+                  dateString: '$fecha_descubrimiento'
+              }
+            }            
+        }
+    },  
+    
+    {$merge: { into: "tb_inventario_onts_pdm", on: "_id", whenMatched: "replace", whenNotMatched: "insert" } }
+])
+
+
