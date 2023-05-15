@@ -200,7 +200,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
       this.openDetalle()
       this.service.poleoMetricaOid(this.requestPoleoOid).subscribe(
         res =>{
-          this._snackBar.open(res.sms, "cerrar", {
+          this._snackBar.open(res.sms, "Cerrar", {
             duration: 4000
           });
          
@@ -457,10 +457,10 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
       actualizaOntbyOLt(idOlt:any,serie:any){
         this.service.actualizaOltByOnt(idOlt,serie).subscribe(
           res => {
-              this._snackBar.open(res.sms, "cerrar", {
+              this._snackBar.open(res.sms, "Cerrar", {
                 duration: 4000
               });
-             console.log(res.sms)
+   
               setTimeout(() => {
                 window.location.reload();
               }, 1400);
@@ -642,7 +642,10 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
 
     getDetalle(ns:any){
       localStorage.setItem("serial",ns)
-      this.dialog.open(detalleActualizacionOnt);
+      this.dialog.open(detalleActualizacionOnt,{
+        height: '80vh',
+      width: '120vw',
+      });
     }
   }
 

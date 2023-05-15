@@ -14,7 +14,7 @@
       </mat-panel-description>
     </mat-expansion-panel-header>
     <mat-form-field >
-      <input matInput (keyup)="applyFilter($event)" placeholder="Búscar" #input>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" #input>
     </mat-form-field>    
   </mat-expansion-panel>
 </mat-accordion>
@@ -26,57 +26,58 @@
   
     <!-- Position Column -->
     <ng-container matColumnDef="ip">
-      <th mat-header-cell *matHeaderCellDef > Ip </th>
-      <td mat-cell *matCellDef="let element"> {{element.ip}} </td>
+      <th mat-header-cell *matHeaderCellDef > IP </th>
+      <td mat-cell *matCellDef="let element"> {{element.ip | textPipe }} </td>
     </ng-container>
     <ng-container matColumnDef="numeroSerie">
       <th mat-header-cell *matHeaderCellDef >Número serie  </th>
-      <td mat-cell *matCellDef="let element"> {{element.numeroSerie}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.numeroSerie | textPipe}} </td>
     </ng-container>
     <ng-container matColumnDef="frame">
       <th mat-header-cell *matHeaderCellDef > Frame </th>
-      <td mat-cell *matCellDef="let element"> {{element.frame}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.frame | textPipe}} </td>
     </ng-container>
     <ng-container matColumnDef="slot">
       <th mat-header-cell *matHeaderCellDef > Slot </th>
-      <td mat-cell *matCellDef="let element"> {{element.slot}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.slot | textPipe}} </td>
     </ng-container>
     <ng-container matColumnDef="port">
       <th mat-header-cell *matHeaderCellDef >Port </th>
-      <td mat-cell *matCellDef="let element"> {{element.port}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.port | textPipe}} </td>
     </ng-container>
     <ng-container matColumnDef="uid">
-      <th mat-header-cell *matHeaderCellDef > Uid </th>
-      <td mat-cell *matCellDef="let element"> {{element.uid}} </td>
+      <th mat-header-cell *matHeaderCellDef > UID </th>
+      <td mat-cell *matCellDef="let element"> {{element.uid | textPipe}} </td>
     </ng-container>
     <ng-container matColumnDef="fechaActualizacion">
       <th mat-header-cell *matHeaderCellDef >Fecha </th>
-      <td mat-cell *matCellDef="let element"> {{element.fechaActualizacion}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.fechaActualizacion| dateFormat}} </td>
     </ng-container>
     <ng-container matColumnDef="descripcionAlarma">
-      <th mat-header-cell *matHeaderCellDef > Descipcion alarma </th>
-      <td mat-cell *matCellDef="let element"> {{element.descripcionAlarma}} </td>
+      <th mat-header-cell *matHeaderCellDef > Descipción alarma </th>
+      <td mat-cell *matCellDef="let element"> {{element.descripcionAlarma| textPipe}} </td>
     </ng-container>
 
     <ng-container matColumnDef="causa">
       <th mat-header-cell *matHeaderCellDef > Causa </th>
-      <td mat-cell *matCellDef="let element"> {{element.causa}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.causa| textPipe}} </td>
     </ng-container>
 
     <ng-container matColumnDef="usuario">
       <th mat-header-cell *matHeaderCellDef > Usuario </th>
-      <td mat-cell *matCellDef="let element"> {{element.usuario}} </td>
+      <td mat-cell *matCellDef="let element"> {{element.usuario| textPipe}} </td>
     </ng-container>
     <ng-container matColumnDef="accion">
-      <th mat-header-cell *matHeaderCellDef > Accion </th>
+      <th mat-header-cell *matHeaderCellDef > Acciones </th>
       <td mat-cell *matCellDef="let element">      <mat-icon matTooltip="Historico de eventos"(click)="getDetalle(element.numeroSerie)">timeline</mat-icon>  </td>
     </ng-container>
 
   
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td style="text-align: center;" class="mat-cell" colspan="15">Sin registros </td>
+    </tr>
   </table>
   <br>
-  
-
   <mat-paginator  #paginator [pageSizeOptions]="[10]" aria-label="Select page of users"></mat-paginator>

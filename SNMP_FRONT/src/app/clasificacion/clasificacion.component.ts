@@ -156,11 +156,11 @@ export class ClasificacionComponent implements OnInit {
 
     window.addEventListener("keydown", function (event) {
   
-      if (event.shiftKey && event.key === 't'  || event.shiftKey && event.key === 'T') {
+     /* if (event.shiftKey && event.key === 't'  || event.shiftKey && event.key === 'T') {
       
         localStorage.setItem('mostrar', 'T');
         window.location.reload();
-      }
+      }*/
       if (event.shiftKey && event.key === 'e'  || event.shiftKey && event.key === 'E') {
         localStorage.setItem('mostrar', 'E');
         window.location.reload();

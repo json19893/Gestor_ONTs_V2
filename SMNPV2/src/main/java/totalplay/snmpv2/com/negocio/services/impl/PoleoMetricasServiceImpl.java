@@ -741,7 +741,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
 //        monitorPoleoOlt.setResultado(metricaAsyncProcess.get().getSms());
 
         GenericResponseDto res = metricaAsyncProcess.get();
-        res.setSms("Se ejecuto correctamente la metrica");
+        res.setSms("Se ejecutó correctamente la métrica");
         res.setCod(0);
         return res;
     }

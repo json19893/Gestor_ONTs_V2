@@ -118,7 +118,7 @@ export class LoginComponent implements OnInit {
             localStorage.removeItem("cambiosDetalle");
             window.location.reload();
           }else{
-            this._snackBar.open(this.sesion.sms, "cerrar",{
+            this._snackBar.open(this.sesion.sms, "Cerrar",{
               duration: 3000
             });
           }

@@ -29,6 +29,7 @@ import { ActualizaOntsDialog, ConsultaOltsComponent ,detalleEjecucionDialog, Dia
 import { FileSaverModule } from 'ngx-filesaver';
 import {DateFormatPipe} from './pipes/date-format.pipe'
 import {numberPipe} from './pipes/number-format.pipe'
+import {textPipe} from './pipes/text-format.pipe'
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import {numberPipe} from './pipes/number-format.pipe'
     detalleEjecucionMetricaDialog,
     DateFormatPipe,
     numberPipe,
+    textPipe,
     detalleActualizacionOnt
 
    

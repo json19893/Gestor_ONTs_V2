@@ -1,15 +1,15 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'totalPipe'
+  name: 'textPipe'
 })
-export class numberPipe implements PipeTransform {
+export class textPipe implements PipeTransform {
 
   transform(value: any): any {
-    if (value>0){ 
+    if (value!=null||value!=undefined){ 
       return value;
     } else{
-      return 0;
+      return "---";
     }
 }
 }
