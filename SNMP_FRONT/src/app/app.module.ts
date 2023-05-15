@@ -28,6 +28,7 @@ import {detalleActualizacionOnt} from './detalleOnt/detalleOnt.component'
 import { ActualizaOntsDialog, ConsultaOltsComponent ,detalleEjecucionDialog, DialogElementsExampleDialog} from './consultaOlts/consultaOlts.component';
 import { FileSaverModule } from 'ngx-filesaver';
 import {DateFormatPipe} from './pipes/date-format.pipe'
+import {numberPipe} from './pipes/number-format.pipe'
 
 @NgModule({
   declarations: [
@@ -49,6 +50,7 @@ import {DateFormatPipe} from './pipes/date-format.pipe'
     detalleActualizacionDialog,
     detalleEjecucionMetricaDialog,
     DateFormatPipe,
+    numberPipe,
     detalleActualizacionOnt
 
    
