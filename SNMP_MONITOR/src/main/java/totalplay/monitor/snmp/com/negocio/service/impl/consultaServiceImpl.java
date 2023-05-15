@@ -3,12 +3,14 @@ package totalplay.monitor.snmp.com.negocio.service.impl;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
-import java.sql.Date;
+
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -440,7 +442,7 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 		
 		try {
 			String idEjecucion  = monitor.getLastId().get_id(); // "640774190ba5db75b4cb89d3";//
-			
+			Date fechaEjecucion= monitor.getLastId().getFecha_fin();
 				
 			
 			poleosLastUpTimeEntidad poleoLastUpTimeV = poleoLastUpTime.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
@@ -454,7 +456,8 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 			poleosCpuEntidad poleoCpuV = poleoCpu.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
 			poleosMemoryEntidad poleoMemoryV = poleoMemory.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
 			poleosProfNameEntidad poleoProfNameV = poleoProfName.getMetricaByIndex(idEjecucion, idOlt+"-"+oid);
-			
+	
+			response.setFechaPoleo(fechaEjecucion);
 			response.setLastUpTime(poleoLastUpTimeV  !=  null ? poleoLastUpTimeV.getValor():"");
 			response.setUpBytes(poleoUpBytesV  !=  null ? poleoUpBytesV.getValor():"");
 			response.setDownBytes(poleoDownBytesV  !=  null ? poleoDownBytesV.getValor():"");

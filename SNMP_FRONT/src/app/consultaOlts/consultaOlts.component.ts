@@ -506,7 +506,7 @@ export class DialogElementsExampleDialog  implements OnInit   {
    blo3:Imetricas []=[];
    blo4:Imetricas []=[];
    sb:Imetricas []=[];
-   blo:Bloques[]=[{bloque:1,nombre:"Identificación ONTs"},{bloque:2,nombre:"Estatus ONTs"},{bloque:3,nombre:"Performance ONTs"},{bloque:4,nombre:"otro"},{bloque:5,nombre:"Sin bloque asignado"}]
+   blo:Bloques[]=[{bloque:1,nombre:"Identificación ONTs"},{bloque:2,nombre:"Estatus ONTs"},{bloque:3,nombre:"Performance ONTs"},{bloque:4,nombre:"Otro"},{bloque:5,nombre:"Sin bloque asignado"}]
  
   constructor(
     private service: pointService,
