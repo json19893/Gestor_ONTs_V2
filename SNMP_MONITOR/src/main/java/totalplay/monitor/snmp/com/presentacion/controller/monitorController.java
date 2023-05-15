@@ -617,7 +617,7 @@ public class monitorController extends constantes {
         try {
         	 
         	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-			Date fecha = format.parse( "2023-02-03T15:00:00.000Z");//LocalDateTime.now().minusHours(1).toString() + "Z"); --pro
+			Date fecha = format.parse(LocalDateTime.now().toString() + "Z");
         	
             if (tipo.equals("E")) {
             	return detalleAct.getDetalleEmpresariales(fecha);

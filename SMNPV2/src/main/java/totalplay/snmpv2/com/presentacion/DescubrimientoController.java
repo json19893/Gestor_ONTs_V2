@@ -13,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -78,6 +79,7 @@ public class DescubrimientoController extends Constantes {
 	private String ruta;
 	
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@Scheduled(cron = "0 2 0 * * *", zone = "CST")
 	@GetMapping("/descubrimiento")
 	public GenericResponseDto getDescubrimientoOnts() throws IOException {
 		String idProceso="";
