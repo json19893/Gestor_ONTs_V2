@@ -3,6 +3,7 @@ package totalplay.snmpv2.com.negocio.services.impl;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -557,13 +558,13 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
     @Override
     public GenericResponseDto getPoleoOntMetrica(RequestPostMetrica request) throws Exception {
         String logEventos = "";
-        logEventos = "[ " + util.getCurrentDateTime() + " ] " + " INFO " + " [Funcion a Ejecutar]:  PoleoMetricasImpl.getPoleoOntMetrica" + "\n";
+        logEventos = "[ " + util.getLocalDateTimeZone() + " ] " + " INFO " + " [Ejecutando Poleo Manual]:  PoleoMetricasImpl.getPoleoOntMetrica" + "\n";
 
         //System.out.println(logEventos);
         //Parametros de entrada:
         String num_serie = request.getNumero_serie();
         Integer idMetrica = request.getIdMetrica();
-        String fechaInicio = LocalDate.now().toString();
+        Date fechaInicio = Date.from(util.getLocalDateTimeZone().atZone(ZoneId.systemDefault()).toInstant());
 
         //Mensaje del happy path
         GenericResponseDto response = new GenericResponseDto();
@@ -616,24 +617,24 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
             response.setSms("Error: Metrica no soportada por esta version");
             return response;
         }
-
+        //Enununciado completo: full-oid :oid_tecnologia + oid_ont + uid;
+        //oid_ont + uid;
         if (configMetrica.isActivo()) {
             if (ont.getTecnologia().equalsIgnoreCase("HUAWEI")) {
-                OID_METRICA = configMetrica.getHUAWEI().getOid() + "." + ont.getOid();
+                OID_METRICA = ont.getOid();// + "." + ont.getUid();
             }
 
             if (ont.getTecnologia().equalsIgnoreCase("ZTE")) {
-                OID_METRICA = configMetrica.getZTE().getOid() + "." + ont.getOid();
+                OID_METRICA = ont.getOid();// + "." + ont.getUid();
             }
 
             if (ont.getTecnologia().equalsIgnoreCase("FH")) {
-                OID_METRICA = configMetrica.getFH().getOid() + "." + ont.getOid();
+                OID_METRICA = ont.getOid();// + "." + ont.getUid();
             }
-        } else {
-            //No esta activada la metrica para este dispositivo
-            response.setCod(TECHNOLOGY_NOT_SUPPORTED);
-            response.setSms("Error: Tecnologia no soportada por esta version");
-            return response;
+            //Caso especial: Poleo de FRAME
+            if (idMetrica == FRAME_SLOT_PORT) {
+                OID_METRICA =ont.getOid().split("\\.")[0];
+            }
         }
 
         AggregationOperation match
@@ -647,7 +648,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
 
         utilerias = new Utils();
         configuracionPoleo = utilerias.getConfiguracion(out.getMappedResults());
-
+        System.out.println(ont);
 
         final String BASE_COMMAND = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + TIME_OUT_VALUE
                 + SPACE + configuracionPoleo.getVersion() + USER_NAME + configuracionPoleo.getUserName() + LEVEL
@@ -656,127 +657,126 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                 + PROTOCOL_PHRASE + configuracionPoleo.getPhrase() + SPACE + IR + olt.getIp();
 
         Integer idOlt = olt.getId_olt();
-        String oid = ont.getOid();
+        String oid = ont.getOid() + ont.getUid();
+        System.out.println(OID_METRICA + "." + ont.getUid());
         String idMonitorPoleo = monitorPoleo.findFirstByOrderByIdDesc().getId();
         configuracionPoleo.setComando(BASE_COMMAND);
         configuracionPoleo.setIdConfiguracion(idConfiguracion);
         configuracionPoleo.setTecnologia(tecnologia);
         configuracionPoleo.setTrazaEventos(logEventos);
-
         String finalLogEventos = logEventos;
-
         //Escucha los eventos
-        configuracionPoleo.setManejarResultadoComando((ruta, c, result, status, metrica, comando) -> {
-            util.deleteLogFile(ruta);
+        configuracionPoleo.setManejarResultadoComando((rutaArchivo, conf, result, status, metrica, comando) -> {
+            util.deleteLogFile(rutaArchivo);
             String copyString = finalLogEventos;
             String valor = "";
-            try{
+            try {
+                valor = obtenerValor(metrica, result, ont);
+                log.info("################# ::" + valor);
+                String tmp = conf.getTrazaEventos();
+                tmp += "[ " + util.getLocalDateTimeZone() + " ] " + " INFO " + " [Datos Generales del Poleo]" + "\n";
+                tmp += "[ " + util.getLocalDateTimeZone() + " ] " + " INFO " + " [Id Olt]: " + ont.getId_olt() + "\n";
+                tmp += "[ " + util.getLocalDateTimeZone() + " ] " + " INFO " + " [Ont Número_Serie]: " + ont.getNumero_serie() + "\n";
+                tmp += "[ " + util.getLocalDateTimeZone() + " ] " + " INFO " + " [Ont Tecnología]: " + ont.getTecnologia() + "\n";
+                tmp += "[ " + util.getLocalDateTimeZone() + " ] " + " INFO " + " [Id-Metrica]: " + configMetrica.getId_metrica() + "\n";
+                tmp += "[ " + util.getLocalDateTimeZone() + " ] " + " INFO " + " [Nombre-Metrica]: " + configMetrica.getNombre() + "\n";
+                if (status == 0) {
+                    tmp += "[ " + util.getLocalDateTimeZone() + " ] " + " INFO " + " [Comando Ejecutado]: " + "\n";
+                    tmp += "[ " + util.getLocalDateTimeZone() + " ] " + " INFO   " + comando + "\n";
+                    tmp += "[ " + util.getLocalDateTimeZone() + " ] " + " INFO " + " [Resultado Ejecucción]: " + valor + "\n";
+                    conf.setTrazaEventos(tmp);
+                    response.setCod(0);
+                    response.setSms("Se ejecuto correctamente la metrica: " + metrica.intValue());
+                } else {
+                    tmp += "[ " + util.getLocalDateTimeZone() + " ] " + " ERROR " + " [Error en la ejecucción del comando]: " + comando + "\n";
+                    conf.setTrazaEventos(tmp);
+                    response.setCod(1);
+                    response.setSms("Error en la ejecuccion del comando: " + metrica.intValue());
+                }
+                tmp += "[ " + util.getLocalDateTimeZone() + " ] " + " INFO " + " [Guardando en Disco]: " + rutaArchivo + "\n";
+                //Persistir log resultante del proceso del poleo:
+                tmp += "[ " + util.getLocalDateTimeZone() + " ] " + " INFO " + " [Finalizó la Ejecucción del Poleo Manual]:  PoleoMetricasImpl.getPoleoOntMetrica" + "\n";
+                //Persiste en disco en un log:
+                conf.setTrazaEventos(tmp);
+                util.crearArchivos(rutaArchivo, conf.getTrazaEventos());
 
-                valor = obtenerValor(metrica, result);
-                log.info("################# ::"+valor);
-            }catch (Exception e){
-                log.error("Error: "+e);
+            } catch (Exception e) {
+                log.error("Error: " + e);
+                response.setCod(1);
+                response.setSms("Error: Error en el casteo de la metrica: " + metrica.intValue());
             }
-
-            String tmp = c.getTrazaEventos();
-            if (status == 0) {
-                tmp += "[ " + util.getCurrentDateTime() + " ] " + " INFO " + " [Comando Ejecutado]: " + comando + "\n";
-                tmp += "[ " + util.getCurrentDateTime() + " ] " + " INFO " + " [Resultado Ejecuccion]: " + valor + "\n";
-                c.setTrazaEventos(tmp);
-            } else {
-                tmp += "[ " + util.getCurrentDateTime() + " ] " + " ERROR " + " [Error en la ejecuccion del comando]: " + comando + "\n";
-                c.setTrazaEventos(tmp);
-            }
-            tmp += "[ " + util.getCurrentDateTime() + " ] " + " INFO " + " [Guardando en Disco]: " + ruta + "\n";
-            util.crearArchivos(ruta, c.getTrazaEventos());
         });
-
-
-        //String resultado = configuracionPoleo.getManejarResultadoComando().getCommandResponse("10");
-        //System.out.println(resultado);
-
         CompletableFuture<GenericResponseDto> metricaAsyncProcess = new CompletableFuture<>();
         boolean errorOlt = false;
 
         metricaAsyncProcess = poleoMetricasUtilsService
-                .dispatcherAsyncPoleoMetrica(
-                        configuracionPoleo,
-                        idMonitorPoleo,
-                        request.getIdMetrica(),
-                        olt.getId_olt(),
-                        false,
-                        oid,
-                        false,
-                        false);
+                .dispatcherAsyncPoleoMetrica(configuracionPoleo, idMonitorPoleo, request.getIdMetrica(),
+                        olt.getId_olt(), false, OID_METRICA, false, false);
 
-//        MonitorPoleoOltMetricaEntity monitor;
-//        String idMonitorOlt = "";
-
-//        monitor = monitorPoleoOltMetrica.getMonitorExist(idMonitorPoleo, idMetrica, olt.getId_olt());
-//        if (monitor != null)
-//            idMonitorOlt = monitor.getId();
-//        else
-//            idMonitorOlt = monitorPoleoOltMetrica.save(new MonitorPoleoOltMetricaEntity(idOlt, Integer.valueOf(idMetrica), LocalDateTime.now().toString(), idMonitorPoleo)).getId();
+        //Se detiene el hilo principal hasta que finalice el hilo ejecutado en paralelo:
+        GenericResponseDto asyncResponse = metricaAsyncProcess.get();
 
         boolean isErrorAsyncProcess
-                = metricaAsyncProcess.get().getSms().equals("0")
-                || metricaAsyncProcess.get().getSms().equals("error")
-                || metricaAsyncProcess.get().getSms().equals("Sin metrica");
+                = asyncResponse.getSms().equals("error") || asyncResponse.getSms().equals("Sin metrica");
 
-        if (isErrorAsyncProcess) {
-//            MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
-//            monitorPoleoOlt.setFecha_inicio(fechaInicio);
-//            monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
-//            monitorPoleoOlt.setError(true);
-//
-//            monitorPoleoOltMetrica.save(monitorPoleoOlt);
-            //Lanza una excepcion
-            throw new RuntimeException("Error: No asigno el id process para el proceso de metrica");
+        if(isErrorAsyncProcess){
+            asyncResponse.setCod(1);
+            asyncResponse.setSms("Error: En la ejecuccion de la metrica: " + idMetrica.intValue());
         }
 
-//        MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
-//        monitorPoleoOlt.setFecha_inicio(fechaInicio);
-//        monitorPoleoOlt.setFecha_fin(LocalDateTime.now().toString());
-//        monitorPoleoOlt.setError(isErrorAsyncProcess);
-//        monitorPoleoOlt.setResultado(metricaAsyncProcess.get().getSms());
+        //Settea la respuesta
+        asyncResponse.setCod(0);
+        asyncResponse.setSms("Se ejecuto correctamente la metrica: " + idMetrica.intValue());
 
-        GenericResponseDto res = metricaAsyncProcess.get();
-        res.setSms("Se ejecutó correctamente la métrica");
-        res.setCod(0);
-        return res;
+        Date fechaFin = Date.from(util.getLocalDateTimeZone().atZone(ZoneId.systemDefault()).toInstant());
+
+        MonitorPoleoOltMetricaEntity monitor;
+        String idMonitorOlt = "";
+
+        /*monitor = monitorPoleoOltMetrica.getMonitorExist(idMonitorPoleo, idMetrica, olt.getId_olt());
+        if (monitor != null)
+            idMonitorOlt = monitor.getId();
+        else
+            idMonitorOlt = monitorPoleoOltMetrica.save(new MonitorPoleoOltMetricaEntity(idOlt, Integer.valueOf(idMetrica), fechaFin, idMonitorPoleo)).getId();
+
+        MonitorPoleoOltMetricaEntity monitorPoleoOlt = monitorPoleoOltMetrica.getMonitorOlt(idMonitorOlt);
+        monitorPoleoOlt.setFecha_inicio(fechaInicio);
+        monitorPoleoOlt.setFecha_fin(fechaFin);
+        monitorPoleoOlt.setError(isErrorAsyncProcess);
+        monitorPoleoOlt.setResultado(metricaAsyncProcess.get().getSms());*/
+        return asyncResponse;
     }
 
-    private String obtenerValor(Integer metrica, Object result) {
+    private String obtenerValor(Integer metrica, Object result, InventarioOntsEntity ont) {
         String valor = "";
-        InventarioOntsEntity inv=new InventarioOntsEntity();
+        InventarioOntsEntity inv = ont;
+        inv.setEstatus(new Integer(0));
+
         switch (metrica) {
             case RUN_STATUS:
                 PoleosEstatusEntity me = (PoleosEstatusEntity) result;
                 valor = me.getValor();
-                inv=  inventario.getOntByOid(me.getId_olt(), me.getOid());
                 inv.setEstatus(
-                me.getValor().equals("up(1)") ? 1: 
-                me.getValor().equals("down(2)")? 2:
-                me.getValor().equals("6")?1:
-                me.getValor().equals("1")?1:
-                me.getValor().equals("2")?2:
-                me.getValor().equals("3")?3:2);
+                        me.getValor().equals("up(1)") ? 1:
+                                me.getValor().equals("down(2)")? 2:
+                                        me.getValor().equals("6")?1:
+                                                me.getValor().equals("1")?1:
+                                                        me.getValor().equals("2")?2:
+                                                                me.getValor().equals("3")?3:2);
                 break;
             case LAST_DOWN_CASE:
                 PoleosLastDownCauseEntity me1 = (PoleosLastDownCauseEntity) result;
                 valor = me1.getValor();
-                inv=  inventario.getOntByOid(me1.getId_olt(), me1.getOid());
                 inv.setDescripcionAlarma(me1.getValor());
                 break;
             case LAST_UP_TIME:
                 PoleosLastUpTimeEntity me2 = (PoleosLastUpTimeEntity) result;
                 valor = me2.getValor();
-                
+
                 break;
             case LAST_DOWN_TIME:
                 PoleosLastDownTimeEntity me3 = (PoleosLastDownTimeEntity) result;
                 valor = me3.getValor();
-                inv=  inventario.getOntByOid(me3.getId_olt(), me3.getOid());
                 inv.setLastDownTime(me3.getValor());
                 break;
             case UP_BYTES:
@@ -818,7 +818,6 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
             case ALIAS_ONT:
                 PoleosAliasEntity me13 = (PoleosAliasEntity) result;
                 valor = me13.getValor();
-                inv=  inventario.getOntByOid(me13.getId_olt(), me13.getOid());
                 inv.setAlias(me13.getValor());
                 break;
             case PROF_NAME_ONT:
@@ -834,7 +833,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                 break;
         }
         if (inv!=null){
-         inventario.save(inv);
+            inventario.save(inv);
         }
         return valor;
     }

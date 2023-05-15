@@ -148,7 +148,7 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
     			
     			if(!error || !sinOid) {
 					String logevent = configuracion.getTrazaEventos();
-					logevent += "[ " + getCurrentDateTime() + " ] "+ " INFO "+ " [Ejecutando el comando snmp]: snpmget procesando peticion..." + "\n";
+					logevent += "[ " + utls.getLocalDateTimeZone() + " ] "+ " INFO "+ " [Ejecutando el comando snmp]: snpmget procesando peticion..." + "\n";
 					configuracion.setTrazaEventos(logevent);
 					proces = utls.execBash(comando, ruta);
 				}
@@ -176,7 +176,7 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
     			}
 				if(exitValue==0 || error || (contador==3 && !referencia.equals(""))){
 					String logevent = configuracion.getTrazaEventos();
-					logevent += "[ " + getCurrentDateTime() + " ] "+ " INFO "+ " [Termino la Ejecuccion del Comando snmp]: " + cadenasMetrica.getOid() + "\n";
+					logevent += "[ " + utls.getLocalDateTimeZone() + " ] "+ " INFO "+ " [Termino la Ejecuccion del Comando snmp]: " + cadenasMetrica.getOid() + "\n";
 					configuracion.setTrazaEventos(logevent);
 					try {
 						configuracion.getManejarResultadoComando().writterLogOnDiskMetrica(ruta3, configuracion, data.get(0), 0,metrica,comando);
@@ -191,7 +191,7 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 			} catch (Exception e) {
 				comando="";
 				String logevent = configuracion.getTrazaEventos();
-				logevent += "[ " + getCurrentDateTime() + " ] "+ " ERROR "+ " [Hubo un error en el proceso SNMPGET]" + "\n";
+				logevent += "[ " + utls.getLocalDateTimeZone() + " ] "+ " ERROR "+ " [Hubo un error en el proceso SNMPGET]" + "\n";
 				configuracion.setTrazaEventos(logevent);
 				try {
 					configuracion.getManejarResultadoComando().writterLogOnDiskMetrica(ruta3, configuracion, data.get(0),1,metrica,comando);
