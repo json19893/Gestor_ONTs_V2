@@ -52,6 +52,11 @@ public class MetricaController {
     public ResponseEntity<?> getMetricaByNum_serial(@RequestBody RequestPostMetrica request) {
         ResponseEntity<GenericResponseDto> responseWrapperServer = null;
         GenericResponseDto response = new GenericResponseDto();
+         if(request.getIdMetrica() == null || request.getNumero_serie().isEmpty()){
+             response.setCod(1);
+             response.setSms("Numero de serie o idMetrica vacios.");
+             return new ResponseEntity(response, HttpStatus.BAD_REQUEST);
+         }
 
         try {
             response = service.getPoleoOntMetrica(request);
@@ -68,7 +73,7 @@ public class MetricaController {
             }
         } catch (Exception e) {
             response.setCod(1);
-            response.setSms("Internal Server Error::: "+e);
+            response.setSms("Internal Server Error::: " + e.getMessage());
             return responseWrapperServer = new ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
         return responseWrapperServer;
