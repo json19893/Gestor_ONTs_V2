@@ -1,5 +1,7 @@
 package totalplay.services.com.persistencia.entidad;
 
+import java.util.Date;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import lombok.Data;
@@ -19,6 +21,6 @@ public class detalleActualizacionesEntidad {
 	private Integer port;
 	private String uid;
 	private String descripcionAlarma;
-	private String fechaActualizacion;
+	private Date fechaActualizacion;
 
 }

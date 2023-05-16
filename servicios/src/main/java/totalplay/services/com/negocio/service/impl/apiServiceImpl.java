@@ -114,6 +114,7 @@ public class apiServiceImpl implements IapiService {
                 datosNumeroSerieDto r = new datosNumeroSerieDto();
                 r.setNumeroSerie(s.getNumero_serie());
                 r.setTipo(s.getTipo());
+                r.setEstatus(s.getEstatus()==1?"UP":"DOWN");
                 dataSerie.add(r);
             }
             response.setNumeroSerie(dataSerie);
@@ -143,7 +144,7 @@ public class apiServiceImpl implements IapiService {
                     na.setSlot(d.getSlot());
                     na.setPort(d.getPort());
                     na.setDescripcionAlarma(d.getDescripcionAlarma());
-                    na.setFechaActualizacion(LocalDateTime.now().toString());
+                    na.setFechaActualizacion(util.getDate());
                     na.setUid(d.getUid());
                     noActualizadas.add(na);
                     actualizadas.add(na);
@@ -167,7 +168,7 @@ public class apiServiceImpl implements IapiService {
                         na.setSlot(d.getSlot());
                         na.setPort(d.getPort());
                         na.setDescripcionAlarma(d.getDescripcionAlarma());
-                        na.setFechaActualizacion(LocalDateTime.now().toString());
+                        na.setFechaActualizacion(util.getDate());
                         na.setUid(d.getUid());
                         noActualizadas.add(na);
                         actualizadas.add(na);
@@ -215,7 +216,7 @@ public class apiServiceImpl implements IapiService {
                                 na.setSlot(d.getSlot());
                                 na.setPort(d.getPort());
                                 na.setDescripcionAlarma(d.getDescripcionAlarma());
-                                na.setFechaActualizacion(LocalDateTime.now().toString());
+                                na.setFechaActualizacion(util.getDate());
                                 na.setUid(d.getUid());
                                 actualizadas.add(na);
                             } else {
@@ -230,7 +231,7 @@ public class apiServiceImpl implements IapiService {
                                 na.setSlot(d.getSlot());
                                 na.setPort(d.getPort());
                                 na.setDescripcionAlarma(d.getDescripcionAlarma());
-                                na.setFechaActualizacion(LocalDateTime.now().toString());
+                                na.setFechaActualizacion(util.getDate());
                                 na.setUid(d.getUid());
                                 actualizadas.add(na);
                             }
