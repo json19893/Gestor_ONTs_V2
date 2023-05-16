@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.Aggregation;
+import org.springframework.data.mongodb.repository.Meta;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -35,13 +36,44 @@ public interface IdetalleActualizacionRepositorio extends MongoRepository<detall
 			+ "}\r\n"
 			, "{$match:{ont:{$ne:[]}}}" 
 			})
+	@Meta(allowDiskUse = true)
 	List<detalleActualizacionesEntidad> getDetalleEmpresariales(@Param("date") Date date);
+	
+	
+	
+		@Aggregation(pipeline = { 
+				  "{$match:{$expr:{$gte:['$fechaActualizacion',  ?0  ]}}}\r\n"
+				, "{\r\n"
+				+ "	'$group': {\r\n"
+				+ "		'_id': '$numeroSerie', \r\n"
+				+ "		datos:{$last:'$$ROOT'}\r\n"
+				+ "			   \r\n"
+				+ "	},\r\n"
+				+ "}\r\n"
+				, "{ $replaceRoot: { newRoot: '$datos' } }\r\n"
+				, "{\r\n"
+				+ "	'$lookup':{\r\n"
+				+ "		from: 'tb_inventario_onts',\r\n"
+				+ "		localField:'numeroSerie',\r\n"
+				+ "		foreignField:'numero_serie',\r\n"
+				+ "		pipeline:[ {$match:{vip:1}} ],\r\n"
+				+ "		as: 'ont',\r\n"
+				+ "	}\r\n"
+				+ "}\r\n"
+				, "{$match:{ont:{$ne:[]}}}" 
+				})
+		@Meta(allowDiskUse = true)
+	List<detalleActualizacionesEntidad> getDetalleVips(@Param("date") Date date);
+		
+	
+	
 	
 	
 	@Aggregation(pipeline = { 
 			 "{$match:{$expr:{$gte:['$fechaActualizacion',  ?0   ]}}}\r\n"
 			 
-	})		
+	})
+	@Meta(allowDiskUse = true)
 	List<detalleActualizacionesEntidad> getDetalle(@Param("date") Date date);
 	
 	@Aggregation(pipeline = { 
