@@ -2,6 +2,7 @@ package totalplay.monitor.snmp.com.negocio.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -384,7 +385,7 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 		}else {
 			totalesRegion = catOltsRepositorio.getTotalesTecnologiaVips();
 		}
-	log.info("totalesRegion::: "+ totalesRegion.toString());
+
 		result = inventario.getAllOntEmp();
 		
 		if(result != null) {
@@ -456,7 +457,8 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 		   Instant nextDay = instant.plus(1, ChronoUnit.DAYS);
 	       response.setProximoDescubrimiento(Date.from(nextDay));
 		   SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-		   Date fechaDia = format.parse(LocalDateTime.now().toString() + "Z");
+		   Date fechaDia = format.parse( LocalDate.now().toString()+"T00:00:00.000Z");
+		   log.info("###################################fechaaa #######################################"+fechaDia.toString());
 	    if(tipo.equals("E")) {
            response.setConteoPdmOnts(detalleAct.getDetalleEmpresariales(fechaDia).size());
            totalOnts= totaEmpresarial;

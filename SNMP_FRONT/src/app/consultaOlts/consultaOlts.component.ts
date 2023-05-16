@@ -524,7 +524,7 @@ ngOnInit() {
   
     this.service.detalleMetricas().subscribe(
      res =>{
-      console.log("metricas :"+res)
+    
       this.ELEMENT_DATA =[]
         this.dataSourceMe =  []
         this.blo1=[];
@@ -563,7 +563,7 @@ ngOnInit() {
       }
       
       this.dataSourceMe = this.ELEMENT_DATA
-      console.log(this.dataSourceMe);
+    
     }
     )
   }
