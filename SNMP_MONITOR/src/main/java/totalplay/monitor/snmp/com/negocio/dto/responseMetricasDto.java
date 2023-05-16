@@ -1,5 +1,9 @@
 package totalplay.monitor.snmp.com.negocio.dto;
 
+
+
+import java.util.Date;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -18,5 +22,7 @@ public class responseMetricasDto {
 	private String cpu;
 	private String memoria;
 	private String profName;
+	private Date fechaPoleo;
+
 	
 }

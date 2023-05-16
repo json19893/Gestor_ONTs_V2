@@ -455,4 +455,12 @@ public class Utils extends Constantes {
     public static boolean isBlankOrNull(String str) {
 	    return (str == null || "".equals(str.trim()));
 	}
+
+    /**
+     * Obtiene la fecha de la zona horaria: "America/Mexico_City" con referencia a tiempo UTC del repositorio.
+     * @return LocalDateTime.
+     */
+    public LocalDateTime getLocalDateTimeZone() {
+        return LocalDateTime.now(ZoneId.of("America/Mexico_City")).minusHours(1);
+    }
 }

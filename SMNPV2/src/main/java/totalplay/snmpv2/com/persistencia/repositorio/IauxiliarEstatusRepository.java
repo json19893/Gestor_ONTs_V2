@@ -20,4 +20,5 @@ public interface IauxiliarEstatusRepository extends MongoRepository<AuxiliarEsta
 		      "{$out:'tb_inventario_onts'}"
 	  		})
 	void sendToInventario();
+
 }

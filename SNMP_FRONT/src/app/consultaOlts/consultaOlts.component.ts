@@ -133,7 +133,7 @@ EXCEL_EXTENSION);
             if (this.intentos > this.descubrimiento.length) {
               this.descubrimiento.push(idOlt);
             } else {
-              this._snackBar.open("Solo puedes puedes realizar " + 5 + " descubrimientos por hoy", "cerrar", {
+              this._snackBar.open("Solo puedes puedes realizar " + 5 + " descubrimientos por hoy", "Cerrar", {
                 duration: 4000
               });
             }
@@ -141,7 +141,7 @@ EXCEL_EXTENSION);
             this.descubrimiento = this.descubrimiento.filter((item: string) => item !== idOlt)
           }
         } else {
-          this._snackBar.open("Ya no puedes realizar mas descubrimientos  por hoy ", "cerrar", {
+          this._snackBar.open("Ya no puedes realizar mas descubrimientos  por hoy ", "Cerrar", {
             duration: 4000
           });
           setTimeout(() => {
@@ -162,7 +162,7 @@ EXCEL_EXTENSION);
           this.getDataTable()
         })
   /*  } else {
-      this._snackBar.open("No se puede activar la olt porque aun no esta configurada para descubrimiento", "cerrar", {
+      this._snackBar.open("No se puede activar la olt porque aun no esta configurada para descubrimiento", "Cerrar", {
         duration: 4000
       });
     }*/
@@ -190,7 +190,7 @@ EXCEL_EXTENSION);
   descubrimientoManual() {
     if (this.descubrimiento.length > 0) {
      /* if (this.descubrimiento.length > 5) {
-        this._snackBar.open("Solo puedes realizar 5 descubrimientos  por día", "cerrar", {
+        this._snackBar.open("Solo puedes realizar 5 descubrimientos  por día", "Cerrar", {
           duration: 4000
         });
       } else {*/
@@ -198,14 +198,14 @@ EXCEL_EXTENSION);
         this.manualDto=new descubrimientoManual(this.descubrimiento,this.usuario);
         this.service.descubrimiento(this.manualDto).subscribe(
           res => {
-              this._snackBar.open(res.sms, "cerrar", {
+              this._snackBar.open(res.sms, "Cerrar", {
                 duration: 4000
               });
               
           })
         /*}*/
     } else {
-      this._snackBar.open("Debes seleccionar al menos una olt", "cerrar", {
+      this._snackBar.open("Debes seleccionar al menos una olt", "Cerrar", {
         duration: 4000
       });
     }
@@ -217,13 +217,13 @@ EXCEL_EXTENSION);
         //this.openDetalle()
         this.service.poleoMetrica(this.poleoManualDto).subscribe(
           res => {
-              this._snackBar.open(res.sms, "cerrar", {
+              this._snackBar.open(res.sms, "Cerrar", {
                 duration: 4000
               });
           })
        
     } else {
-      this._snackBar.open("Debes seleccionar al menos una olt", "cerrar", {
+      this._snackBar.open("Debes seleccionar al menos una olt", "Cerrar", {
         duration: 4000
       });
     }
@@ -506,7 +506,7 @@ export class DialogElementsExampleDialog  implements OnInit   {
    blo3:Imetricas []=[];
    blo4:Imetricas []=[];
    sb:Imetricas []=[];
-   blo:Bloques[]=[{bloque:1,nombre:"Identificación ONTs"},{bloque:2,nombre:"Estatus ONTs"},{bloque:3,nombre:"Performance ONTs"},{bloque:4,nombre:"otro"},{bloque:5,nombre:"Sin bloque asignado"}]
+   blo:Bloques[]=[{bloque:1,nombre:"Identificación ONTs"},{bloque:2,nombre:"Estatus ONTs"},{bloque:3,nombre:"Performance ONTs"},{bloque:4,nombre:"Otro"},{bloque:5,nombre:"Sin bloque asignado"}]
  
   constructor(
     private service: pointService,
@@ -524,6 +524,7 @@ ngOnInit() {
   
     this.service.detalleMetricas().subscribe(
      res =>{
+      console.log("metricas :"+res)
       this.ELEMENT_DATA =[]
         this.dataSourceMe =  []
         this.blo1=[];
@@ -535,9 +536,9 @@ ngOnInit() {
        for(let d in res.entity){
          val={
           nombre:res.entity[d].nombre,
-          oidHuawei:res.entity[d].zte.oid,
-          oidZte:res.entity[d].huawei.oid,
-          oidFh:res.entity[d].fh.oid,
+          oidHuawei:res.entity[d].zte.oid==''?null:res.entity[d].zte.oid,
+          oidZte:res.entity[d].huawei.oid==''?null:res.entity[d].huawei.oid,
+          oidFh:res.entity[d].fh.oid==''?null:res.entity[d].fh.oid,
           id_metrica:res.entity[d].id_metrica ,
         }
         
@@ -625,7 +626,7 @@ selec(idMetrica: any,idBloque:any,tipo:any) {
      res =>{
       this.ELEMENT_DATA =[]
         this.dataSourceMe =  []
-        this._snackbar.open(res.sms, "cerrar", {
+        this._snackbar.open(res.sms, "Cerrar", {
           duration: 4000
         });
         this.getMetricas();
@@ -638,7 +639,7 @@ selec(idMetrica: any,idBloque:any,tipo:any) {
         this.ELEMENT_DATA =[]
         this.dataSourceMe =  []
   
-         this._snackbar.open(res.sms, "cerrar", {
+         this._snackbar.open(res.sms, "Cerrar", {
            duration: 4000
          });
          this.getMetricas();

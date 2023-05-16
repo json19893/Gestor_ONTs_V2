@@ -1,5 +1,6 @@
 package totalplay.monitor.snmp.com.negocio.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -36,6 +37,7 @@ import totalplay.monitor.snmp.com.persistencia.entidad.tbHistoricoDiferenciasEnt
 import totalplay.monitor.snmp.com.persistencia.entidad.tblMonitoreoEjecucionEntidad;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatRegionesRepositorio;
+import totalplay.monitor.snmp.com.persistencia.repository.IdetalleActualizacionRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IdiferenciasManualRepository;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOltsReposirorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsPdmRepositorio;
@@ -79,6 +81,8 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 	IvwTotalOntsVipsRepositorio wvOntsVips; 
 	@Autowired
 	IdiferenciasManualRepository diferencias;
+	@Autowired
+    IdetalleActualizacionRepositorio detalleAct;
 
 	@Override
 	public responseRegionDto getOltsByRegion(Integer idRegion, String tipo, boolean onlyHeaders) throws Exception {
@@ -451,15 +455,17 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 		   Instant instant = fecha.toInstant();
 		   Instant nextDay = instant.plus(1, ChronoUnit.DAYS);
 	       response.setProximoDescubrimiento(Date.from(nextDay));
-	     
+		   SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
+		   Date fechaDia = format.parse(LocalDateTime.now().toString() + "Z");
 	    if(tipo.equals("E")) {
-           response.setConteoPdmOnts( inventarioPdm.finOntsByTotalE()+ inventario.findTotalCambiosE());
+           response.setConteoPdmOnts(detalleAct.getDetalleEmpresariales(fechaDia).size());
            totalOnts= totaEmpresarial;
 	    }else if(tipo.equals("V")) {
 	    	totalOnts =  inventario.finOntsByClasificionV();
 	    }else {
 	    	 totalOnts = inventario.finOntsByTotal()+inventarioPdm.finOntsByTotalT();
-	    	 response.setConteoPdmOnts( inventarioPdm.finOntsByTotalT()+ inventario.findTotalCambiosT());
+	    	 ///response.setConteoPdmOnts( inventarioPdm.finOntsByTotalT()+ inventario.findTotalCambiosT());
+			 response.setConteoPdmOnts(detalleAct.getDetalle(fechaDia).size());
 	    }
 	
 		

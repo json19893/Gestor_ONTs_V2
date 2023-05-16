@@ -119,10 +119,11 @@ public ses:any;
       this.checked = false;
       this.clasificacion = '';
     } else if (this.mostrar == 'V') {
-      this.checked = true;
-      this.clasificacion = 'Vips';
+      this.checked = false;
+      this.clasificacion = 'Emp';
     } else {
       this.checked = true;
+      this.clasificacion = 'Emp';
     }
     this.usuario =localStorage.getItem('usuario');
     this.rol =localStorage.getItem('rol');

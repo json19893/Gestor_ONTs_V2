@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import totalplay.snmpv2.com.negocio.dto.CambioManualOntOltRequest;
 import totalplay.snmpv2.com.negocio.dto.CambioManualOntOltResponse;
@@ -34,7 +35,8 @@ public class OltsController {
 
     @Autowired
     IinventarioOntsRepository ontsRepository;
-
+    
+    @Scheduled(fixedRate =3600000)
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @GetMapping(value = "/olts/actualizartotales", produces = MediaType.APPLICATION_JSON_VALUE)
     public GenericResponseDto actualizarTotalOntsPorOlt() {

@@ -114,6 +114,7 @@ public class apiServiceImpl implements IapiService {
                 datosNumeroSerieDto r = new datosNumeroSerieDto();
                 r.setNumeroSerie(s.getNumero_serie());
                 r.setTipo(s.getTipo());
+                r.setEstatus(s.getEstatus()==1?"UP":"DOWN");
                 dataSerie.add(r);
             }
             response.setNumeroSerie(dataSerie);
@@ -143,7 +144,7 @@ public class apiServiceImpl implements IapiService {
                     na.setSlot(d.getSlot());
                     na.setPort(d.getPort());
                     na.setDescripcionAlarma(d.getDescripcionAlarma());
-                    na.setFechaActualizacion(LocalDateTime.now().toString());
+                    na.setFechaActualizacion(util.getDate());
                     na.setUid(d.getUid());
                     noActualizadas.add(na);
                     actualizadas.add(na);
@@ -153,13 +154,13 @@ public class apiServiceImpl implements IapiService {
                             olt.getId_olt());
 
                     //Si esta vacio la lista busca en la tabla de respaldos:
-                    List<InventarioOntResp> ontInventarioRespaldo = new ArrayList<>();
-                    if (res.isEmpty()) {
+                   // List<InventarioOntResp> ontInventarioRespaldo = new ArrayList<>();
+                    /*if (res.isEmpty()) {
                         ontInventarioRespaldo = ontsInventarioRespaldoRepository
                                 .getOntsRespaldo(olt.getId_olt(), d.getUid(), d.getFrame(), d.getPort(), d.getSlot());
-                    }
+                    }*/
 
-                    if (res.isEmpty() && ontInventarioRespaldo.isEmpty()) {
+                    if (res.isEmpty() /*&& ontInventarioRespaldo.isEmpty()*/) {
                         na.setCausa("No existe una ont asociada a los criterios de busqueda");
                         na.setNumeroSerie("na");
                         na.setIp(d.getIp());
@@ -167,14 +168,14 @@ public class apiServiceImpl implements IapiService {
                         na.setSlot(d.getSlot());
                         na.setPort(d.getPort());
                         na.setDescripcionAlarma(d.getDescripcionAlarma());
-                        na.setFechaActualizacion(LocalDateTime.now().toString());
+                        na.setFechaActualizacion(util.getDate());
                         na.setUid(d.getUid());
                         noActualizadas.add(na);
                         actualizadas.add(na);
                     } else {
-                        if (res.isEmpty()
-                                && !ontInventarioRespaldo.isEmpty()) {
-                            //Adaptar la lista de objetos para que funcionen con el bloque logico en comun (logica del negocio):
+                     /*  if (res.isEmpty()
+                               && !ontInventarioRespaldo.isEmpty()) {
+                          
                             inventarioOntsEntidad tmp;
                             res = new ArrayList<>();
                             for (InventarioOntResp ontResp : ontInventarioRespaldo) {
@@ -200,7 +201,7 @@ public class apiServiceImpl implements IapiService {
                                 tmp.setVip(ontResp.getVip());
                                 res.add(tmp);
                             }
-                        }
+                        }*/
 
                         for (inventarioOntsEntidad r : res) {
                             if (d.getEstatus().equals("UP") || d.getEstatus().equals("CLEAR")) {
@@ -215,7 +216,7 @@ public class apiServiceImpl implements IapiService {
                                 na.setSlot(d.getSlot());
                                 na.setPort(d.getPort());
                                 na.setDescripcionAlarma(d.getDescripcionAlarma());
-                                na.setFechaActualizacion(LocalDateTime.now().toString());
+                                na.setFechaActualizacion(util.getDate());
                                 na.setUid(d.getUid());
                                 actualizadas.add(na);
                             } else {
@@ -230,7 +231,7 @@ public class apiServiceImpl implements IapiService {
                                 na.setSlot(d.getSlot());
                                 na.setPort(d.getPort());
                                 na.setDescripcionAlarma(d.getDescripcionAlarma());
-                                na.setFechaActualizacion(LocalDateTime.now().toString());
+                                na.setFechaActualizacion(util.getDate());
                                 na.setUid(d.getUid());
                                 actualizadas.add(na);
                             }

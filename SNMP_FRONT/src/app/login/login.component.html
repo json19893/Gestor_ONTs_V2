@@ -12,7 +12,7 @@
 
             <form class="example-form" [formGroup]="loginForm" (ngSubmit)="login()" novalidate>
               <p>
-                <mat-form-field appearance="fill" class="">
+                <mat-form-field appearance="fill" >
                   <mat-label>Usuario</mat-label>
                   <input matInput placeholder="Nombre de usuario" formControlName="u" required>
                   <mat-icon matSuffix>account_circle</mat-icon>
@@ -20,12 +20,10 @@
                 </mat-form-field>
               </p>
               <p>
-                <mat-form-field appearance="fill">
-                  <mat-label>Contraseña</mat-label>
-                  <input matInput [type]="hide ? 'p' : 'text'" formControlName="p" required>
-                  <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-pressed]="hide">
-                    <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
-                  </button>
+                <mat-form-field appearance="fill" >
+                  <mat-label>Contrseña</mat-label>
+                  <input matInput type="password" placeholder="Clave de acceso" formControlName="p" required>
+                  <mat-icon matSuffix>vpn_key</mat-icon>
 
                 </mat-form-field>
               </p>

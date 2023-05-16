@@ -32,7 +32,7 @@ export class IpGuard implements CanActivate {
     if (this.ip === allowedIP ) {
       return true;
     } else {
-        this._snackBar.open("No tienes permitido acceder a esta pagina", "cerrar",{
+        this._snackBar.open("No tienes permitido acceder a esta pagina", "Cerrar",{
             duration: 3000
           });
         this.router.navigate(['/error'])
