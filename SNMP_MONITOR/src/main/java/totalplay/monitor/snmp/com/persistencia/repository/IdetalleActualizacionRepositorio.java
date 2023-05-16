@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.Aggregation;
+import org.springframework.data.mongodb.repository.Meta;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -35,6 +36,7 @@ public interface IdetalleActualizacionRepositorio extends MongoRepository<detall
 			+ "}\r\n"
 			, "{$match:{ont:{$ne:[]}}}" 
 			})
+	@Meta(allowDiskUse = true)
 	List<detalleActualizacionesEntidad> getDetalleEmpresariales(@Param("date") Date date);
 	
 	
@@ -60,6 +62,7 @@ public interface IdetalleActualizacionRepositorio extends MongoRepository<detall
 				+ "}\r\n"
 				, "{$match:{ont:{$ne:[]}}}" 
 				})
+		@Meta(allowDiskUse = true)
 	List<detalleActualizacionesEntidad> getDetalleVips(@Param("date") Date date);
 		
 	
@@ -69,7 +72,8 @@ public interface IdetalleActualizacionRepositorio extends MongoRepository<detall
 	@Aggregation(pipeline = { 
 			 "{$match:{$expr:{$gte:['$fechaActualizacion',  ?0   ]}}}\r\n"
 			 
-	})		
+	})
+	@Meta(allowDiskUse = true)
 	List<detalleActualizacionesEntidad> getDetalle(@Param("date") Date date);
 	
 	@Aggregation(pipeline = { 

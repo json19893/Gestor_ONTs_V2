@@ -617,7 +617,10 @@ public class monitorController extends constantes {
         try {
         	 
         	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-        	Date fecha = format.parse( LocalDate.now().toString()+"T00:00:00.000Z");
+        	Date fecha = new Date();//format.parse( LocalDate.now().toString()+"T00:00:00.000Z");
+        	fecha.setHours(0);
+        	fecha.setMinutes(0);
+        	fecha.setSeconds(0);
         	
             if (tipo.equals("E")) {
             	return detalleAct.getDetalleEmpresariales(fecha);
