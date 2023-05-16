@@ -621,6 +621,8 @@ public class monitorController extends constantes {
         	
             if (tipo.equals("E")) {
             	return detalleAct.getDetalleEmpresariales(fecha);
+            } else if(tipo.equals("V")) {
+            	return detalleAct.getDetalleVips(fecha);
             } else {
             	return detalleAct.getDetalle(fecha);
             }

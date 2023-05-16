@@ -38,6 +38,34 @@ public interface IdetalleActualizacionRepositorio extends MongoRepository<detall
 	List<detalleActualizacionesEntidad> getDetalleEmpresariales(@Param("date") Date date);
 	
 	
+	
+		@Aggregation(pipeline = { 
+				  "{$match:{$expr:{$gte:['$fechaActualizacion',  ?0  ]}}}\r\n"
+				, "{\r\n"
+				+ "	'$group': {\r\n"
+				+ "		'_id': '$numeroSerie', \r\n"
+				+ "		datos:{$last:'$$ROOT'}\r\n"
+				+ "			   \r\n"
+				+ "	},\r\n"
+				+ "}\r\n"
+				, "{ $replaceRoot: { newRoot: '$datos' } }\r\n"
+				, "{\r\n"
+				+ "	'$lookup':{\r\n"
+				+ "		from: 'tb_inventario_onts',\r\n"
+				+ "		localField:'numeroSerie',\r\n"
+				+ "		foreignField:'numero_serie',\r\n"
+				+ "		pipeline:[ {$match:{vip:1}} ],\r\n"
+				+ "		as: 'ont',\r\n"
+				+ "	}\r\n"
+				+ "}\r\n"
+				, "{$match:{ont:{$ne:[]}}}" 
+				})
+	List<detalleActualizacionesEntidad> getDetalleVips(@Param("date") Date date);
+		
+	
+	
+	
+	
 	@Aggregation(pipeline = { 
 			 "{$match:{$expr:{$gte:['$fechaActualizacion',  ?0   ]}}}\r\n"
 			 
