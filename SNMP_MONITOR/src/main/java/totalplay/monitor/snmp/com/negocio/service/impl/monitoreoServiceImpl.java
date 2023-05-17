@@ -456,14 +456,20 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 		   Instant instant = fecha.toInstant();
 		   Instant nextDay = instant.plus(1, ChronoUnit.DAYS);
 	       response.setProximoDescubrimiento(Date.from(nextDay));
-		   SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-		   Date fechaDia = format.parse( LocalDate.now().toString()+"T00:00:00.000Z");
+		   Date fechaDia = new Date();//format.parse( LocalDate.now().toString()+"T00:00:00.000Z");
+		   fechaDia.setHours(0);
+		   fechaDia.setMinutes(0);
+		   fechaDia.setSeconds(0);
 		   log.info("###################################fechaaa #######################################"+fechaDia.toString());
 	    if(tipo.equals("E")) {
            response.setConteoPdmOnts(detalleAct.getDetalleEmpresariales(fechaDia).size());
+		   log.info("###################################total emp #######################################"+response.getConteoPdmOnts());
            totalOnts= totaEmpresarial;
 	    }else if(tipo.equals("V")) {
+			response.setConteoPdmOnts(detalleAct.getDetalleVips(fechaDia).size());
+			log.info("###################################total vip #######################################"+response.getConteoPdmOnts());
 	    	totalOnts =  inventario.finOntsByClasificionV();
+
 	    }else {
 	    	 totalOnts = inventario.finOntsByTotal()+inventarioPdm.finOntsByTotalT();
 	    	 ///response.setConteoPdmOnts( inventarioPdm.finOntsByTotalT()+ inventario.findTotalCambiosT());
