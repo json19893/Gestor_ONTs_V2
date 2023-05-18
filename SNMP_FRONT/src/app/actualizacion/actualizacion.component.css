@@ -10,4 +10,26 @@
 }
 
 
+.mat-header-cell {
+   
+  background: rgb(59, 69, 89);
+  color: aliceblue;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+  font-size: 12px;
 
+}
+.mat-cell{
+
+  font-size: 10px;
+  font-family: 'Montserrat', sans-serif;
+  text-align: left;
+  text-overflow: ellipsis;
+}
+
+
+
+.mat-cell:hover{
+  transform: scale(.98);
+  transition: .4s ease;
+}

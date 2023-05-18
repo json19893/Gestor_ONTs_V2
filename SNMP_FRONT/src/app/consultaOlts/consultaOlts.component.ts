@@ -230,11 +230,17 @@ EXCEL_EXTENSION);
   }
 
   openDetalle() {
-    this.dialog.open(detalleEjecucionDialog);
+    this.dialog.open(detalleEjecucionDialog,{
+      height: '80vh',
+    width: '130vw',
+    });
   }
 
   openDialog() {
-    this.dialog.open(DialogElementsExampleDialog);
+    this.dialog.open(DialogElementsExampleDialog,{
+      height: '80vh',
+    width: '130vw',
+    });
     
   }
 
@@ -524,7 +530,7 @@ ngOnInit() {
   
     this.service.detalleMetricas().subscribe(
      res =>{
-      console.log("metricas :"+res)
+    
       this.ELEMENT_DATA =[]
         this.dataSourceMe =  []
         this.blo1=[];
@@ -563,7 +569,7 @@ ngOnInit() {
       }
       
       this.dataSourceMe = this.ELEMENT_DATA
-      console.log(this.dataSourceMe);
+    
     }
     )
   }

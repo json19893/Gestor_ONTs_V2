@@ -225,7 +225,10 @@ console.log("e.skip ::: "+this.skip);
 
   getDetalle(ns:any){
     localStorage.setItem("serial",ns)
-    this.dialog.open(detalleActualizacionDialog);
+    this.dialog.open(detalleActualizacionDialog,{
+      height: '50vh',
+    width: '100vw',
+    });
   }
 
   applyFilter(event: Event) {

@@ -219,6 +219,7 @@ public class apiServiceImpl implements IapiService {
                                 na.setFechaActualizacion(util.getDate());
                                 na.setUid(d.getUid());
                                 actualizadas.add(na);
+                             
                             } else {
                                 r.setEstatus(2);
                                 r.setDescripcionAlarma(d.getDescripcionAlarma());
@@ -235,11 +236,12 @@ public class apiServiceImpl implements IapiService {
                                 na.setUid(d.getUid());
                                 actualizadas.add(na);
                             }
-                            if (onts.save(r) != null) {
+                           /* if (onts.save(r) != null) {
                                 if (ontsInventarioRespaldoRepository.findById(r.get_id()).isPresent()) {
                                     ontsInventarioRespaldoRepository.deleteById(r.get_id());
                                 }
-                            }
+                            }*/ 
+                            onts.save(r);
                         }
                     }
                 }
