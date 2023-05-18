@@ -13,6 +13,6 @@ public interface IpoleoMetricasService {
 	CompletableFuture<String> executeProcess(List<CatOltsEntity> olts, String idMonitorPoleo, int idMetrica) throws Exception;
 	CompletableFuture<String> getMetricaEmpresarialesByMetrica(List<OntsConfiguracionDto> ontsEmpresariales, String idPoleo, int idMetrica);
 	List<OntsConfiguracionDto> getOntsFaltantes(int idMetrica, String idEjecucion, boolean resultado, boolean empresariales, String tabla, int tipo, List<CatOltsEntity> olts );
-	void joinUpdateStatus(String idMonitorPoleo);
+	String joinUpdateStatus(String idMonitorPoleo);
 	GenericResponseDto getPoleoOntMetrica(RequestPostMetrica request) throws Exception;
 }

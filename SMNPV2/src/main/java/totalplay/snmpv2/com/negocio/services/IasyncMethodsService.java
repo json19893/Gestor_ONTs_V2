@@ -28,4 +28,5 @@ public interface IasyncMethodsService {
 	CompletableFuture<GenericResponseDto> saveOntsNCE(List<BmsGestorOraVerticaEntity> onts) throws Exception;
 	CompletableFuture<GenericResponseDto> deleteInventario(List<InventarioOntsEntity> onts );
 	CompletableFuture<GenericResponseDto> saveOntsViejoGestor(List<OntsViejoGestorEntity> onts) throws Exception;
+	CompletableFuture<GenericResponseDto> completarEstatus(List<CatOltsEntity> olts);
 }

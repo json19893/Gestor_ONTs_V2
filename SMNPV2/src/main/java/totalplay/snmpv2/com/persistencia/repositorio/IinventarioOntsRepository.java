@@ -231,7 +231,7 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 
 
 	@Aggregation(pipeline = {
-		      "{$match:{$and:[{id_region:?0},{id_olt:?1}]}}\n"
+		      "{$match: {id_olt:?1} }\n"
 			, "{\n"
 	  		+ "        $lookup:{\n"
 	  		+ "            from: \"auxiliar_estatus\",\n"
@@ -251,6 +251,21 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 	  		})
 	List<AuxiliarJoinEstatusEntity> updateEstatus(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt);
 
+	@Aggregation(pipeline = {
+		        "{$match:{id_olt: ?0 }}\n"
+		      , " {\n"
+		      + "		'$lookup':{\n"
+		      + "			from: 'auxiliar_join_estatus',\n"
+		      + "			localField:'numero_serie',\n"
+		      + "			foreignField:'numero_serie',\n"
+		      + "			as: 'onts',\n"
+		      + "		}\n"
+		      + "}    \n"
+		      , "{$match:{onts:[]}}\n"
+		      , "{$unset:['onts', '_id']}  "
+	  		})
+	List<AuxiliarJoinEstatusEntity> completarInventario( @Param("idOLt") Integer idOLt);
+	
 
 	@Aggregation(pipeline = {
 				"{$match:{$and:[{id_region:?0},{id_olt:?1}]}}\n"
