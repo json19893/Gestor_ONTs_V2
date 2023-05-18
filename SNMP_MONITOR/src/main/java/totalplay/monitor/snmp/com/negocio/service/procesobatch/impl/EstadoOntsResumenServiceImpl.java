@@ -5,6 +5,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import totalplay.monitor.snmp.com.negocio.dto.EnvoltorioAuxiliarDto;
+import totalplay.monitor.snmp.com.negocio.dto.totalGraficaDto;
 import totalplay.monitor.snmp.com.negocio.dto.totalesActivoDto;
 import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
 import totalplay.monitor.snmp.com.negocio.service.procesobatch.IEstadoOntsResumenService;
@@ -12,7 +13,10 @@ import totalplay.monitor.snmp.com.persistencia.entidad.EnvoltorioOntsTotalesActi
 import totalplay.monitor.snmp.com.persistencia.repository.IEnvoltorioOntsTotalesActivoRepositorio;
 
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -56,6 +60,8 @@ public class EstadoOntsResumenServiceImpl implements IEstadoOntsResumenService {
             envoltura.setTotalesOntsActivas(resumenEstadoOntTotales);
             envoltura.setTotalesOnstsActivasEmpresariales(resumenEstadoOntEmpresariales);
             envoltura.setTotalesOntsActivasVips(resumenEstadoOntVip);
+            //A future cmabiarlo por la logica del negocio:
+            envoltura.setTotalesOntsActivasServiciosAdministrados(getDummyResumen());
 
             //Finalmente se persiste la informacion procesada:
             List<EnvoltorioOntsTotalesActivoEntidad> document = repositorio.findAll();
@@ -67,10 +73,13 @@ public class EstadoOntsResumenServiceImpl implements IEstadoOntsResumenService {
             }
 
             EnvoltorioOntsTotalesActivoEntidad res = document.get(0);
+
             res.setDate(LocalDateTime.now());
             res.setTotalesOntsActivas(resumenEstadoOntTotales);
             res.setTotalesOnstsActivasEmpresariales(resumenEstadoOntEmpresariales);
             res.setTotalesOntsActivasVips(resumenEstadoOntVip);
+            res.setTotalesOntsActivasServiciosAdministrados(getDummyResumen());
+
             EnvoltorioOntsTotalesActivoEntidad updated = repositorio.save(res);
 
             if (updated != null) {
@@ -83,8 +92,66 @@ public class EstadoOntsResumenServiceImpl implements IEstadoOntsResumenService {
 
             //System.out.println("El proceso actualizacion del resumen: estatus de onts tomo: " +  df.format(minutos)  + " segundos en terminar la ejecuccion.");
         } catch (Exception ex) {
+            ex.printStackTrace();
                 System.out.println("Error en el proceso para crear los resumenes de estatus para las onts. Reintentando... en 5 segundos");
         }
+    }
+
+    private EnvoltorioAuxiliarDto getDummyResumen() {
+        EnvoltorioAuxiliarDto dummyObject = new EnvoltorioAuxiliarDto();
+        totalesActivoDto dto = new totalesActivoDto();
+        List<totalGraficaDto> graficaList = new ArrayList<>();
+        totalGraficaDto graficaEmp = new totalGraficaDto();
+        totalGraficaDto graficaONTs = new totalGraficaDto();
+        totalGraficaDto graficaOLTs = new totalGraficaDto();
+
+        dummyObject.setTipo("S");
+        dummyObject.setDescripcionCorta("Servicios Administrados");
+        dummyObject.setDescripcionLarga("Resumen del estado de las onts: Servicios Administrados");
+
+        dto.setTotalHuawei(0);
+
+        dto.setTotalArribaZte(0);
+        dto.setTotalArribaFh(0);
+        dto.setTotalAbajoZte(0);
+        dto.setTotalAbajoFh(0);
+
+        dto.setTotalAbajoHuawei(0);
+        dto.setTotalZte(0);
+        dto.setTotalFh(0);
+        dto.setTotalArribaHuawei(0);
+        dto.setTotalAbajoHuawei(0);
+        dto.setUltimaActualizacion(Date.from(Instant.now()));
+        dto.setProximoDescubrimiento(Date.from(Instant.now().plusMillis(10000)));
+        dto.setConteoPdmOnts(0);
+        dto.setTotalHuaweiEmp(0);
+        dto.setTotalZteEmp(0);
+        dto.setTotalFhEmp(0);
+        dto.setTotalArribaZteEmp(0);
+        dto.setTotalArribaHuaweiEmp(0);
+        dto.setTotalArribaFhEmp(0);
+        dto.setTotalAbajoHuaweiEmp(0);
+        dto.setTotalAbajoZteEmp(0);
+        dto.setTotalAbajoFhEmp(0);
+
+        graficaEmp.setCategory("Emp");
+        graficaEmp.setValue(0);
+        graficaEmp.setFull(100);
+
+        graficaONTs.setCategory("ONTs");
+        graficaONTs.setValue(0);
+        graficaONTs.setFull(100);
+
+        graficaOLTs.setCategory("OLTs");
+        graficaOLTs.setValue(0);
+        graficaOLTs.setFull(100);
+
+        graficaList.add(graficaEmp);
+        graficaList.add(graficaONTs);
+        graficaList.add(graficaOLTs);
+        dto.setGrafica(graficaList);
+        dummyObject.setResumenStatusOnts(dto);
+        return dummyObject;
     }
 
     /**

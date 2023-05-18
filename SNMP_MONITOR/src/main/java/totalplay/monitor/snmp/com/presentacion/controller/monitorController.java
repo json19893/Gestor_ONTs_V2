@@ -208,7 +208,7 @@ public class monitorController extends constantes {
     @RequestMapping(value = "/getTotalesByTecnologia/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<datosRegionDto> getTotalesByTecnologia(@PathVariable("tipo") String tipo) throws Exception {
 
-        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0 || tipo.compareTo("S") == 0) {
             TotalesByTecnologiaEntidad existe = totalesByTecnologiaRepository.getEntity(tipo);
 
             if(existe != null){
@@ -233,7 +233,7 @@ public class monitorController extends constantes {
 
         LocalTime timeRequestClient = utils.getDateTime().toLocalTime();
 
-        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0 || tipo.compareTo("S") == 0) {
             //Busco el ultmo resumen en la base de datos:
             List<EnvoltorioOntsTotalesActivoEntidad> resumenEstadoOntsList = new ArrayList<>();
 
@@ -259,6 +259,13 @@ public class monitorController extends constantes {
             if (tipo.equals(resumenEstadoOnts.getTotalesOnstsActivasEmpresariales().getTipo())) {
                 return resumenEstadoOnts.getTotalesOnstsActivasEmpresariales().getResumenStatusOnts();
             }
+
+            if (tipo.equalsIgnoreCase("S")) {
+                return resumenEstadoOnts.getTotalesOntsActivasServiciosAdministrados().getResumenStatusOnts();
+            }
+
+            //Sino hay datos ve a ejecutar la logica del negocio:
+            monitorServicio.getTotalesActivo(tipo);
         }
         return null;
     }
