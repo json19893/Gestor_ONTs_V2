@@ -445,8 +445,8 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
     }
 
     @Override
-    public void joinUpdateStatus(String idMonitorPoleo) {
-
+    public String joinUpdateStatus(String idMonitorPoleo) {
+    	String estatus="";
         log.info("::::::::::::::::::::::::::::::::::::Inicia la actualizaciòn de estatus del inventario final");
 
         getOntsFaltantes(1, idMonitorPoleo, false, true, "auxiliar_estatus", 2, null);
@@ -474,16 +474,30 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
             }
 
             CompletableFuture.allOf(regionSegmentOlts.toArray(new CompletableFuture[regionSegmentOlts.size()])).join();
-
-            try {
-                auxiliarJoinEstatus.sendToInventario();
-            } catch (Exception e) {
-                log.error("error", e);
+            
+            if(auxiliarJoinEstatus.count()<inventario.count()) {
+            	//Se completa el inventario
+                 completarInventarioJoin();
             }
+            
+            
+            try {
+            	if(auxiliarJoinEstatus.count() == inventario.count()) {
+            		auxiliarJoinEstatus.sendToInventario();
+            		estatus = "Cruce realizado correctamente";
+            	}else
+            		estatus =  "Inventario Corrompido, no se relizó en enlace";	
+            } catch (Exception e) {
+            	estatus = "No se pudo realizar el cruce con el inventario";
+            }
+            
 
         } catch (Exception e) {
-            log.error("error", e);
+            estatus = "No se pudo realizar el cruce con el inventario";
         }
+        
+        return estatus;
+        
 
     }
 
@@ -839,4 +853,32 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
         }
         return valor;
     }
+    
+    private void completarInventarioJoin() {
+    	
+    	List<CatOltsEntity> oltsInventario = inventario.getOlts();
+        ArrayList<CompletableFuture<GenericResponseDto>> regionSegmentOlts = new ArrayList<CompletableFuture<GenericResponseDto>>();
+       
+        Integer maxOnts = (oltsInventario.size() / 42) + 1;
+
+        maxOnts = (oltsInventario.size() / 42) + 1;
+
+        for (int i = 0; i < oltsInventario.size(); i += maxOnts) {
+            Integer limMax = i + maxOnts;
+            if (limMax >= oltsInventario.size()) {
+                limMax = oltsInventario.size();
+            }
+            List<CatOltsEntity> listSegment = new ArrayList<CatOltsEntity>(
+                    oltsInventario.subList(i, limMax));
+
+            CompletableFuture<GenericResponseDto> executeProcess = asyncMethods.completarEstatus(listSegment);
+            regionSegmentOlts.add(executeProcess);
+        }
+
+        CompletableFuture.allOf(regionSegmentOlts.toArray(new CompletableFuture[regionSegmentOlts.size()])).join();
+
+    }
+    
+    
+    
 }

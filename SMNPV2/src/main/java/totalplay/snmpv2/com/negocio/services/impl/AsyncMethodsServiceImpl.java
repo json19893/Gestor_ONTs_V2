@@ -318,14 +318,35 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 				log.error("::::::::error olt "+ olt.getId_olt(),e );
 			}
 		}
+		return null;
+		
+	} 
+	
+	@Override
+	@Async("taskExecutor2")
+	public CompletableFuture<GenericResponseDto> completarEstatus(List<CatOltsEntity> olts){
+		
+		for(CatOltsEntity olt:olts) {
+			try {
+				
+					LocalDateTime now = LocalDateTime.now(); 
+					
+					List<AuxiliarJoinEstatusEntity> resp = inventario.completarInventario(olt.getId_olt());
+					auxiliarJoinEstatus.insert(resp);				
+					
+					int seconds = (int) ChronoUnit.SECONDS.between(now, LocalDateTime.now());
+					log.info("::::::::olt "+ olt.getId_olt() +"   :::::::::::::::  "+ seconds);
+				
+			} catch (Exception e) {
+				log.error("::::::::error olt "+ olt.getId_olt(),e );
+			}
+		}
 		
 		
 		
 		return null;
 		
-	} 
-	
-	
+	}
 	@Override
 	@Async("taskExecutor2")
 	public CompletableFuture<GenericResponseDto> getFaltantesMetricas(List<CatOltsEntity> olts, String tabla, String joinField, int tipo, String idEjecucion, int idMetrica){
