@@ -111,10 +111,12 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 			arribaFh = catOltsRepositorio.findCatOltsByStatusTecnologiaRegionCount(idRegion, "FIBER HOME", 1);
 			abajoFh = catOltsRepositorio.findCatOltsByStatusTecnologiaRegionCount(idRegion, "FIBER HOME", 2);
 			abajoF = catOltsRepositorio.findCatOltsByStatusTecnologiaRegionCount(idRegion, "FIBER HOME", 0);
-		} else if(tipo.compareTo("E") == 0){
+		} else if(tipo.equals("E")){
 			totalesRegion = catOltsRepositorio.getTotalesTecnologiaRegion(idRegion);
-		} else {
+		} else if(tipo.equals("V")){
 			totalesRegion = catOltsRepositorio.getTotalesTecnologiaRegionVips(idRegion);
+		} else {
+			totalesRegion = catOltsRepositorio.getTotalesTecnologiaRegionServiciosAdministrados(idRegion);
 		}
 		
 		result = inventario.getConteoByEmp(idRegion);
@@ -193,13 +195,15 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 			
 
 		if(!onlyHeaders) {
-			if (tipo.compareTo("T") == 0) 
+			if (tipo.equals("T")) 
 				response.setTotalesRegion(catOltsRepositorio.getDataRegion(idRegion)); /*vwOnts.findByIdRegion(idRegion));*/
-			else if (tipo.compareTo("E") == 0)
+			else if (tipo.equals("E"))
 				response.setTotalesRegionEmp(catOltsRepositorio.getDataRegionEmpresariales(idRegion));
-			else
+			else if(tipo.equals("V"))
 				response.setTotalesRegionVips(catOltsRepositorio.getDataRegionVips(idRegion));
-		}
+			else
+				response.setTotalesRegionSA(catOltsRepositorio.getDataRegionSA(idRegion));
+		}	
 
 		return response;
 	}

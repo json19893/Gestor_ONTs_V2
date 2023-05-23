@@ -36,6 +36,7 @@ public class inventarioOntsEntidad {
 	private String index;
 	private String indexFSP;
 	private boolean error;
+	private boolean sa;
 	
 	
 

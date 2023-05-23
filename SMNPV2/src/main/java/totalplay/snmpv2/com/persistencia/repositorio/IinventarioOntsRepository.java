@@ -202,7 +202,7 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 
 
 	@Aggregation(pipeline = {
-		        "{ $match:{$or:[{tipo:'E'}, {vip:1}]} }\n"
+		        "{ $match:{$or:[{tipo:'E'}, {vip:1}, {sa:true}]} }\n"
 		      , "{\n"
 		      + "		\"$lookup\":{\n"
 		      + "			from: \"tb_inventario_onts_aux\",\n"
@@ -218,6 +218,7 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 		      + "        $set:{\n"
 		      + "            'onts.tipo':'$tipo',\n"
 		      + "            'onts.vip':'$vip'\n"
+		      + "            'onts.sa':'$sa'\n"
 		      + "        }\n"
 		      + " }\n"
 		      , "{ $replaceRoot: { newRoot: \"$onts\" } }"
@@ -535,7 +536,7 @@ List<FaltantesMetricasEntity> getFaltantesMetricas2(@Param("idRegion") Integer i
 List<FaltantesMetricasManualEntity> getFaltantesMetricasManual(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt, @Param("table") String table, @Param("join") String join);
 	
 	@Aggregation(pipeline = { 
-	        "{ $match:{$or:[{tipo:'E'}, {vip:1}]} }\n"
+	        "{ $match:{$or:[{tipo:'E'}, {vip:1}, {sa:true}]} }\n"
 	      , "{\n"
 	      + "		\"$lookup\":{\n"
 	      + "			from: \"tb_inventario_onts_aux_manual\",\n"
@@ -551,6 +552,7 @@ List<FaltantesMetricasManualEntity> getFaltantesMetricasManual(@Param("idRegion"
 	      + "        $set:{\n"
 	      + "            'onts.tipo':'$tipo',\n"
 	      + "            'onts.vip':'$vip'\n"
+	      + "            'onts.sa':'$sa'\n"
 	      + "        }\n"
 	      + " }\n"
 	      , "{ $replaceRoot: { newRoot: \"$onts\" } }"

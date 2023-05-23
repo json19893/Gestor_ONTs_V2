@@ -21,4 +21,5 @@ public class EnvoltorioGetOltsByRegionEntidad {
     private EnvoltorioResumenOltsbyRegionEstatus regionOntTodoEstatus;
     private EnvoltorioResumenOltsbyRegionEstatus regionOntEmpresarialesEstatus;
     private EnvoltorioResumenOltsbyRegionEstatus regionOntVipsEstatus;
+    private EnvoltorioResumenOltsbyRegionEstatus regionOntSAEstatus;
 }

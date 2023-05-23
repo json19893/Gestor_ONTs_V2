@@ -33,6 +33,7 @@ public class inventarioOntsTempEntidad {
 	private String tecnologia;
 	private String lastDownTime;
 	private Integer vip;
+	private boolean sa;
 	
 
 }

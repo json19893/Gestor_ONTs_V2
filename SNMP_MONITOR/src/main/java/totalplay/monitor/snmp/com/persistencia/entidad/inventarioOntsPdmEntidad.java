@@ -29,6 +29,7 @@ public class inventarioOntsPdmEntidad {
 	private String descripcionAlarma;
 	private Integer actualizacion;
 	private String id_puerto;
+	private boolean sa;
 	
 	
 }

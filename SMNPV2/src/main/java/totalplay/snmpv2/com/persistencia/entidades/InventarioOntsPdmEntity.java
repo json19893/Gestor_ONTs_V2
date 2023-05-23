@@ -18,5 +18,6 @@ public class InventarioOntsPdmEntity extends GenericPoleosDto {
 	private String descripcionAlarma;
 	private Integer actualizacion;
 	private Integer vip;
+	private boolean sa;
 	
 }

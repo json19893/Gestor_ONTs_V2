@@ -15,6 +15,7 @@ public class responseRegionDto {
 	private List<dataRegionResponseDto> totalesRegion;
 	private List<dataRegionResponseDto> totalesRegionEmp;
 	private List<dataRegionResponseDto> totalesRegionVips;
+	private List<dataRegionResponseDto> totalesRegionSA;
 	private Integer totalHuawei;
 	private Integer totalZte;
 	private Integer totalFh;
