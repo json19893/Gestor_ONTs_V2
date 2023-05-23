@@ -350,7 +350,7 @@ export class DialogContentExampleDialog implements OnInit {
       this.mostrar = 'E';
     }
 
-    this.getOntsData = new getOnts(numeroSerie, alias, this.mostrar);
+   /* this.getOntsData = new getOnts(numeroSerie, alias, this.mostrar);
     this.service.findOnt(this.getOntsData).subscribe(
       res => {
         if (res.success) {
@@ -376,7 +376,9 @@ export class DialogContentExampleDialog implements OnInit {
 
             }
             ELEMENT_DATA.push(dat);
-            localStorage.setItem("dataDetalle", JSON.stringify(ELEMENT_DATA));
+            //localStorage.setItem("dataDetalle", JSON.stringify(ELEMENT_DATA));
+
+            console.log("busqueda menu "+ ELEMENT_DATA);
             //this.cookieService.set('dataDetalle', JSON.stringify(ELEMENT_DATA));
           }
           localStorage.setItem("upDetalle", res.totales.arriba);
@@ -391,7 +393,7 @@ export class DialogContentExampleDialog implements OnInit {
           localStorage.setItem('muestraDetalle', 'true');
           localStorage.setItem('busqueda', '1');
           localStorage.setItem( "detalleOnts","false");
-          window.location.reload();
+        
         } else {
           this.spinner.hide()
           this.error('No se encontró información con ese criterio de búsqueda');
@@ -399,9 +401,13 @@ export class DialogContentExampleDialog implements OnInit {
 
       },
       err => console.error(err)
-    )
-
-
+    )*/
+    localStorage.setItem('muestraOnt', 'false');
+    localStorage.setItem('muestraHome', 'false');
+    localStorage.setItem('muestraDetalle', 'true');
+    localStorage.setItem('busqueda', '1');
+    localStorage.setItem( "detalleOnts","false");
+    window.location.reload();
 
 
   }

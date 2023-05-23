@@ -7,7 +7,6 @@ export class DateFormatPipe implements PipeTransform {
 
 
   transform(value: any): any {
-    console.log("val::: "+value)
     if (!value){
       return "--"
     } 
@@ -19,9 +18,9 @@ export class DateFormatPipe implements PipeTransform {
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear().toString();
-    const ampm = date.getHours() >= 12 ? 'PM' : 'AM';
+    const ampm = date.getHours()+6 >= 12 ? 'PM' : 'AM';
     const hours = date.getHours() % 12;
     const minutes = date.getMinutes();
-    return `${day}/${month}/${year} ${hours}:${minutes < 10 ? '0' + minutes : minutes} ${ampm}`;
+    return `${day}/${month}/${year} ${hours+6}:${minutes < 10 ? '0' + minutes : minutes} ${ampm}`;
 }
 }

@@ -601,11 +601,6 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
             return response;
         }
 
-        if (ont.getEstatus().equals("0")) {
-            response.setCod(RESOURCE_NOT_AVAILABLE);
-            response.setSms("Error: recurso no disponible");
-            return response;
-        }
         String tecnologia = ont.getTecnologia();
 
         olt = catOltRepository.getOlt(ont.getId_olt());
@@ -670,8 +665,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                 + configuracionPoleo.getPassword() + PROTOCOL_PRIV + configuracionPoleo.getProtPriv()
                 + PROTOCOL_PHRASE + configuracionPoleo.getPhrase() + SPACE + IR + olt.getIp();
 
-        Integer idOlt = olt.getId_olt();
-        String oid = ont.getOid() + ont.getUid();
+    
         String idMonitorPoleo = monitorPoleo.findFirstByOrderByIdDesc().getId();
 
         configuracionPoleo.setComando(BASE_COMMAND);
@@ -766,7 +760,6 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
     private String obtenerValor(Integer metrica, Object result, InventarioOntsEntity ont) {
         String valor = "";
         InventarioOntsEntity inv = ont;
-        inv.setEstatus(new Integer(0));
 
         switch (metrica) {
             case RUN_STATUS:
@@ -779,66 +772,80 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                                                 me.getValor().equals("1")?1:
                                                         me.getValor().equals("2")?2:
                                                                 me.getValor().equals("3")?3:2);
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case LAST_DOWN_CASE:
                 PoleosLastDownCauseEntity me1 = (PoleosLastDownCauseEntity) result;
                 valor = me1.getValor();
                 inv.setDescripcionAlarma(me1.getValor());
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case LAST_UP_TIME:
                 PoleosLastUpTimeEntity me2 = (PoleosLastUpTimeEntity) result;
                 valor = me2.getValor();
-
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case LAST_DOWN_TIME:
                 PoleosLastDownTimeEntity me3 = (PoleosLastDownTimeEntity) result;
                 valor = me3.getValor();
                 inv.setLastDownTime(me3.getValor());
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case UP_BYTES:
                 PoleosUpBytesEntity me4 = (PoleosUpBytesEntity) result;
                 valor = me4.getValor();
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case DOWN_BYTES:
                 PoleosDownBytesEntity me5 = (PoleosDownBytesEntity) result;
                 valor = me5.getValor();
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case TIMEOUT:
                 PoleosTimeOutEntity me6 = (PoleosTimeOutEntity) result;
                 valor = me6.getValor();
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case UP_PACKETS:
                 PoleosUpPacketsEntity me7 = (PoleosUpPacketsEntity) result;
                 valor = me7.getValor();
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case DOWN_PACKETS:
                 PoleosDownPacketsEntity me8 = (PoleosDownPacketsEntity) result;
                 valor = me8.getValor();
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case DROP_UP_PACKETS:
                 PoleosDropUpPacketsEntity me9 = (PoleosDropUpPacketsEntity) result;
                 valor = me9.getValor();
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case DROP_DOWN_PACKETS:
                 PoleosDropDownPacketsEntity me10 = (PoleosDropDownPacketsEntity) result;
                 valor = me10.getValor();
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case CPU:
                 PoleosCpuEntity me11 = (PoleosCpuEntity) result;
                 valor = me11.getValor();
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case MEMORY:
                 PoleosMemoryEntity me12 = (PoleosMemoryEntity) result;
                 valor = me12.getValor();
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case ALIAS_ONT:
                 PoleosAliasEntity me13 = (PoleosAliasEntity) result;
                 valor = me13.getValor();
                 inv.setAlias(me13.getValor());
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case PROF_NAME_ONT:
                 PoleosProfNameEntity me14 = (PoleosProfNameEntity) result;
                 valor = me14.getValor();
+                inv.setFecha_modificacion(util.getDate());
                 break;
             case FRAME_SLOT_PORT:
                 PoleosFrameSlotPortEntity me15 = (PoleosFrameSlotPortEntity) result;
@@ -846,6 +853,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                 inv.setFrame(me15.getFrame());
                 inv.setSlot(me15.getSlot());
                 inv.setPort(me15.getPort());
+                inv.setFecha_modificacion(util.getDate());
                 break;
         }
         if (inv!=null){
