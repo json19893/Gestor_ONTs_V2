@@ -31,4 +31,5 @@ public class InventarioOntResp {
     private String lastDownTime;
     private Integer actualizacion;
     private Integer vip;
+    private Integer sa;
 }

@@ -11,4 +11,5 @@ public class constantes {
 	public static final String ONT_RESIDENCIALES="resumen_activas_residenciales";
 	public static final String ONT_VIP="resumen_activas_vip";
 	public static final String ONT_EMPRESARIALES="resumen_activas_empresariales";
+	public static final String ONT_SERVICIOS_ADMINISTRADOS = "resumen_servicios_administrados";
 }

@@ -27,7 +27,7 @@ public class OltsByRegionServiceImpl implements IOltsByRegionService {
     IEnvoltorioGetOltsByRegionRepository repositorio;
 
     @Override
-    @Scheduled(fixedDelay = 10000)
+    @Scheduled(fixedDelay = 60000)
     public void process() throws Exception {
         System.out.printf("Inicia el proceso consulta estatus regiones onts");
         try {
@@ -103,6 +103,8 @@ public class OltsByRegionServiceImpl implements IOltsByRegionService {
         entity.setRegionOntTodoEstatus(regionResumen.getRegionOntTodoEstatus());
         entity.setRegionOntEmpresarialesEstatus(regionResumen.getRegionOntEmpresarialesEstatus());
         entity.setRegionOntVipsEstatus(regionResumen.getRegionOntVipsEstatus());
+        entity.setRegionOntSAEstatus(regionResumen.getRegionOntSAEstatus());
+        
         return entity;
     }
 
@@ -113,6 +115,7 @@ public class OltsByRegionServiceImpl implements IOltsByRegionService {
         tipoOnt.add(ONT_TOTALES);
         tipoOnt.add(ONT_EMPRESARIALES);
         tipoOnt.add(ONT_VIP);
+        tipoOnt.add(ONT_SERVICIOS_ADMINISTRADOS);
 
         List<EnvoltorioTopLevelRegionAuxiliarDto> listRegiones = new ArrayList<>();
         EnvoltorioTopLevelRegionAuxiliarDto regionAux;
@@ -149,6 +152,9 @@ public class OltsByRegionServiceImpl implements IOltsByRegionService {
                     case "V":
                         regionAux.setRegionOntVipsEstatus(tmp);
                         break;
+                    case "S":
+                        regionAux.setRegionOntSAEstatus(tmp);
+                        break;
                 }
             }
             listRegiones.add(regionAux);
@@ -182,6 +188,12 @@ public class OltsByRegionServiceImpl implements IOltsByRegionService {
                 consultar = "V";
                 descripcion_corta = "Vip";
                 descripcion_larga = "Resumen del estado de las onts Vip";
+                break;
+            case ONT_SERVICIOS_ADMINISTRADOS:
+                //Settea los datos:
+                consultar = "S";
+                descripcion_corta = "Servicios Administrados";
+                descripcion_larga = "Resumen del estado de las onts de Servicios Administrados ";
                 break;
         }
 

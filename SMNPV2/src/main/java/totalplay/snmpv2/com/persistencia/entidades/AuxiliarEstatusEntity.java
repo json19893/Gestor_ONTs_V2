@@ -19,5 +19,6 @@ public class AuxiliarEstatusEntity extends GenericPoleosDto {
 	private Integer actualizacion;
 	private Integer vip;
 	private String fecha_actualizacion;
+	private boolean sa;
 	
 }

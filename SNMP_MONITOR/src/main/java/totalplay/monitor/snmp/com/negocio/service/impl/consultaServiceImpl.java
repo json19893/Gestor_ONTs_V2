@@ -198,7 +198,19 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 				return response;
 			}
 			break;
-		}
+			
+			case "S":
+				if (ip) {
+					oltsVip = catalogoOlts.getResultLookupSA(data, true);
+				} else {
+					oltsVip = catalogoOlts.getResultLookupSA(data, false);
+				}
+				if (oltsVip.isEmpty()) {
+					response.setMessage("No se pudo localizar la olt");
+					return response;
+				}
+				break;
+		}		
 
 		idRegion = tipo.equals("T") ? olts.get(0).getId_region() : tipo.equals("E") ?  oltsEmp.get(0).getId_region(): oltsVip.get(0).getId_region();
 

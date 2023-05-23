@@ -669,6 +669,14 @@ public class monitorController extends constantes {
         return response;
     }
     
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "/getSinActualizar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> getSinActualizar() throws Exception {
+
+        return null;
+    }
+
+    
     
 
 }
