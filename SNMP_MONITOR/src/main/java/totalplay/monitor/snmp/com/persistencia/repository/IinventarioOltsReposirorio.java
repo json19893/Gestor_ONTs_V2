@@ -21,21 +21,24 @@ public interface IinventarioOltsReposirorio extends MongoRepository<inventarioOn
 	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}", "{'$match':{'id_olt':?0}}" })
 	List<listInventarioOntsDto> finOntsByIdAllService(@Param("idOlts") Integer idOlts);
 	
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olt':?0},{'tipo': 'E'}]} }" })
+	@Aggregation(pipeline = { "{$unionWith: 'tb_inventario_onts_pdm'}","{'$match':{'$and':[{'id_olt':?0},{'tipo': 'E'}]} }" })
 	List<inventarioOntsEntidad> finOntsByIdAllEmp(@Param("idOlts") Integer idOlts);
 	
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olt':?0},{'vip': 1}]} }" })
+	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}", "{'$match':{'$and':[{'id_olt':?0},{'vip': 1}]} }" })
 	List<inventarioOntsEntidad> finOntsByIdAllVips(@Param("idOlts") Integer idOlts);
 	
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olt':?0},{'tipo': 'E'}]} }" })
+	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}", "{'$match':{'$and':[{'id_olt':?0},{'tipo': 'E'}]} }" })
 	List<listInventarioOntsDto> finOntsByIdAllEmpService(@Param("idOlts") Integer idOlts);
 	
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olt':?0},{'estatus':?1}]}}" })
+	@Aggregation(pipeline = { "{$unionWith: 'tb_inventario_onts_pdm'}","{'$match':{'$and':[{'id_olt':?0},{'estatus':?1}]}}" })
 	List<inventarioOntsEntidad> totalByEstatus(@Param("idOlts") Integer idOlts,@Param("estatus") Integer estatus);
 
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olt':?0},{'estatus':?1},{'tipo':'E'}]}}" })
+	@Aggregation(pipeline = { "{$unionWith: 'tb_inventario_onts_pdm'}","{'$match':{'$and':[{'id_olt':?0},{'estatus':?1},{'tipo':'E'}]}}" })
 	List<inventarioOntsEntidad> finOntsByIdOltsEmp(@Param("idOlts") Integer idOlts, @Param("status") Integer status);
+
+	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}", "{'$match':{'$and':[{'id_olt':?0},{'estatus':{$in:[2,0]}},{'tipo':?1}]}}" })
+	List<inventarioOntsEntidad> finOntsByIdOltsEmpDown(@Param("idOlts") Integer idOlts,@Param("tipo") String tipo);
 	
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'id_olt':?0},{'estatus':?1},{'vip':1}]}}" })
+	@Aggregation(pipeline = { "{$unionWith: 'tb_inventario_onts_pdm'}","{'$match':{'$and':[{'id_olt':?0},{'estatus':?1},{'vip':1}]}}" })
 	List<inventarioOntsEntidad> finOntsByIdOltsVips(@Param("idOlts") Integer idOlts, @Param("status") Integer status);
 }
