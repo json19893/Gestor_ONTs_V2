@@ -30,6 +30,7 @@ import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsAuxRepositor
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsNCERepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsPdmRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempNCERepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsViejoGestorRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioPuertosRepository;
@@ -98,6 +99,8 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 	IinventarioOntsNCERepository inventarioNCE;
 	@Autowired
 	IinventarioOntsViejoGestorRepository inventarioViejo;
+	@Autowired
+	IinventarioOntsTempNCERepository tempNCE; 
 	
 	
 	Utils util=new Utils();
@@ -130,44 +133,64 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 	
 	@Override
 	@Async("taskExecutor2")
-	public CompletableFuture<GenericResponseDto> getMetrica(List<CatOltsEntity> olts, int metrica, boolean manual){
+	public CompletableFuture<GenericResponseDto> getMetrica(List<CatOltsEntity> olts, int metrica, boolean manual, boolean nce){
 		for(CatOltsEntity olt:olts) {
 			try {
-					List resultado;
+					List resultado=null;
 					LocalDateTime now = LocalDateTime.now();
 					
 					switch(metrica) {
 						case 1:
-							resultado =inventarioAux.getEstatus(olt.getId_region(),  olt.getId_olt());
-							auxiliarTrans.insert(resultado);
+							if(nce) {
+								tempNCE.getEstatusNCE(olt.getId_region(),  olt.getId_olt());
+								//tempNCE.saveAll(resultado);
+								
+							}else {
+								resultado =inventarioAux.getEstatus(olt.getId_region(),  olt.getId_olt());
+								auxiliarTrans.insert(resultado);
+							}
 						break;
 						case 2:
 							if(manual) 
 								resultado = inventarioAuxManual.getDescripcionAlarma(olt.getId_region(),  olt.getId_olt());
-							else 
+							else if(nce)
+								tempNCE.getDescripcionAlarma(olt.getId_region(),  olt.getId_olt());
+							else	
 								resultado = inventarioAux.getDescripcionAlarma(olt.getId_region(),  olt.getId_olt());
-							auxiliarTrans.insert(resultado);
+							if(!nce)
+								auxiliarTrans.insert(resultado);
 						break;
 						case 4:
 							if(manual) 
 								resultado = inventarioAuxManual.getLastDownTime(olt.getId_region(),  olt.getId_olt());
+							else if(nce)
+								tempNCE.getLastDownTime(olt.getId_region(),  olt.getId_olt());
 							else
 								resultado = inventarioAux.getLastDownTime(olt.getId_region(),  olt.getId_olt());
-							auxiliarTrans.insert(resultado);
+							
+							if(!nce)
+								auxiliarTrans.insert(resultado);
 						break;
 						case 14:
 							if(manual) 
 								resultado = inventarioAuxManual.getAlias(olt.getId_region(),  olt.getId_olt());
+							else if(nce)
+								tempNCE.getAlias(olt.getId_region(),  olt.getId_olt());
 							else
 								resultado = inventarioAux.getAlias(olt.getId_region(),  olt.getId_olt());
-							auxiliarTrans.insert(resultado);
+							
+							if(!nce)
+								auxiliarTrans.insert(resultado);
 						break;
 						case 16:
 							if(manual) 
 								resultado = inventarioAuxManual.getFrameSlotPort(olt.getId_region(),  olt.getId_olt());
-							else
+							else if(nce)
+								tempNCE.getFrameSlotPort(olt.getId_region(),  olt.getId_olt());
+							else								
 								resultado = inventarioAux.getFrameSlotPort(olt.getId_region(),  olt.getId_olt());
-							auxiliarTrans.insert(resultado);
+							if(!nce)
+								auxiliarTrans.insert(resultado);
 						break;
 					}
 					
@@ -624,63 +647,63 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 		case 2:
 			//poleoMetrica.saveAll(list);
 			List data = getErrores(PoleosLastDownCauseEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 		case 3:
 			data = getErrores(PoleosLastUpTimeEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 		case 4:
 			data = getErrores(PoleosLastDownTimeEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 		case 5:
 			data = getErrores(PoleosUpBytesEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 		case 6:
 			data = getErrores(PoleosDownBytesEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 		case 7:
 			data = getErrores(PoleosTimeOutEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 		case 8:
 			data = getErrores(PoleosUpPacketsEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 		case 9:
 			data = getErrores(PoleosDownPacketsEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 		case 10:
 			data = getErrores(PoleosDropUpPacketsEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 		case 11:
 			data = getErrores(PoleosDropDownPacketsEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 		case 12:
 			data = getErrores(PoleosCpuEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 		case 13:
 			data = getErrores(PoleosLastUpTimeEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 		case 14:
 			data = getErrores(PoleosAliasEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 		case 15:
 			data = getErrores(PoleosProfNameEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 		case 16:
 			data = getErrores(PoleosFrameSlotPortEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data);
+			genericMetrics.guardaInventario(idMetrica, data, false);
 			break;
 			
 		

@@ -17,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 public interface IasyncMethodsService {
    
 	CompletableFuture<GenericResponseDto> getFaltantes(List<CatOltsEntity> olts );
-	CompletableFuture<GenericResponseDto> getMetrica(List<CatOltsEntity> olts, int metrica, boolean manual );
+	CompletableFuture<GenericResponseDto> getMetrica(List<CatOltsEntity> olts, int metrica, boolean manual, boolean nce );
 	CompletableFuture<GenericResponseDto> getFaltatesInv(List<CatOltsEntity> olts );
 	CompletableFuture<GenericResponseDto> saveEmpresariales(List onts, boolean manual );
 	CompletableFuture<GenericResponseDto> deletePdm(List<InventarioOntsPdmEntity> onts );

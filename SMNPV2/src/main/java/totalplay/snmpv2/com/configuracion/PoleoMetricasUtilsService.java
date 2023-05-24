@@ -51,65 +51,65 @@ public class PoleoMetricasUtilsService extends Constantes {
         switch (idMetrica) {
             case RUN_STATUS:
                 metrica = genericMetrics
-                        .poleo(configuracion, idMonitorPoleo, RUN_STATUS, idOlt, PoleosEstatusEntity.class, saveErroneos, referencia, error, manual);
+                        .poleo(configuracion, idMonitorPoleo, RUN_STATUS, idOlt, PoleosEstatusEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case LAST_DOWN_CASE:
                 metrica
-                        = genericMetrics.poleo(configuracion, idMonitorPoleo, LAST_DOWN_CASE, idOlt, PoleosLastDownCauseEntity.class, saveErroneos, referencia, error, manual);
+                        = genericMetrics.poleo(configuracion, idMonitorPoleo, LAST_DOWN_CASE, idOlt, PoleosLastDownCauseEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case LAST_UP_TIME:
                 metrica
-                        = genericMetrics.poleo(configuracion, idMonitorPoleo, LAST_UP_TIME, idOlt, PoleosLastUpTimeEntity.class, saveErroneos, referencia, error, manual);
+                        = genericMetrics.poleo(configuracion, idMonitorPoleo, LAST_UP_TIME, idOlt, PoleosLastUpTimeEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case LAST_DOWN_TIME:
                 metrica
-                        = genericMetrics.poleo(configuracion, idMonitorPoleo, LAST_DOWN_TIME, idOlt, PoleosLastDownTimeEntity.class, saveErroneos, referencia, error, manual);
+                        = genericMetrics.poleo(configuracion, idMonitorPoleo, LAST_DOWN_TIME, idOlt, PoleosLastDownTimeEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case UP_BYTES:
-                metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, UP_BYTES, idOlt, PoleosUpBytesEntity.class, saveErroneos, referencia, error, manual);
+                metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, UP_BYTES, idOlt, PoleosUpBytesEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case DOWN_BYTES:
                 metrica
-                        = genericMetrics.poleo(configuracion, idMonitorPoleo, DOWN_BYTES, idOlt, PoleosDownBytesEntity.class, saveErroneos, referencia, error, manual);
+                        = genericMetrics.poleo(configuracion, idMonitorPoleo, DOWN_BYTES, idOlt, PoleosDownBytesEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case TIMEOUT:
                 metrica
-                        = genericMetrics.poleo(configuracion, idMonitorPoleo, TIMEOUT, idOlt, PoleosTimeOutEntity.class, saveErroneos, referencia, error, manual);
+                        = genericMetrics.poleo(configuracion, idMonitorPoleo, TIMEOUT, idOlt, PoleosTimeOutEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case UP_PACKETS:
                 metrica
-                        = genericMetrics.poleo(configuracion, idMonitorPoleo, UP_PACKETS, idOlt, PoleosUpPacketsEntity.class, saveErroneos, referencia, error, manual);
+                        = genericMetrics.poleo(configuracion, idMonitorPoleo, UP_PACKETS, idOlt, PoleosUpPacketsEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case DOWN_PACKETS:
                 metrica
-                        = genericMetrics.poleo(configuracion, idMonitorPoleo, DOWN_PACKETS, idOlt, PoleosDownPacketsEntity.class, saveErroneos, referencia, error, manual);
+                        = genericMetrics.poleo(configuracion, idMonitorPoleo, DOWN_PACKETS, idOlt, PoleosDownPacketsEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case DROP_UP_PACKETS:
                 metrica
-                        = genericMetrics.poleo(configuracion, idMonitorPoleo, DROP_UP_PACKETS, idOlt, PoleosDropUpPacketsEntity.class, saveErroneos, referencia, error, manual);
+                        = genericMetrics.poleo(configuracion, idMonitorPoleo, DROP_UP_PACKETS, idOlt, PoleosDropUpPacketsEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case DROP_DOWN_PACKETS:
                 metrica
-                        = genericMetrics.poleo(configuracion, idMonitorPoleo, DROP_DOWN_PACKETS, idOlt, PoleosDropDownPacketsEntity.class, saveErroneos, referencia, error, manual);
+                        = genericMetrics.poleo(configuracion, idMonitorPoleo, DROP_DOWN_PACKETS, idOlt, PoleosDropDownPacketsEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case CPU:
-                metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, CPU, idOlt, PoleosCpuEntity.class, saveErroneos, referencia, error, manual);
+                metrica = genericMetrics.poleo(configuracion, idMonitorPoleo, CPU, idOlt, PoleosCpuEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case MEMORY:
                 metrica
-                        = genericMetrics.poleo(configuracion, idMonitorPoleo, MEMORY, idOlt, PoleosMemoryEntity.class, saveErroneos, referencia, error, manual);
+                        = genericMetrics.poleo(configuracion, idMonitorPoleo, MEMORY, idOlt, PoleosMemoryEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case ALIAS_ONT:
                 metrica
-                        = genericMetrics.poleo(configuracion, idMonitorPoleo, ALIAS_ONT, idOlt, PoleosAliasEntity.class, saveErroneos, referencia, error, manual);
+                        = genericMetrics.poleo(configuracion, idMonitorPoleo, ALIAS_ONT, idOlt, PoleosAliasEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case PROF_NAME_ONT:
                 metrica
-                        = genericMetrics.poleo(configuracion, idMonitorPoleo, PROF_NAME_ONT, idOlt, PoleosProfNameEntity.class, saveErroneos, referencia, error, manual);
+                        = genericMetrics.poleo(configuracion, idMonitorPoleo, PROF_NAME_ONT, idOlt, PoleosProfNameEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
             case FRAME_SLOT_PORT:
                 metrica
-                        = genericMetrics.poleo(configuracion, idMonitorPoleo, FRAME_SLOT_PORT, idOlt, PoleosFrameSlotPortEntity.class, saveErroneos, referencia, error, manual);
+                        = genericMetrics.poleo(configuracion, idMonitorPoleo, FRAME_SLOT_PORT, idOlt, PoleosFrameSlotPortEntity.class, saveErroneos, referencia, error, manual, false);
                 break;
         }
         return metrica;

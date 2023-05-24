@@ -9,7 +9,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import lombok.extern.slf4j.Slf4j;
-@EnableScheduling
+//@EnableScheduling
 @SpringBootApplication
 @Slf4j
 @EnableDiscoveryClient
