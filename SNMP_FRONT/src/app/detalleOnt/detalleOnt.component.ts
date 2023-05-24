@@ -128,7 +128,8 @@ export class DetalleOntComponent implements OnInit {
     ngOnInit() {
   
       this.getMetricas()
-       this.dataDetalle=JSON.parse(localStorage.getItem("dataDetalle")!);   
+       this.dataDetalle=JSON.parse(localStorage.getItem("dataDetalle")!);  
+        console
       if(this.mostrar==null){
         this.mostrar='E';
        }
@@ -157,7 +158,7 @@ if(this.dataDetalle==undefined){
       this.spinner.hide();
     }, 1000);*/
    }
-  //this.getOntsSearch()
+  this.getOntsSearch()
 }else{
  
   this.llenaTabla(this.dataDetalle);
@@ -241,7 +242,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                 puerto:res[d].port,
                 uid:res[d].uid,
                 tipo:res[d].tipo,
-                desEstatus:res[d].descripcionAlarma=='0-0-0,0:0:0.0,.0:0'?'1':res[d].descripcionAlarma,
+                desEstatus:res[d].descripcionAlarma,
                 fecha_ultima_caida: res[d].lastDownTime=='0-0-0,0:0:0.0,.0:0'?'1 ':res[d].lastDownTime,
                 selected:false,
                 olts:[]
@@ -264,6 +265,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
            this.spinner.hide();
          }, 1000);
         }
+        this.al= localStorage.getItem('alias');
+        this.nS= localStorage.getItem('ns');
           this.mostrar = localStorage.getItem('mostrar');
         if(this.mostrar==null){
           this.mostrar='E';
@@ -274,34 +277,32 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
         this.service.findOnt( this.getOntsData).subscribe(
           res => {
             if(res.success){
+        
             let dat;
             for(let d in res.listOnts){
               dat={
-                _id: res.listOnts[d]._id,
-                numero_serie:res.listOnts[d].numero_serie,
-                oid:res.listOnts[d].oid,
-                fecha_descubrimiento: res.listOnts[d].fecha_modificacion,
-                id_olt:res.listOnts[d].id_olt,
-                estatus: res[d].estatus==1? "UP":res[d].estatus==0?"DISCONNECT":"DOWN",
-                id_ejecucion:res.listOnts[d].id_ejecucion,    
+                _id: res.listOnts[0]._id,
+                numero_serie:res.listOnts[0].numero_serie,
+                oid:res.listOnts[0].oid,
+                fecha_descubrimiento: res.listOnts[0].fecha_modificacion,
+                id_olt:res.listOnts[0].id_olt,
+                estatus: res.listOnts[0].estatus==1? "UP":res.listOnts[0].estatus==0?"DISCONNECT":"DOWN",
+                id_ejecucion:res.listOnts[0].id_ejecucion,    
                 tipoCambio:"--",
-                alias:res.listOnts[d].alias, 
-                frame:res.listOnts[d].frame,
-                slot:res.listOnts[d].slot,
-                puerto:res.listOnts[d].port,
-                uid:res.listOnts[d].uid,
-                tipo:res.listOnts[d].tipo,
-                desEstatus:res.listOnts[d].descripcionAlarma,
-                selected:res.listOnts[d].selected,
-                fecha_ultima_caida: res[d].lastDownTime,
+                alias:res.listOnts[0].alias, 
+                frame:res.listOnts[0].frame,
+                slot:res.listOnts[0].slot,
+                puerto:res.listOnts[0].port,
+                uid:res.listOnts[0].uid,
+                tipo:res.listOnts[0].tipo,
+                desEstatus:res.listOnts[0].descripcionAlarma,
+                fecha_ultima_caida: res.listOnts[0].lastDownTime,
+                selected:false,
                 olts:[]
-      
               }
               ELEMENT_DATA.push(dat);
-              this.dataUp.paginator = this.paginator;
-              //localStorage.setItem("dataDetalle", JSON.stringify(ELEMENT_DATA));
-            }
-           
+           }
+            this.dataUp.paginator = this.paginator;
             localStorage.setItem("upDetalle", res.totales.arriba);
             localStorage.setItem("downDetalle", res.totales.abajo);
             localStorage.setItem("totalDetalle", res.totales.totalOlt);
@@ -309,10 +310,15 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
             localStorage.setItem('page',res.page);
             localStorage.setItem("nombre", res.nombre);
             localStorage.setItem('ip',res.ip);
-
+            this.up= localStorage.getItem("upDetalle");
+            this.dowm= localStorage.getItem("downDetalle");
+            this.totalOnt= localStorage.getItem("totalDetalle");
+            this.his=localStorage.getItem("cambiosDetalle", );
+            this.nombre=localStorage.getItem("nombre");
+            this.ip=localStorage.getItem("ip");
             
            
-            window.location.reload();
+            //window.location.reload();
             
             
            
@@ -608,6 +614,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
 
           this.lastUpTime=resp.lastUpTime
           this.upBytes=   resp.upBytes/1048576
+          
           this.timeOut=resp.timeOut==-1?"Sin tiempo de vencimiento":resp.timeOut;
           this.upPackets=resp.upPackets/1048576
           this.downPackets=resp.downPackets/1048576

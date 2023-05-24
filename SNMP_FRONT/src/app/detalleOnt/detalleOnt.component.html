@@ -268,12 +268,12 @@
                                         <br>
                                         <span class="data">{{upBytes=="" ? "--": upBytes | number: '1.0-0'}} MB</span>
                                       </div>
-              
                                       <div class="col-sm-3">
-                                        <span class="cabe">Periodo de trabajo:</span>
-                                        <br>
-                                        <span class="data">{{timeOut=="" ? "--":timeOut}}</span>
-                                      </div>
+                                        <span class="cabe">Bytes de bajada</span>
+                                          <br>
+                                          <span class="data">{{downBytes=="" ? "--": downBytes | number: '1.0-0'}} MB</span>
+                                        </div>
+                                   
                                   </div>
                                   <br>
                                   <div class="row" >
@@ -323,12 +323,19 @@
                                       <div class="col-sm-3">
                                         <span class="cabe">Paquetes recibidos :</span>
                                         <br>
-                                        <span class="data">{{downBytes==""? "--": downBytes | number: '1.0-0'}} MB</span>
+                                        <span class="data">{{upPackets==""? "--": upPackets | number: '1.0-0'}} MB</span>
                                       </div>
                                      
                                   </div>
                                   <br>
-                                  <div class="row" ></div>
+                                  <div class="row" >
+                                    <div class="col-sm-3">
+                                      <span class="cabe">Periodo de trabajo:</span>
+                                      <br>
+                                      <span class="data">{{timeOut=="" ? "--":timeOut}}</span>
+                                    </div>
+
+                                  </div>
                               </div>
                                   </div>
                             </td>
