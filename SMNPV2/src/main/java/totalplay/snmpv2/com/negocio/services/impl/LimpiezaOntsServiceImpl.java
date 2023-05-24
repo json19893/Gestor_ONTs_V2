@@ -169,11 +169,11 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			 //hacer el cruce de estatus
 			String idPoleo =  monitorPoleo.getLastFinishId().getId();
 			updateDescripcion(monitor, INICIO_DESC+" CRUCES  MÈTRICAS");
-			crucesMetricas(1,idEjecucion, "auxiliar_descubrimiento", null, false );
-			crucesMetricas(2,idPoleo, "auxiliar_descubrimiento", null, false  );
-			crucesMetricas(4,idPoleo, "auxiliar_descubrimiento", null, false );
-			crucesMetricas(14,idPoleo, "auxiliar_descubrimiento", null, false  );
-			crucesMetricas(16,idPoleo, "auxiliar_descubrimiento", null, false );
+			crucesMetricas(1,idEjecucion, "auxiliar_descubrimiento", null, false, false );
+			crucesMetricas(2,idPoleo, "auxiliar_descubrimiento", null, false, false  );
+			crucesMetricas(4,idPoleo, "auxiliar_descubrimiento", null, false, false );
+			crucesMetricas(14,idPoleo, "auxiliar_descubrimiento", null, false, false  );
+			crucesMetricas(16,idPoleo, "auxiliar_descubrimiento", null, false, false );
 			
 			//Obtener los faltantes de inventario
 			updateDescripcion(monitor, INICIO_DESC+" OBTENER  FALTANTES");
@@ -248,12 +248,12 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			updateDescripcion(monitor, INICIO_DESC+" CRECE MÉTRICAS");
 			log.info(INICIO_DESC+" CRECE MÉTRICAS");
 			
-			crucesMetricas(2,idPoleo, "auxiliar_descubrimiento_manual", olts, true );
-			crucesMetricas(4,idPoleo, "auxiliar_descubrimiento_manual", olts, true );
-			crucesMetricas(14,idPoleo, "auxiliar_descubrimiento_manual", olts, true );
-			crucesMetricas(16,idPoleo, "auxiliar_descubrimiento_manual", olts, true );
+			crucesMetricas(2,idPoleo, "auxiliar_descubrimiento_manual", olts, true, false );
+			crucesMetricas(4,idPoleo, "auxiliar_descubrimiento_manual", olts, true, false );
+			crucesMetricas(14,idPoleo, "auxiliar_descubrimiento_manual", olts, true, false );
+			crucesMetricas(16,idPoleo, "auxiliar_descubrimiento_manual", olts, true, false );
 			
-			getEmpresarialesVips(true);
+			getEmpresarialesVips(false);
 			
 			updateDescripcion(monitor, INICIO_DESC+" SEND INVENTARIO");
 			log.info(INICIO_DESC+" SEND INVENTARIO");
@@ -266,7 +266,19 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 		}
 	}
 	
-	private void crucesMetricas(int metrica, String idPoleo, String tabla, List<CatOltsEntity> olts, boolean manual ) {
+	@Override
+	public void LimpiezaNCE(List<CatOltsEntity> olts) {	
+		String idPoleo =  monitorPoleo.getLastFinishId().getId();
+		String idEjecucion =  monitorEstatus.getLastFinishId().getId();
+		
+		crucesMetricas(1,idEjecucion, "auxiliar_descubrimiento_nce", olts, false, true );
+		crucesMetricas(2,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
+		crucesMetricas(4,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
+		crucesMetricas(14,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
+		crucesMetricas(16,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
+	}
+	
+	private void crucesMetricas(int metrica, String idPoleo, String tabla, List<CatOltsEntity> olts, boolean manual, boolean nce ) {
 		
 		log.info(":::::::::::::::::::::::::: cruce metrica " +metrica+"  :::::::::::::::::::::::");
 		if(olts == null)
@@ -286,7 +298,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 				limMax = olts.size();
 			}
 			List<CatOltsEntity> segmentOlts = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
-			CompletableFuture<GenericResponseDto> executeProcess = asyncMethods.getMetrica(segmentOlts,metrica, manual);
+			CompletableFuture<GenericResponseDto> executeProcess = asyncMethods.getMetrica(segmentOlts,metrica, manual, nce);
 			
 			thredOlts.add(executeProcess);
 		}
@@ -417,9 +429,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 	public void saveOnts(List<InventarioOntsEntity> inventario) {
 		log.info(":::::::::::::::::::::::::: Inserta inventario  "+ ":::::::::::::::::::::::");
 		
-		try {
-			
-			
+		try {		
 			
 			List<CompletableFuture<GenericResponseDto>> thredOnts=new ArrayList<CompletableFuture<GenericResponseDto>>();
 			int ValMaxOlts = (inventario.size()/40) + 1;

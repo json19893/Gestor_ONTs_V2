@@ -21,6 +21,7 @@ import totalplay.snmpv2.com.negocio.services.IGenericMetrics;
 import totalplay.snmpv2.com.negocio.services.IlimpiezaCadena;
 import totalplay.snmpv2.com.persistencia.entidades.ConfiguracionMetricaEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.IconfiguracionMetricaRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempNCERepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IpoleoAliasRepositorio;
 import totalplay.snmpv2.com.persistencia.repositorio.IpoleoCpuRepositorio;
@@ -84,6 +85,8 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 	IpoleoFrameSlotPortRepositorio poleoFrameSlotPort;
 	@Autowired
 	IpoleoEstatusRepositorio poleoEstatus;
+	@Autowired
+	IinventarioOntsTempNCERepository tempNCE;
 	
 	
 	Utils utls=new Utils();
@@ -97,7 +100,7 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 	
 
 	@Override																					
-	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error,boolean manual) throws IOException, NoSuchFieldException, NoSuchMethodException {
+	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error,boolean manual, boolean nce) throws IOException, NoSuchFieldException, NoSuchMethodException {
 
 		EjecucionDto proces = new EjecucionDto();
 		List data = new ArrayList<T>();
@@ -184,7 +187,7 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 						// TODO: handle exception
 					}
 					
-					guardaInventario(metrica,data);
+					guardaInventario(metrica,data,nce);
 				}
 			
 			
@@ -212,10 +215,13 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
     	return CompletableFuture.completedFuture(new GenericResponseDto(String.valueOf(data.size()), exitValue));
 }
 	@Override
-	public void guardaInventario(Integer idMetrica, List list ) {
+	public void guardaInventario(Integer idMetrica, List list, boolean nce ) {
 		switch (idMetrica) {
 			case 0:
-				inventarioTemp.saveAll(list);
+				if(nce)
+					tempNCE.saveAll(list);
+				else	
+					inventarioTemp.saveAll(list);
 			break;
 			case 1:
 				poleoEstatus.saveAll(list);

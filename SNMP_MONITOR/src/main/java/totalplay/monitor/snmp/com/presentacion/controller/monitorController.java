@@ -72,8 +72,10 @@ public class monitorController extends constantes {
     @Autowired
     ImonitorPoleoManualRepository monitorPoleoManual;
     @Autowired
-    IdetalleActualizacionRepositorio detalleAct;
-
+    IdetalleActualizacionRepositorio detalleAct;    
+    @Autowired
+    IinventarioRechazadosNCERepositorio rechazadasNCE;
+    
     @Autowired
     IBlockMetricService BlockMetricService;
     @Autowired
@@ -671,9 +673,16 @@ public class monitorController extends constantes {
     
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getSinActualizar", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public Map<String, Object> getSinActualizar() throws Exception {
+    public List<InventarioRechazadoNCEDto> getSinActualizar() throws Exception {
 
-        return null;
+        return catOlts.getRechazadasNCE();
+    }
+    
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = "/getAceptadasInventario/{olt}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<InventarioAceptadasNCEDto> getAceptadasInventario(@PathVariable("olt") Integer olt) throws Exception {
+
+        return catOlts.getaceptadasInventario(olt);
     }
 
     

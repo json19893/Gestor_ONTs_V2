@@ -23,6 +23,7 @@ import totalplay.snmpv2.com.negocio.services.IdescubrimientoService;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.EstatusPoleoManualEntidad;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsTmpEntity;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsTmpNCEEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ItblDescubrimientoManualRepositorio;
@@ -44,7 +45,7 @@ public class DescubrimientoServiceImpl extends Constantes implements Idescubrimi
 	@Override
 	@Async("taskExecutor")
 	public CompletableFuture<GenericResponseDto> getDescubrimiento(List<CatOltsEntity> olts, String idProceso,
-			boolean manual,String usuario) throws IOException {
+			boolean manual,String usuario, boolean nce) throws IOException {
 		try {
 	
 				for (CatOltsEntity o : olts) {
@@ -56,7 +57,7 @@ public class DescubrimientoServiceImpl extends Constantes implements Idescubrimi
 					o.setOnts_error(!pin?0:null);
 					catOLtsRepository.save(o);
 					if(pin)
-						descubrimiento(o.getId_olt(), idProceso,manual,usuario);
+						descubrimiento(o.getId_olt(), idProceso,manual,usuario, nce);
 			}
 
 		} catch (Exception e) {
@@ -67,10 +68,12 @@ public class DescubrimientoServiceImpl extends Constantes implements Idescubrimi
 		return CompletableFuture.completedFuture(new GenericResponseDto(EJECUCION_EXITOSA, 0));
 	}
 
-	public boolean descubrimiento(Integer olt, String idProceso,boolean manual,String usuario) throws IOException {
+	public boolean descubrimiento(Integer olt, String idProceso,boolean manual,String usuario, boolean nce) throws IOException {
 		String oid="";
 		String idDescubrimientoManual="";
 		EstatusPoleoManualEntidad registro= new EstatusPoleoManualEntidad();
+		CompletableFuture<GenericResponseDto> descubrimiento=null;
+		
 		try {
 			AggregationOperation match = Aggregation.match(Criteria.where("id_olt").is(olt));
 			AggregationOperation lookup = Aggregation.lookup("cat_configuracion", "id_configuracion",
@@ -87,7 +90,12 @@ public class DescubrimientoServiceImpl extends Constantes implements Idescubrimi
 				configuracion.getNombreOlt(),LocalDate.now().toString(),0,INICIO_PROCESO_MANUAL,null,usuario)).getId();
 				registro=descubrimientoManual.findByid(idDescubrimientoManual);
 			}
-			CompletableFuture<GenericResponseDto> descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpEntity.class, true, "", false,manual);
+			
+			if(nce)
+				 descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpNCEEntity.class, true, "", false,manual, nce);
+			else
+				descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpEntity.class, true, "", false,manual, nce);
+			
 			CompletableFuture.allOf(descubrimiento);
 			if(manual){
 				if(descubrimiento.get().getCod()==0){

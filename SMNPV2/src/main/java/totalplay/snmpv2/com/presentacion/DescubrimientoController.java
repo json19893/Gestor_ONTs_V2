@@ -41,6 +41,7 @@ import totalplay.snmpv2.com.persistencia.repositorio.IBitacoraEventosRepository;
 
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsErroneas;
+import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempNCERepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorEjecucionRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ItblDescubrimientoManualRepositorio;
@@ -70,6 +71,8 @@ public class DescubrimientoController extends Constantes {
     IUpdateTotalOntsService updateTotales;
 	@Autowired
 	IasyncMethodsService asyncMethods;
+	@Autowired
+	IinventarioOntsTempNCERepository tempNCE; 
 	
 	
 	private Integer valMaxOlts = 50;
@@ -127,7 +130,7 @@ public class DescubrimientoController extends Constantes {
 	}
 
 	public List<CompletableFuture<GenericResponseDto>> getProceso ( List<CatOltsEntity> olts,String idProceso,Boolean manual,String usuario) throws IOException{
-		valMaxOlts = (olts.size() /40) + 1;
+			valMaxOlts = (olts.size() /40) + 1;
 			List<CompletableFuture<GenericResponseDto>> thredOlts = new ArrayList<CompletableFuture<GenericResponseDto>>();
 			for (int i = 0; i < olts.size(); i += valMaxOlts) {
 				Integer limMax = i + valMaxOlts;
@@ -136,7 +139,7 @@ public class DescubrimientoController extends Constantes {
 				}
 				List<CatOltsEntity> segmentOlts = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
 				CompletableFuture<GenericResponseDto> executeProcess = descubrimientoService
-						.getDescubrimiento(segmentOlts, idProceso, manual,usuario);
+						.getDescubrimiento(segmentOlts, idProceso, manual,usuario,false);
 				thredOlts.add(executeProcess);
 			}
 			return thredOlts;
@@ -176,6 +179,38 @@ public class DescubrimientoController extends Constantes {
 		}
 		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
 	}
+	
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@GetMapping("/descubrimientoNCE/{idOlt}")
+	public GenericResponseDto descubrimientoNCE(@PathVariable("idOlt") Integer idOlt) throws Exception {
+		
+		tempNCE.deleteAll();
+		List<CatOltsEntity> olts = new ArrayList<CatOltsEntity>();
+		CatOltsEntity olt=catOltRepository.getOlt(idOlt);
+		olts.add(olt);
+		
+		valMaxOlts = (olts.size() /1);///40) + 1;
+		List<CompletableFuture<GenericResponseDto>> thredOlts = new ArrayList<CompletableFuture<GenericResponseDto>>();
+		for (int i = 0; i < olts.size(); i += valMaxOlts) {
+			Integer limMax = i + valMaxOlts;
+			if (limMax >= olts.size()) {
+				limMax = olts.size();
+			}
+			List<CatOltsEntity> segmentOlts = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
+			CompletableFuture<GenericResponseDto> executeProcess = descubrimientoService
+					.getDescubrimiento(segmentOlts, idProceso, false,"", true);
+			thredOlts.add(executeProcess);
+		}
+		
+		CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
+		
+		//hacer le cruce de las mètricas
+		limpiezaOnts.LimpiezaNCE(olts);
+		return null;
+		
+	}
+	
+	
 	
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@GetMapping("/updateConfiguration")
