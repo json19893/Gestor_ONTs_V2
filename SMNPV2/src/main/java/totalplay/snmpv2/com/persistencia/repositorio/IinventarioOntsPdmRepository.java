@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsPdmEntity;
 import totalplay.snmpv2.com.persistencia.entidades.inventarioOntsErroneas;
 
@@ -25,5 +27,8 @@ public interface IinventarioOntsPdmRepository extends MongoRepository<Inventario
 	        , "{$unset:[\"onts\"]}"
 		})
 	List<InventarioOntsPdmEntity> getInventario();
+	
+	@Query("{numero_serie: ?0}")
+	InventarioOntsPdmEntity finOntSerie(String numSerie);
 	
 }

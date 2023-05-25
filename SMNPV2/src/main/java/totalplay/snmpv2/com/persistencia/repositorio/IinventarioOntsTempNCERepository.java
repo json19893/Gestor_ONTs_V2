@@ -11,11 +11,16 @@ import org.springframework.data.repository.query.Param;
 import totalplay.snmpv2.com.negocio.dto.LimpiezaManualDto;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioAuxTransEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsTmpEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsTmpNCEEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioPuertosEntity;
 
 public interface IinventarioOntsTempNCERepository extends MongoRepository<InventarioOntsTmpNCEEntity, String> {
+	
+	@Query("{numero_serie: ?0}")
+	InventarioOntsEntity finOntSerie(String numSerie);
+   
 	
 	@Aggregation(pipeline = { 
 		      "{$match:{id_olt:?1}}\n"
