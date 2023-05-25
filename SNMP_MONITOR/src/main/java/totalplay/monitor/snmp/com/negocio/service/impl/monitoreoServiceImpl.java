@@ -232,9 +232,17 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 		if(tipo.compareTo("T")==0){
 			return invOLts.finOntsByIdOlts(idOlt, estatus);
 		}else if(tipo.compareTo("E")==0){
+			if(estatus==1){
 			return invOLts.finOntsByIdOltsEmp(idOlt, estatus);
+			}else{
+				return invOLts.finOntsByIdOltsEmpDown(idOlt,tipo);
+			}
 		}else {
+			if(estatus==1){
 			return invOLts.finOntsByIdOltsVips(idOlt, estatus);
+			}else{
+				return invOLts.finOntsByIdOltsEmpDown(idOlt,tipo);
+			}
 		}
 			
 	}
@@ -531,15 +539,16 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 				//response.setCambios(historicoDiferencias.findTotalCambiosOlt(idOlt));
 				
 			}else if(tipo.compareTo("E")==0){
-				response.setTotalOlt(inventario.finOntsByTotalOltEmp(idOlt));
-				response.setArriba(inventario.finOntsByTotalEstatusEmp(idOlt, 1));
-				response.setAbajo(inventario.finOntsByTotalEstatusEmp(idOlt, 2));
+				response.setArriba(inventario.finOntsByTotalEstatusEmp(idOlt, 1)+inventarioPdm.finOntsByTotalEstatusByTipo(idOlt, 1,"E"));
+				response.setAbajo(inventario.finOntsByTotalEstatusEmp(idOlt, 2)+inventarioPdm.finOntsByTotalEstatusByTipo(idOlt, 2,"E")+inventarioPdm.finOntsByTotalEstatusByTipo(idOlt, 0,"E"));
+				response.setTotalOlt(inventario.finOntsByTotalOltEmp(idOlt)+inventarioPdm.finOntsByTotalOltByTipo(idOlt,"E"));
+				
 				//response.setCambios(historicoDiferencias.findTotalCambiosOltEmp(idOlt));
 				
 			}else {
-				response.setTotalOlt(inventario.finOntsByTotalOltVip(idOlt));
-				response.setArriba(inventario.finOntsByTotalEstatusVip(idOlt, 1));
-				response.setAbajo(inventario.finOntsByTotalEstatusVip(idOlt, 2));
+				response.setTotalOlt(inventario.finOntsByTotalOltVip(idOlt)+inventarioPdm.finOntsByTotalOltByTipo(idOlt,"V"));
+				response.setArriba(inventario.finOntsByTotalEstatusVip(idOlt, 1)+inventarioPdm.finOntsByTotalEstatusByTipo(idOlt, 1,"V"));
+				response.setAbajo(inventario.finOntsByTotalEstatusVip(idOlt, 2)+inventarioPdm.finOntsByTotalEstatusByTipo(idOlt, 2,"V")+inventarioPdm.finOntsByTotalEstatusByTipo(idOlt, 0,"V"));
 				//response.setCambios(historicoDiferencias.findTotalCambiosOltVip(idOlt));
 				
 			}

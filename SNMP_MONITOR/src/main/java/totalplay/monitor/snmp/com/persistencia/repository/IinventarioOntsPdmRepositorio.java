@@ -20,9 +20,13 @@ public interface IinventarioOntsPdmRepositorio extends MongoRepository<inventari
 	
 	@Query(value = " {'id_olt': ?0 }",count = true)
 	Integer finOntsByTotalOlt(@Param("idOlt") Integer idOlt);
+	@Query(value = " {'id_olt': ?0,'tipo':?1 }",count = true)
+	Integer finOntsByTotalOltByTipo(@Param("idOlt") Integer idOlt,@Param("tipo") String tipo);
 	
 	@Query(value = " {'id_olt': ?0, 'estatus': ?1 }",count = true)
 	Integer finOntsByTotalEstatus(@Param("idOlt") Integer idOlt,@Param("estatus") Integer estatus);
+	@Query(value = " {'id_olt': ?0, 'estatus': ?1 ,'tipo':?2}",count = true)
+	Integer finOntsByTotalEstatusByTipo(@Param("idOlt") Integer idOlt,@Param("estatus") Integer estatus,@Param("tipo") String tipo);
 	
 	@Aggregation(pipeline = { "{'$match':{'numero_serie':?0}}" })
 	inventarioOntsPdmEntidad getOntBySerie(@Param("serie") String serie);
