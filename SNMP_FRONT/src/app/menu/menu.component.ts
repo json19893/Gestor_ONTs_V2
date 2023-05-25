@@ -103,7 +103,8 @@ public ses:any;
 
   ngOnInit() {
     this.ses=localStorage.getItem('cod_sesion');
-    if(this.ses==1){
+    //if(this.ses==1){
+    if(1==1){
       this.router.navigate(['/home'])
       
     }else{
@@ -146,12 +147,24 @@ public ses:any;
   }
 
 
+  renderizarAsignacionOnts(){
+    localStorage.setItem( "detalleClasificacion",'false');
+    localStorage.setItem('muestraHome', 'false');
+    localStorage.setItem('muestraDetalle', 'false');
+    localStorage.setItem('detalleOnts', 'false');
+    localStorage.setItem('detalleAsignarOnts', 'true');
+
+    window.location.reload();
+  }
+
   getmuestradetalle() {
 
     localStorage.setItem( "detalleClasificacion",'true'); 
     localStorage.setItem('muestraHome', 'false');
     localStorage.setItem('muestraDetalle', 'false');
     localStorage.setItem('detalleOnts', 'false');
+    localStorage.setItem('detalleAsignarOnts', 'false');
+
     window.location.reload();
 
   }
@@ -162,6 +175,7 @@ public ses:any;
     localStorage.setItem('muestraHome', 'false');
     localStorage.setItem('muestraDetalle', 'false');
     localStorage.setItem('detalleOnts', 'true');
+    localStorage.setItem('detalleAsignarOnts', 'false');
 
     window.location.reload();
 
@@ -216,6 +230,8 @@ public ses:any;
     localStorage.removeItem("downDetalle");
     localStorage.removeItem("totalDetalle");
     localStorage.removeItem("cambiosDetalle");
+    localStorage.setItem('detalleAsignarOnts', 'false');
+    
     window.location.reload();
   }
 

@@ -29,7 +29,8 @@ import { ActualizaOntsDialog, ConsultaOltsComponent ,detalleEjecucionDialog, Dia
 import { FileSaverModule } from 'ngx-filesaver';
 import {DateFormatPipe} from './pipes/date-format.pipe'
 import {numberPipe} from './pipes/number-format.pipe'
-import {textPipe} from './pipes/text-format.pipe'
+import {textPipe} from './pipes/text-format.pipe';
+import { ConsultaOltsAsignacionComponent, } from './asignar-onts/consultaOlts.component';
 
 @NgModule({
   declarations: [
@@ -53,8 +54,8 @@ import {textPipe} from './pipes/text-format.pipe'
     DateFormatPipe,
     numberPipe,
     textPipe,
-    detalleActualizacionOnt
-
+    detalleActualizacionOnt,
+    ConsultaOltsAsignacionComponent
    
 
   ],
@@ -71,7 +72,8 @@ import {textPipe} from './pipes/text-format.pipe'
     HttpClientModule,
     FileSaverModule
   
-    ],
+    ],exports:[]
+    ,
     
   providers: [AppRoutinProviders,BrowserModule,pointService,{ provide: MatPaginatorIntl, useValue: getDutchPaginatorIntl() }],
   bootstrap: [AppComponent]

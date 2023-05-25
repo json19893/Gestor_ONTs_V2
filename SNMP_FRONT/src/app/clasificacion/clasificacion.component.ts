@@ -81,6 +81,8 @@ export class ClasificacionComponent implements OnInit {
   public detalleOnts:any;
   muestraDetalle:any;
   public ses:any;
+  
+  public detalleAsignarOnts: any;
 
   @ViewChild('tbl1', { static: false }) paginator!: MatPaginator;
   @ViewChild(MatSort) sort: MatSort | undefined;
@@ -117,6 +119,7 @@ export class ClasificacionComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.detalleAsignarOnts=localStorage.getItem('detalleAsignarOnts'); 
     this.busqueda=localStorage.getItem('busqueda');
     this.muestraHome = localStorage.getItem('muestraHome');
     this.muestraDetalle= localStorage.getItem('muestraDetalle');

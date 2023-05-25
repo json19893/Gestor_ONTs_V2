@@ -1,0 +1,90 @@
+
+<span class="title-center2"> Detalle de OLTs</span>
+<br><br>
+<mat-divider></mat-divider>
+<br>
+
+<mat-accordion>
+  <mat-expansion-panel hideToggle>
+    <mat-expansion-panel-header class="panelTitle">
+      <mat-panel-title >
+          <img  class="icon-avata" src="./assets/img/search.SVG"/>
+        
+      </mat-panel-title>
+      <mat-panel-description>
+          Criterios de búsqueda
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <mat-form-field >
+      <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" #input>
+    </mat-form-field>    
+  </mat-expansion-panel>
+</mat-accordion>
+
+<br>
+
+<table mat-table  class="mat-elevation-z8" #table id="my-table-id" >
+  <ng-container matColumnDef="opciones">
+    <th mat-header-cell *matHeaderCellDef>
+      <button mat-icon-button [matMenuTriggerFor]="animals" aria-label="Example icon-button with a menu">
+        <mat-icon matTooltip="Acciones" >settings</mat-icon>
+      </button>
+      <mat-menu #animals="matMenu">
+        <!--button mat-menu-item [matMenuTriggerFor]="asignar">Poleo metrica</button -->
+        <button mat-menu-item >&nbsp;&nbsp;Descubrimiento</button>
+      </mat-menu>
+      <mat-menu #asignar="matMenu" >
+        <!--<button mat-menu-item (click)="poleoMetrica(item.bloque)"  *ngFor="let item of blo" >{{item.nombre}}</button>-->
+      </mat-menu>  
+    </th>
+    
+  </ng-container>
+  <!-- Checkbox Column -->
+  <ng-container matColumnDef="select">
+    <th mat-header-cell *matHeaderCellDef>
+     
+    </th>
+    
+      
+    
+  </ng-container>
+  <!-- Name Column -->
+  <ng-container matColumnDef="ip">
+    <th mat-header-cell *matHeaderCellDef> IP OLT </th>
+  </ng-container>
+
+  <!-- Weight Column -->
+  <ng-container matColumnDef="nombre">
+    <th mat-header-cell *matHeaderCellDef> Nombre </th>
+  </ng-container>
+
+  <!-- Symbol Column -->
+  <ng-container matColumnDef="tecnologia">
+    <th mat-header-cell *matHeaderCellDef> Tecnología </th>
+    
+  </ng-container>
+   <!-- Symbol Column -->
+   <ng-container matColumnDef="id_region">
+    <th mat-header-cell *matHeaderCellDef> 	Región </th>
+    
+  </ng-container>
+  <ng-container matColumnDef="totalOnts">
+    <th mat-header-cell *matHeaderCellDef> 	Total ONTs </th>
+    
+  </ng-container>
+  <ng-container matColumnDef="descripcion">
+    <th mat-header-cell *matHeaderCellDef> 	Descripción </th>
+    
+  </ng-container>
+  <ng-container matColumnDef="slide">
+    <th mat-header-cell *matHeaderCellDef>Estatus para descubrimiento</th>
+
+    
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+  <tr mat-row *matRowDef="let row; columns: columnsToDisplay;"
+      >
+  </tr>
+</table>
+
+<mat-paginator  #paginator [pageSizeOptions]="[10]" aria-label="Select page of users"></mat-paginator>

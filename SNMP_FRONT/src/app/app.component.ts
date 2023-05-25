@@ -9,11 +9,12 @@ import {NgxSpinnerService} from 'ngx-spinner';
 export class AppComponent implements OnInit {
 
   constructor(
-    private spinner:NgxSpinnerService){
+    //private spinner:NgxSpinnerService
+    ){
 
     }
 ngOnInit() {
-  this.spinner.show();
+  //this.spinner.show();
 }
 
 
