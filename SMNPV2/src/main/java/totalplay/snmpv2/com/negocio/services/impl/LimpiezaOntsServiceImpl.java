@@ -20,6 +20,7 @@ import totalplay.snmpv2.com.negocio.services.IpoleoMetricasService;
 
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsPdmRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempNCERepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioPuertosRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorActualizacionEstatusRepository;
@@ -30,6 +31,7 @@ import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IdiferenciasManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IdiferenciasRepository;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
+import totalplay.snmpv2.com.persistencia.entidades.DiferenciasEntity;
 import totalplay.snmpv2.com.persistencia.entidades.DiferenciasManualEntity;
 
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioAuxTransRepository;
@@ -77,6 +79,8 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 	ImonitorEjecucionRepository monitorDescubrimiento;
 	@Autowired
 	IinventarioOntsAuxManualRepository inventarioAuxManual;
+	@Autowired
+	IinventarioOntsTempNCERepository tempNCE;
 	
 	@Override
 	public boolean getInventarioPuertos(MonitorEjecucionEntity monitor, List<CatOltsEntity> olts) {
@@ -452,6 +456,96 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			log.error(e.toString());
 		}
 		
+	}
+
+	@Override
+	public String insertInventario(String serie, String tipo) {
+		//TODO: Buscar en inventario si existe una ont con la serie
+		try{
+			InventarioOntsEntity ontInv =  inventarioOnts.getOntBySerialNumber(serie);
+			InventarioOntsEntity ontNCE =  tempNCE.finOntSerie(serie) ;
+			InventarioOntsPdmEntity ontPDM =  inventarioPdm.finOntSerie(serie);
+			
+			if(ontNCE == null ) return "No hay una ont Aceptada para inyectar en inventario";
+			
+			ontNCE.setTipo(tipo);
+			
+			
+			if(ontInv != null) {
+				//TODO: Si existe la ont con la misma serie validar si tieenen diferencte id_olt
+				//TODO: Si tienen diferente olt, validar si està en duplicados, sino ingresar ambas,
+				//borrar de inventario la existente y enviar ambas a carga manual
+				
+				if(ontInv.getId_olt() == ontNCE.getId_olt()) {
+					ontNCE.setVip(ontNCE.getVip());
+					inventarioOnts.delete(ontInv);
+					inventarioOnts.save(ontNCE);
+					
+					if(ontPDM != null )
+						inventarioPdm.delete(ontPDM);
+				}else {
+					DiferenciasEntity dif = diferencias.getOntBySerialNumber(serie);
+					if(dif != null ) {
+						//seterar los campos en diferencia y en carga manual
+						DiferenciasEntity auxDif = new  DiferenciasEntity();
+						DiferenciasManualEntity auxManual = new DiferenciasManualEntity();
+						
+									
+						auxDif.setOid(ontNCE.getOid());
+						auxDif.setUid(ontNCE.getUid());
+						auxDif.setId_olt(ontNCE.getId_olt());
+						auxDif.setId_metrica(ontNCE.getId_metrica());
+						auxDif.setId_metrica(ontNCE.getId_metrica());
+						auxDif.setFecha_descubrimiento(ontNCE.getFecha_descubrimiento());
+						auxDif.setEstatus(ontNCE.getEstatus());
+						auxDif.setId_ejecucion(ontNCE.getId_ejecucion());
+						auxDif.setId_region(ontNCE.getId_region());
+						auxDif.setId_puerto(ontNCE.getId_puerto());
+						auxDif.setNumero_serie(ontNCE.getNumero_serie());
+						auxDif.setTecnologia(ontNCE.getTecnologia());
+						auxDif.setIndex(ontNCE.getIndex());
+						auxDif.setIndexFSP(ontNCE.getIndexFSP());
+						
+						/*auxManual.setOid(ontNCE.getOid());
+						auxManual.setUid(ontNCE.getUid());
+						auxManual.setId_olt(ontNCE.getId_olt());
+						auxManual.setId_metrica(ontNCE.getId_metrica());
+						auxManual.setId_metrica(ontNCE.getId_metrica());
+						auxManual.setFecha_descubrimiento(ontNCE.getFecha_descubrimiento());
+						auxManual.setEstatus(ontNCE.getEstatus());
+						auxManual.setId_ejecucion(ontNCE.getId_ejecucion());
+						auxManual.setId_region(ontNCE.getId_region());
+						auxManual.setId_puerto(ontNCE.getId_puerto());
+						auxManual.setNumero_serie(ontNCE.getNumero_serie());
+						auxManual.setTecnologia(ontNCE.getTecnologia());
+						auxManual.setIndex(ontNCE.getIndex());
+						auxManual.setIndexFSP(ontNCE.getIndexFSP());
+						*/
+						diferencias.save(auxDif);
+						//diferenciasManual.save(auxManual);
+						inventarioOnts.delete(ontInv);
+						inventarioOnts.save(ontNCE);
+						if(ontPDM != null )
+							inventarioPdm.delete(ontPDM);						
+						
+						return "Se gurdó el registro en carga manual debido a que hay repetidos";
+						
+					}
+					
+				}
+			
+				
+			}else {	
+				inventarioOnts.save(ontNCE);
+				if(ontPDM != null )
+					inventarioPdm.delete(ontPDM);
+				return "Se gurdó el registro en inventario Final";
+			}
+		}catch (Exception e) {
+			return "Problemas al guardar el registro";
+		}
+		
+		return "Se guardò correctamente el registro";
 	}
 	
 }

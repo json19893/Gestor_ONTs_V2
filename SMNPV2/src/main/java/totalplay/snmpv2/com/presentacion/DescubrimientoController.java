@@ -183,30 +183,34 @@ public class DescubrimientoController extends Constantes {
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@GetMapping("/descubrimientoNCE/{idOlt}")
 	public GenericResponseDto descubrimientoNCE(@PathVariable("idOlt") Integer idOlt) throws Exception {
-		
-		tempNCE.deleteAll();
-		List<CatOltsEntity> olts = new ArrayList<CatOltsEntity>();
-		CatOltsEntity olt=catOltRepository.getOlt(idOlt);
-		olts.add(olt);
-		
-		valMaxOlts = (olts.size() /1);///40) + 1;
-		List<CompletableFuture<GenericResponseDto>> thredOlts = new ArrayList<CompletableFuture<GenericResponseDto>>();
-		for (int i = 0; i < olts.size(); i += valMaxOlts) {
-			Integer limMax = i + valMaxOlts;
-			if (limMax >= olts.size()) {
-				limMax = olts.size();
+		try {
+			tempNCE.deleteAll();
+			List<CatOltsEntity> olts = new ArrayList<CatOltsEntity>();
+			CatOltsEntity olt=catOltRepository.getOlt(idOlt);
+			olts.add(olt);
+			
+			valMaxOlts = (olts.size() /1);///40) + 1;
+			List<CompletableFuture<GenericResponseDto>> thredOlts = new ArrayList<CompletableFuture<GenericResponseDto>>();
+			for (int i = 0; i < olts.size(); i += valMaxOlts) {
+				Integer limMax = i + valMaxOlts;
+				if (limMax >= olts.size()) {
+					limMax = olts.size();
+				}
+				List<CatOltsEntity> segmentOlts = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
+				CompletableFuture<GenericResponseDto> executeProcess = descubrimientoService
+						.getDescubrimiento(segmentOlts, idProceso, false,"", true);
+				thredOlts.add(executeProcess);
 			}
-			List<CatOltsEntity> segmentOlts = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
-			CompletableFuture<GenericResponseDto> executeProcess = descubrimientoService
-					.getDescubrimiento(segmentOlts, idProceso, false,"", true);
-			thredOlts.add(executeProcess);
+			
+			CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
+			
+			//hacer le cruce de las mètricas
+			limpiezaOnts.LimpiezaNCE(olts);
+		}catch (Exception e) {
+			return  new GenericResponseDto(EJECUCION_ERROR, 1);
 		}
 		
-		CompletableFuture.allOf(thredOlts.toArray(new CompletableFuture[thredOlts.size()])).join();
-		
-		//hacer le cruce de las mètricas
-		limpiezaOnts.LimpiezaNCE(olts);
-		return null;
+		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
 		
 	}
 	
@@ -249,6 +253,20 @@ public class DescubrimientoController extends Constantes {
 	}
 
 	
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@GetMapping("/insertInventario/{serie}/{tipo}")
+	public GenericResponseDto insertInventario(@PathVariable("serie") String serie, @PathVariable("tipo") String tipo) throws Exception {
+		String respuesta = EJECUCION_EXITOSA;
+		
+		try {	
+			if(!serie.equals("") && !tipo.equals("")) {
+					respuesta = limpiezaOnts.insertInventario(serie, tipo);
+			}				
+		} catch (Exception e) {
+			return  new GenericResponseDto(EJECUCION_ERROR, 1);
+		}
+ 		return new GenericResponseDto(respuesta, 0);
+	}
 	
 	
 	

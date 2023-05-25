@@ -4,12 +4,14 @@ import java.util.List;
 
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import totalplay.snmpv2.com.negocio.dto.GenericPoleosDto;
 import totalplay.snmpv2.com.persistencia.entidades.DiferenciasEntity;
 import totalplay.snmpv2.com.persistencia.entidades.DiferenciasManualEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsAuxEntity;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioPuertosEntity;
 
 public interface IdiferenciasRepository extends MongoRepository<DiferenciasEntity, String> {
@@ -109,5 +111,8 @@ public interface IdiferenciasRepository extends MongoRepository<DiferenciasEntit
 		      "{$unset:['_id']}"})
 	List<DiferenciasManualEntity> getAllDiferencias();
 	
+	
+	@Query("{numero_serie: ?0}")
+	DiferenciasEntity getOntBySerialNumber(String numSerie);
 	
 }
