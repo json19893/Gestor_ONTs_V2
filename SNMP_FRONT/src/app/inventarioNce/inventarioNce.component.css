@@ -137,4 +137,8 @@ tr.example-detail-row {
   font-family: 'Montserrat', sans-serif;
  
 }
+.table-container {
+  height: 300px; /* Ajusta la altura deseada para la tabla */
+  overflow: auto;
+}
 

@@ -30,7 +30,7 @@ public class EstadoOntsResumenServiceImpl implements IEstadoOntsResumenService {
     ImonitorService negocio;
 
     //Agrega un cron para ejecutar cada dos minutos
-    //@Scheduled(fixedDelay = 2000)
+    @Scheduled(fixedDelay = 5000)
     public void process() {
         //System.out.println("Ejecutando proceso");
         //Meter el tiempo que tomo para actualizar:+ 

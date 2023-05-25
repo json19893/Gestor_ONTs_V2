@@ -7,7 +7,7 @@ export class DateFormatPipe implements PipeTransform {
 
 
   transform(value: any): any {
-    console.log("valueee::: "+value)
+
     if (!value){
       return "--"
     } 

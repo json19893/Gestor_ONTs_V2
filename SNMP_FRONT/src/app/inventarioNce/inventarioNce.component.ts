@@ -20,7 +20,7 @@ export interface olts {
     pin:              number;
     descubrio:        boolean;
     total_onts:       number;
-    onts:             Ont[];
+    onts:          MatTableDataSource< Ont[]>;  
 }
 
 export interface Ont {
@@ -62,10 +62,13 @@ export class InventarioNceComponent implements OnInit {
     total=0;
     displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie', 'alias', 'estatus','fecha','fechaUltimaCaida','desEstatus','acciones'];
     dataSource:olts[]=[];
-    @ViewChild(MatPaginator)
-    paginator!: MatPaginator;
+    @ViewChild('paginator') paginator!: MatPaginator;
+    @ViewChild('paginator2') paginator2!: MatPaginator;
     startIndex = 0;
     endIndex = 10;
+
+    startIndex2 = 0;
+    endIndex2 = 10;
   
     constructor(
         private router:Router,
@@ -83,64 +86,14 @@ export class InventarioNceComponent implements OnInit {
           this.startIndex = this.paginator.pageIndex * this.paginator.pageSize;
           this.endIndex = this.startIndex + this.paginator.pageSize;
         });
+    
+    
       }
     getRechazadasNce(){
         this.service.getRechazadasNce().subscribe(
             data => {
-                let olts;
-                let onts;
-                let olts1=[]
-                        for( let ol in data){
-                            let onts1=[]
-                        
-                               
-                            for(let on in data[ol].onts){
-                                onts={
-                                    _id: data[ol].onts[on]._id,        
-                                    numero_serie: data[ol].onts[on].numero_serie,  
-                                    oid:  data[ol].onts[on].oid,        
-                                    fecha_descubrimiento: data[ol].onts[on].fecha_descubrimiento, 
-                                    fecha_modificacion: data[ol].onts[on].fecha_modificacion, 
-                                    id_olt:data[ol].onts[on].id_olt,    
-                                    estatus: data[ol].onts[on].estatus ==1? "UP":data[ol].onts[on].estatus==0?"DISCONNECT":"DOWN",            
-                                    id_ejecucion:data[ol].onts[on].id_ejecucion,    
-                                    alias: data[ol].onts[on].alias,               
-                                    id_region:  data[ol].onts[on].id_region,           
-                                    slot:   data[ol].onts[on].slot,              
-                                    frame:  data[ol].onts[on].frame,                
-                                    port:  data[ol].onts[on].port,                 
-                                    tipo:   data[ol].onts[on].tipo,                
-                                    uid:  data[ol].onts[on].uid,                  
-                                    descripcionAlarma:    data[ol].onts[on].descripcionAlarma,  
-                                    lastDownTime:  data[ol].onts[on].lastDownTime,         
-                                    actualizacion:   data[ol].onts[on].actualizacion,       
-                                    id_puerto:   data[ol].onts[on].id_puerto,          
-                                    tecnologia: data[ol].onts[on].tecnologia,           
-                                    index:      data[ol].onts[on].index,           
-                                    indexFSP:  data[ol].onts[on].indexFSP,            
-                                    error:    data[ol].onts[on].error,             
-                                    sa:    data[ol].onts[on].sa,                 
-                                  }  
-                                  onts1.push(onts);
-                            }
-                            olts={  
-                            id: data[ol].id,              
-                            id_olt:data[ol].id_olt,         
-                            nombre:data[ol].nombre,             
-                            ip:data[ol].ip,                 
-                            descripcion:data[ol].descripcion,        
-                            tecnologia:data[ol].tecnologia,          
-                            id_region:data[ol].id_region,           
-                            id_configuracion:data[ol].id_configuracion,     
-                            estatus:data[ol].estatus,             
-                            pin:data[ol].pin,                  
-                            descubrio:data[ol].descubrio,           
-                            total_onts:data[ol].total_onts,         
-                            onts: onts1
-                            }
-                            olts1.push(olts)
-                        }
-                this.dataSource = olts1;
+           
+                this.dataSource = data;
             },
             err => console.error(err)
           );
