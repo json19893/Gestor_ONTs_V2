@@ -7,19 +7,19 @@ export class ConvertStatusOntPipe implements PipeTransform {
 
   transform(state: number): String {
     if(state === 0){
-      return 'disconnect';
+      return 'DISCONECT';
     }
 
     if(state === 1){
-      return 'up';
+      return 'UP';
     }
 
 
     if(state === 2){
-      return 'cannot pull';
+      return 'DOWN';
     }
 
-    return 'unknow state';
+    return '---';
   }
 
 }

@@ -20,7 +20,7 @@ export interface olts {
     pin:              number;
     descubrio:        boolean;
     total_onts:       number;
-    onts:          MatTableDataSource< Ont[]>;  
+    onts:          Ont[];  
 }
 
 export interface Ont {
