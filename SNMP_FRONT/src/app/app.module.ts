@@ -25,6 +25,7 @@ import { BottomSheetOverviewExampleSheet} from'./menu/menu.component';
 import { DialogContentExampleDialog } from './menu/menu.component';
 import { ActualizacionComponent } from './actualizacion/actualizacion.component'
 import {detalleActualizacionOnt} from './detalleOnt/detalleOnt.component'
+import {InventarioNceComponent} from './inventarioNce/inventarioNce.component'
 import { ActualizaOntsDialog, ConsultaOltsComponent ,detalleEjecucionDialog, DialogElementsExampleDialog} from './consultaOlts/consultaOlts.component';
 import { FileSaverModule } from 'ngx-filesaver';
 import {DateFormatPipe} from './pipes/date-format.pipe'
@@ -53,7 +54,8 @@ import {textPipe} from './pipes/text-format.pipe'
     DateFormatPipe,
     numberPipe,
     textPipe,
-    detalleActualizacionOnt
+    detalleActualizacionOnt,
+    InventarioNceComponent
 
    
 

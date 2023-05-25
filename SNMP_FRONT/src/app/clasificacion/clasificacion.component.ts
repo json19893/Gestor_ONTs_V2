@@ -80,6 +80,7 @@ export class ClasificacionComponent implements OnInit {
   public detalleClasificacion:any;
   public detalleOnts:any;
   muestraDetalle:any;
+  inventarioNce:any;
   public ses:any;
 
   @ViewChild('tbl1', { static: false }) paginator!: MatPaginator;
@@ -122,6 +123,7 @@ export class ClasificacionComponent implements OnInit {
     this.muestraDetalle= localStorage.getItem('muestraDetalle');
     this.detalleClasificacion= localStorage.getItem('detalleClasificacion');
     this.detalleOnts= localStorage.getItem('detalleOnts');
+    this.inventarioNce=localStorage.getItem('inventarioNce')
     if ( this.muestraHome==null ||  this.muestraHome=='false'){
       if(this.detalleClasificacion=='false'||this.detalleClasificacion==undefined){
         if(this.detalleOnts=='false'||this.detalleOnts==undefined){

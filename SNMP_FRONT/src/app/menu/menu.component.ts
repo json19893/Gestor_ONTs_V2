@@ -152,6 +152,7 @@ public ses:any;
     localStorage.setItem('muestraHome', 'false');
     localStorage.setItem('muestraDetalle', 'false');
     localStorage.setItem('detalleOnts', 'false');
+    localStorage.setItem('inventarioNce','false')
     window.location.reload();
 
   }
@@ -162,12 +163,21 @@ public ses:any;
     localStorage.setItem('muestraHome', 'false');
     localStorage.setItem('muestraDetalle', 'false');
     localStorage.setItem('detalleOnts', 'true');
+    localStorage.setItem('inventarioNce','false')
 
     window.location.reload();
 
   }
 
+  getmuestrainventarioNce() {
+    localStorage.setItem( "detalleClasificacion",'false'); 
+    localStorage.setItem('muestraHome', 'false');
+    localStorage.setItem('muestraDetalle', 'false');
+    localStorage.setItem('detalleOnts', 'false');
+    localStorage.setItem('inventarioNce','true')
 
+    window.location.reload();
+  }
 
 
 
@@ -184,6 +194,7 @@ public ses:any;
     localStorage.setItem('detalleOnts', 'false');
     localStorage.setItem('muestraHome', 'false');
     localStorage.setItem('muestraDetalle', 'false');
+    localStorage.setItem('inventarioNce','false')
     localStorage.removeItem('IdRegion');
     localStorage.removeItem('nombreRegion');
     localStorage.removeItem('dataRegion');
@@ -407,6 +418,7 @@ export class DialogContentExampleDialog implements OnInit {
     localStorage.setItem('muestraDetalle', 'true');
     localStorage.setItem('busqueda', '1');
     localStorage.setItem( "detalleOnts","false");
+    localStorage.setItem('inventarioNce','false')
     window.location.reload();
 
 
@@ -430,6 +442,7 @@ export class DialogContentExampleDialog implements OnInit {
     localStorage.setItem( "detalleClasificacion","false"); 
     localStorage.setItem( "detalleOnts","false");
     localStorage.setItem('muestraDetalle', 'false');
+    localStorage.setItem('inventarioNce','false')
     this.spinner.show();
     var nombre = this.form2.value.nombre == 'null' ? null : this.form2.value.nombre;
     var ip = this.form2.value.ip == 'null' ? null : this.form2.value.ip;
@@ -506,6 +519,7 @@ export class DialogContentExampleDialog implements OnInit {
           localStorage.setItem('muestraHome', this.muestraHome);
           localStorage.setItem('muestraOnt', 'true');
           localStorage.setItem('muestraDetalle', 'false');
+          localStorage.setItem('inventarioNce','false')
           window.location.reload();
         } else {
           this.spinner.hide()
