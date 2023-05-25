@@ -27,10 +27,10 @@ export interface Ont {
     _id:                  string;
     numero_serie:         string;
     oid:                  string;
-    fecha_descubrimiento: Date;
-    fecha_modificacion:   Date;
+    fecha_descubrimiento: string;
+    fecha_modificacion:   string;
     id_olt:               number;
-    estatus:              number;
+    estatus:              string;
     id_ejecucion:         string;
     alias:                string;
     id_region:            number;
@@ -40,7 +40,7 @@ export interface Ont {
     tipo:                 string;
     uid:                  string;
     descripcionAlarma:    string;
-    lastDownTime:         Date;
+    lastDownTime:         string;
     actualizacion:        string;
     id_puerto:            number;
     tecnologia:           string;
@@ -72,7 +72,6 @@ export class InventarioNceComponent implements OnInit {
         private spinner:NgxSpinnerService,
         private service: pointService,
         ){
-  // Valor inicial de los índices
         }
     ngOnInit() {
         this.spinner.show();
@@ -88,17 +87,67 @@ export class InventarioNceComponent implements OnInit {
     getRechazadasNce(){
         this.service.getRechazadasNce().subscribe(
             data => {
-                this.dataSource = data;
+                let olts;
+                let onts;
+                let olts1=[]
+                        for( let ol in data){
+                            let onts1=[]
+                        
+                               
+                            for(let on in data[ol].onts){
+                                onts={
+                                    _id: data[ol].onts[on]._id,        
+                                    numero_serie: data[ol].onts[on].numero_serie,  
+                                    oid:  data[ol].onts[on].oid,        
+                                    fecha_descubrimiento: data[ol].onts[on].fecha_descubrimiento, 
+                                    fecha_modificacion: data[ol].onts[on].fecha_modificacion, 
+                                    id_olt:data[ol].onts[on].id_olt,    
+                                    estatus: data[ol].onts[on].estatus ==1? "UP":data[ol].onts[on].estatus==0?"DISCONNECT":"DOWN",            
+                                    id_ejecucion:data[ol].onts[on].id_ejecucion,    
+                                    alias: data[ol].onts[on].alias,               
+                                    id_region:  data[ol].onts[on].id_region,           
+                                    slot:   data[ol].onts[on].slot,              
+                                    frame:  data[ol].onts[on].frame,                
+                                    port:  data[ol].onts[on].port,                 
+                                    tipo:   data[ol].onts[on].tipo,                
+                                    uid:  data[ol].onts[on].uid,                  
+                                    descripcionAlarma:    data[ol].onts[on].descripcionAlarma,  
+                                    lastDownTime:  data[ol].onts[on].lastDownTime,         
+                                    actualizacion:   data[ol].onts[on].actualizacion,       
+                                    id_puerto:   data[ol].onts[on].id_puerto,          
+                                    tecnologia: data[ol].onts[on].tecnologia,           
+                                    index:      data[ol].onts[on].index,           
+                                    indexFSP:  data[ol].onts[on].indexFSP,            
+                                    error:    data[ol].onts[on].error,             
+                                    sa:    data[ol].onts[on].sa,                 
+                                  }  
+                                  onts1.push(onts);
+                            }
+                            olts={  
+                            id: data[ol].id,              
+                            id_olt:data[ol].id_olt,         
+                            nombre:data[ol].nombre,             
+                            ip:data[ol].ip,                 
+                            descripcion:data[ol].descripcion,        
+                            tecnologia:data[ol].tecnologia,          
+                            id_region:data[ol].id_region,           
+                            id_configuracion:data[ol].id_configuracion,     
+                            estatus:data[ol].estatus,             
+                            pin:data[ol].pin,                  
+                            descubrio:data[ol].descubrio,           
+                            total_onts:data[ol].total_onts,         
+                            onts: onts1
+                            }
+                            olts1.push(olts)
+                        }
+                this.dataSource = olts1;
             },
             err => console.error(err)
           );
      
     }
 
-     onPageChange(event: PageEvent): void {
-    this.pageSize = event.pageSize;
-    this.currentPageIndex = event.pageIndex;
-  }
+
     
   
 }
