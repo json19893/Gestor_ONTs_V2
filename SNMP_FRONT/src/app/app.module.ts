@@ -31,6 +31,7 @@ import { FileSaverModule } from 'ngx-filesaver';
 import {DateFormatPipe} from './pipes/date-format.pipe'
 import {numberPipe} from './pipes/number-format.pipe'
 import {textPipe} from './pipes/text-format.pipe'
+import { ConvertStatusOntPipe } from './pipes/convert-status-ont.pipe';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import {textPipe} from './pipes/text-format.pipe'
     numberPipe,
     textPipe,
     detalleActualizacionOnt,
-    InventarioNceComponent
+    InventarioNceComponent,
+    ConvertStatusOntPipe
 
    
 
