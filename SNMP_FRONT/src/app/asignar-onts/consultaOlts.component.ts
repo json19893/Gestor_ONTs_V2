@@ -1,6 +1,8 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from "@angular/core";
 import { MatPaginator } from "@angular/material/paginator";
 import { ThemePalette } from "@angular/material/core";
+import { OltsService } from "./service/asignar-onts.service";
+import { olts } from "./interfaces";
 
 
 @Component({
@@ -18,15 +20,19 @@ export class ConsultaOltsAsignacionComponent implements OnInit {
   public rol: any;
   color: ThemePalette = 'primary';*/
   
-  columnsToDisplay = ['select', 'ip', 'nombre', 'tecnologia', 'id_region', 'totalOnts', 'descripcion', 'slide','opciones'];
-  headers = ['Ip OLT', 'Nombre', 'Tecnología', 'Región'];
 
-  constructor() {
+  public collection: olts[] = [];
+  //columnsToDisplay = ['select', 'ip', 'nombre', 'tecnologia', 'id_region', 'totalOnts', 'descripcion', 'slide','opciones'];
+  columnsToDisplay = ['id_olt', 'nombre' ,'ip'];
+  headers = ['Id', 'Nombre' ,'Ip'];
 
-  }
+  constructor(private oltsService: OltsService) {}
   /** Whether the number of selected elements matches the total number of rows. */
   ngOnInit() {
-    
+    this.oltsService.getOlts().subscribe(olt=>{
+        console.log(olt);
+        this.collection = olt;
+    });
   }
 
   
