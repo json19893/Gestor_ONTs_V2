@@ -31,6 +31,7 @@ import {DateFormatPipe} from './pipes/date-format.pipe'
 import {numberPipe} from './pipes/number-format.pipe'
 import {textPipe} from './pipes/text-format.pipe';
 import { ConsultaOltsAsignacionComponent, } from './asignar-onts/consultaOlts.component';
+import { DialogElementsExampleDialogComponent } from './asignar-onts/components/dialog-elements-example-dialog/dialog-elements-example-dialog.component';
 
 @NgModule({
   declarations: [
@@ -55,7 +56,8 @@ import { ConsultaOltsAsignacionComponent, } from './asignar-onts/consultaOlts.co
     numberPipe,
     textPipe,
     detalleActualizacionOnt,
-    ConsultaOltsAsignacionComponent
+    ConsultaOltsAsignacionComponent,
+    DialogElementsExampleDialogComponent
    
 
   ],

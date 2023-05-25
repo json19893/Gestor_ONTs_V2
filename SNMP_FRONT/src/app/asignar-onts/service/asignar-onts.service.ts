@@ -11,7 +11,7 @@ export class OltsService {
 
   constructor(private http: HttpClient) {}
 
-  getOlts(): Observable<olts[]>{
-    return this.http.get<olts[]>(this.URL);
+  getOlts(): Observable<any>{
+    return this.http.get<any>(this.URL);
   }
 }
