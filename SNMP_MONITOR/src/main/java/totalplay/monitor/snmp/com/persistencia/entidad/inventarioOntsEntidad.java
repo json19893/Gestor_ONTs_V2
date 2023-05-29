@@ -6,36 +6,20 @@ import java.util.Date;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import totalplay.monitor.snmp.com.negocio.dto.GenericPoleosDto;
 
 
 @Document(collection = "tb_inventario_onts")
 @Data
 @NoArgsConstructor
-public class inventarioOntsEntidad {
-	@Id
-	private String _id;
-	private String numero_serie;
-	private String oid;
-	private Date fecha_descubrimiento;
-	private Date fecha_modificacion;
-	private Integer id_olt;
-	private Integer estatus;
-	private String id_ejecucion;
+public class inventarioOntsEntidad  extends GenericPoleosDto {
+	
 	private String alias;
-	private Integer id_region;
-	private Integer slot;
-	private Integer frame;
-	private Integer port;
 	private String tipo;
-	private String uid;
-	private String descripcionAlarma;
 	private String lastDownTime;
+	private String descripcionAlarma;
 	private Integer actualizacion;
-	private String id_puerto;
-	private String tecnologia;
-	private String index;
-	private String indexFSP;
-	private boolean error;
+	private Integer vip;
 	private boolean sa;
 	
 	
