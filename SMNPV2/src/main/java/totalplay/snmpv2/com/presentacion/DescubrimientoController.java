@@ -44,8 +44,10 @@ import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsErroneas;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempNCERepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorEjecucionRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.ImonitorPoleoNCERepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ItblDescubrimientoManualRepositorio;
 import totalplay.snmpv2.com.persistencia.entidades.MonitorEjecucionEntity;
+import totalplay.snmpv2.com.persistencia.entidades.monitorPoleoNCEEntidad;
 @Slf4j
 @RestController
 public class DescubrimientoController extends Constantes {
@@ -73,6 +75,8 @@ public class DescubrimientoController extends Constantes {
 	IasyncMethodsService asyncMethods;
 	@Autowired
 	IinventarioOntsTempNCERepository tempNCE; 
+	@Autowired
+	ImonitorPoleoNCERepository monitorNCE;
 	
 	
 	private Integer valMaxOlts = 50;
@@ -183,7 +187,9 @@ public class DescubrimientoController extends Constantes {
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@GetMapping("/descubrimientoNCE/{idOlt}")
 	public GenericResponseDto descubrimientoNCE(@PathVariable("idOlt") Integer idOlt) throws Exception {
+		monitorPoleoNCEEntidad monitor=null;
 		try {
+			monitor= monitorNCE.save(new monitorPoleoNCEEntidad(util.getDate(),"POLEO DE NCE, OLT: "+ idOlt,INICIO, idOlt));
 			tempNCE.deleteAll();
 			List<CatOltsEntity> olts = new ArrayList<CatOltsEntity>();
 			CatOltsEntity olt=catOltRepository.getOlt(idOlt);
@@ -206,7 +212,15 @@ public class DescubrimientoController extends Constantes {
 			
 			//hacer le cruce de las mètricas
 			limpiezaOnts.LimpiezaNCE(olts);
+			monitor.setFecha_fin(util.getDate());
+			
+			monitorNCE.save(monitor);
 		}catch (Exception e) {
+			if(monitor != null)
+				monitor.setFecha_fin(util.getDate());
+				monitor.setDescripcion("POLEO DE NCE, OLT: "+ idOlt);
+				monitorNCE.save(monitor);
+			
 			return  new GenericResponseDto(EJECUCION_ERROR, 1);
 		}
 		
@@ -253,20 +267,6 @@ public class DescubrimientoController extends Constantes {
 	}
 
 	
-	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-	@GetMapping("/insertInventario/{serie}/{tipo}")
-	public GenericResponseDto insertInventario(@PathVariable("serie") String serie, @PathVariable("tipo") String tipo) throws Exception {
-		String respuesta = EJECUCION_EXITOSA;
-		
-		try {	
-			if(!serie.equals("") && !tipo.equals("")) {
-					respuesta = limpiezaOnts.insertInventario(serie, tipo);
-			}				
-		} catch (Exception e) {
-			return  new GenericResponseDto(EJECUCION_ERROR, 1);
-		}
- 		return new GenericResponseDto(respuesta, 0);
-	}
 	
 	
 	

@@ -5,16 +5,22 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,7 +34,9 @@ import totalplay.monitor.snmp.com.negocio.service.IBlockMetricService;
 import totalplay.monitor.snmp.com.negocio.service.IProcesamientoTotalesOntService;
 import totalplay.monitor.snmp.com.negocio.service.IconsultaService;
 import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
+import totalplay.monitor.snmp.com.negocio.service.impl.InsertaOntsServiceImpl;
 import totalplay.monitor.snmp.com.negocio.service.procesobatch.IEstadoOntsResumenService;
+import totalplay.monitor.snmp.com.negocio.service.procesobatch.IUpdateOLTsNCEService;
 import totalplay.monitor.snmp.com.negocio.util.constantes;
 import totalplay.monitor.snmp.com.negocio.util.utils;
 import totalplay.monitor.snmp.com.persistencia.entidad.*;
@@ -87,6 +95,13 @@ public class monitorController extends constantes {
 
     @Autowired
     ITotalesByTecnologiaRepository totalesByTecnologiaRepository;
+    @Autowired
+    InsertaOntsServiceImpl inserta;
+    
+    @Autowired
+    IUpdateOLTsNCEService oltsNCE;
+   
+    
     /**
      * Mètodo que busca las olts, sus totales por tecnologìa y las onts
      * empresariales por regiòn,
@@ -685,6 +700,69 @@ public class monitorController extends constantes {
         return catOlts.getaceptadasInventario(olt);
     }
 
+    
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = {"/getRechazadasByOlt/{olt}/{ip}/{initDate}/{finishDate}", "/getRechazadasByOlt/{olt}/{ip}/{initDate}"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<inventarioOntsEntidad> getAceptadasInventario(@PathVariable("olt") Integer olt, @PathVariable("ip") String ip, @PathVariable("initDate") String initDate, @PathVariable(required = false, name = "finishDate") String finishDate) throws Exception {
+    	//"yyyy-MM-dd'T'HH:mm:ss.SSSX"
+    	String fDate="";
+    	Date fechaFinal= null;
+    	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");    	
+    	SimpleDateFormat formatTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    	
+    	String iDate = initDate.split("T")[0];
+		Date fechaInicial = format.parse(iDate);
+		
+		if(finishDate == null ) {
+			fechaFinal = Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(1,ChronoUnit.HOURS));finishDate= LocalDateTime.now().toString();
+			
+		}else {
+			finishDate =  finishDate.replaceAll("\\+", "=");
+			fDate = finishDate.split("=")[0];			
+			fechaFinal= formatTime.parse(fDate);
+		}
+		
+    	return rechazadasNCE.getRechazadasNCE(ip, olt, fechaInicial, fechaFinal);
+    }
+    
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+    @RequestMapping(value = {"/getRechazadasByOltInventario/{olt}/{ip}/{initDate}/{finishDate}", "/getRechazadasByOltInventario/{olt}/{ip}/{initDate}" }, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<AceptadasNCEDto> getRechazadasByOltInventario(@PathVariable("olt") Integer olt, @PathVariable("ip") String ip, @PathVariable("initDate") String initDate, @PathVariable(required = false, name = "finishDate") String finishDate) throws Exception {
+    	
+    	String fDate="";
+    	Date fechaFinal= null;
+    	SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");    	
+    	SimpleDateFormat formatTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+    	
+    	String iDate = initDate.split("T")[0];
+		Date fechaInicial = format.parse(iDate);
+		
+		if(finishDate == null ) {
+			fechaFinal = Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(1,ChronoUnit.HOURS));finishDate= LocalDateTime.now().toString();
+			
+		}else {
+			finishDate =  finishDate.replaceAll("\\+", "=");
+			fDate = finishDate.split("=")[0];			
+			fechaFinal= formatTime.parse(fDate);
+		}
+    	
+        return rechazadasNCE.getRechazadasNCEInventario(ip, olt, fechaInicial, fechaFinal);
+    }
+    
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@GetMapping("/insertInventario/{serie}/{tipo}")
+	public GenericResponseDto insertInventario(@PathVariable("serie") String serie, @PathVariable("tipo") String tipo) throws Exception {
+		String respuesta = "EJECUCION EXITOSA";
+		
+		try {	
+			if(!serie.equals("") && !tipo.equals("")) {
+					respuesta = inserta.insertInventario(serie, tipo);
+			}				
+		} catch (Exception e) {
+			return  new GenericResponseDto("EJECUCION ERROR", 1);
+		}
+ 		return new GenericResponseDto(respuesta, 0);
+	}
     
     
 

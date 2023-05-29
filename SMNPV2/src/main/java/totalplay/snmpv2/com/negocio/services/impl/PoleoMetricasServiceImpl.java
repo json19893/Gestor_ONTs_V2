@@ -666,7 +666,8 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                 + PROTOCOL_PHRASE + configuracionPoleo.getPhrase() + SPACE + IR + olt.getIp();
 
     
-        String idMonitorPoleo = monitorPoleo.findFirstByOrderByIdDesc().getId();
+        //String idMonitorPoleo = monitorPoleo.findFirstByOrderByIdDesc().getId();
+        String idMonitorPoleo = monitorPoleo.getLastFinishId().getId();
 
         configuracionPoleo.setComando(BASE_COMMAND);
         configuracionPoleo.setIdConfiguracion(idConfiguracion);

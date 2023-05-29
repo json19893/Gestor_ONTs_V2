@@ -31,4 +31,7 @@ public interface IinventarioOntsPdmRepositorio extends MongoRepository<inventari
 	@Aggregation(pipeline = { "{'$match':{'numero_serie':?0}}" })
 	inventarioOntsPdmEntidad getOntBySerie(@Param("serie") String serie);
 	
+	@Query("{numero_serie: ?0}")
+	inventarioOntsPdmEntidad finOntSerie(String numSerie);
+	
 }

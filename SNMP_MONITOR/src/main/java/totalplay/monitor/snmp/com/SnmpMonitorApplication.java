@@ -13,7 +13,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 @SpringBootApplication
-//@EnableScheduling
+@EnableScheduling
 @EnableDiscoveryClient
 
 public class SnmpMonitorApplication {

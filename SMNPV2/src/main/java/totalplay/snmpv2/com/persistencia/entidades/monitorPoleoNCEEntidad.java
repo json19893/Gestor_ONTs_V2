@@ -18,15 +18,14 @@ public class monitorPoleoNCEEntidad {
 	private Date fecha_fin;
 	private String descripcion;
 	private Integer estatus;
-	private Integer bloque;
-	private String id_ejecucion;
+	private Integer olt;
 	
-	public monitorPoleoNCEEntidad(Date fecha_inicio, Date fecha_fin, String descripcion, Integer estatus, Integer bloque, String id_ejecucion) {
+	
+	public monitorPoleoNCEEntidad(Date fecha_inicio, String descripcion, Integer estatus, Integer olt) {
 		this.fecha_inicio = fecha_inicio;
-		this.fecha_fin = fecha_fin;
 		this.descripcion = descripcion;
-		this.estatus = estatus;
-		this.bloque =bloque;
-		this.id_ejecucion = id_ejecucion;
+		this.estatus = estatus;	
+		this.olt = olt;
+		
 	}
 }
