@@ -18,5 +18,5 @@ public interface IlimpiezaOntsService {
 	void saveOnts(List<InventarioOntsEntity> inventario);
 	void deleteInventarioPdm();
 	void LimpiezaNCE(List<CatOltsEntity> olts);
-	String insertInventario(String serie, String tipo);
+	
 }

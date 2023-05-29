@@ -1,5 +1,6 @@
 package totalplay.monitor.snmp.com.persistencia.repository;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.Aggregation;
@@ -1000,6 +1001,38 @@ public interface IcatOltsRepositorio extends MongoRepository<catOltsEntidad, Str
 			  , "{$set:{\"olt.onts\":\"$onts\"}}\r\n"
 			  , "{ $replaceRoot: { newRoot: \"$olt\" } }" })
 	List<InventarioAceptadasNCEDto> getaceptadasInventario(@Param("olt") Integer olt);
+	
+	@Aggregation(pipeline = { 
+			  "{\r\n"
+			+ "		\"$lookup\":{\r\n"
+			+ "			from: \"inv_rechazados_act_nce\",\r\n"
+			+ "			localField:\"ip\",\r\n"
+			+ "			foreignField:\"ip\",\r\n"
+			+ "		  	pipeline: [\r\n"
+			+ "			    { $match: {fechaActualizacion: {$gte: ?0 }}},\r\n"
+			+ "			],\r\n"
+			+ "			as: \"nce\",\r\n"
+			+ "		}\r\n"
+			+ "}\r\n"
+			, "{\r\n"
+			+ "		\"$lookup\":{\r\n"
+			+ "			from: \"tb_inventario_onts_pdm\",\r\n"
+			+ "			localField:\"id_olt\",\r\n"
+			+ "			foreignField:\"id_olt\",\r\n"
+			+ "		  	as: \"pdm\",\r\n"
+			+ "		}\r\n"
+			+ "}\r\n"
+			, "{\r\n"
+			+ "        $set:{\r\n"
+			+ "             nce:   { $cond: [\r\n"
+			+ "                         {$or: [ {$ne: [\"$nce\", [] ]}, {$ne: [\"$pdm\", [] ]} ]}, true, false ] }\r\n"
+			+ "            }    \r\n"
+			+ "}\r\n"
+			, "{\r\n"
+			+ "        $unset:[\"pdm\"] \r\n"
+			+ "}\r\n"
+			, "{ $merge: { into: \"cat_olts\", on: \"_id\", whenMatched: \"replace\", whenNotMatched: \"insert\" } }" })
+	List<catOltsEntidad> updateStatusNCE(@Param("date") Date date);
 	
 
 }

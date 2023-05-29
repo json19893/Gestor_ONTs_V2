@@ -90,6 +90,9 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 	@Aggregation(pipeline = { "{'$match':{'$and':[{'alias':?0},{'tipo':'E'}]}}" })
 	List<inventarioOntsEntidad> findOntByAliasE(@Param("alias") String alias);
 	
+	@Query("{numero_serie: ?0}")
+	inventarioOntsEntidad getOntBySerialNumber(String numSerie);
+	
 	
 	@Aggregation(pipeline = { "{$unionWith: 'tb_inventario_onts_pdm'}"
 			, "{'$match':{'$and':[{'numero_serie':?0},{'vip': 1 }]}}" })

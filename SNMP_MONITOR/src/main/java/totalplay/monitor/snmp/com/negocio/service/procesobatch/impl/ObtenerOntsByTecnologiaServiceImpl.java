@@ -31,7 +31,7 @@ public class ObtenerOntsByTecnologiaServiceImpl implements IObtenerOntsByTecnolo
     IinventarioOntsRepositorio inventario;
 
     @Override
-    //@Scheduled(fixedDelay = 5000)
+    @Scheduled(fixedDelay = 5000)
     public void process() {
         System.out.println("Ejecutando proceso para consultar los totales de las onts por tecnologia");
         //Meter el tiempo que tomo para actualizar:+
