@@ -22,13 +22,19 @@ export class DateFormatPipe implements PipeTransform {
       return "--"
     } 
    else if (value=="0-0-0,0:0:0.0,.0:0"){
-      console.log("valueee 000 "+value)
+    
       return "--"
     }else if (value=="No se cuenta con Oid para polear"){
       return "--"
-    }else{
+    }else if (value==null){
+      return "--"
+    }
+  else if (value=='---'){
+    return "--"
+  }
+    else{
+   
     const date = new Date(value);
-    console.log("date::: "+date)
     const day = date.getDate().toString().padStart(2, '0');
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const year = date.getFullYear().toString();

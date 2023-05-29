@@ -12,6 +12,7 @@ import { Olts } from '../model/names.olts';
 import { Onts } from '../model/alias.onts';
 import { ActualizacionDetalle } from '../model/actualizacion.detalle';
 import { Actualizacion, ValidaUser } from '../detalleOnt/interfaces/atcualizacion-response';
+import { olts } from '../inventarioNce/inventarioNce.component';
 @Injectable({
   providedIn: 'root'
 })
@@ -262,6 +263,14 @@ export class pointService {
     return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.ACTUALIZA_OLT_BY_ONT+idOlt+"/"+serie,{headers});
   }
   
+
+  getRechazadasNce(): Observable<any> {
+    var headers = new HttpHeaders({
+       'mode':'no-cors',
+       'Access-Control-Allow-Origin':'*'  });
+     return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.GET_RECHAZADOS_NCE,{headers});
+ 
+   }
 
 /*Servicios de login  */
 

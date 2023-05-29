@@ -1,0 +1,144 @@
+.example-element-position{
+  background: rgba(173, 13, 13, 0.226) !important;
+  height: 55px !important;
+  color: white !important;
+  line-height: 22px !important;
+  font-size: 13px !important;
+}
+
+.example-element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+tr.example-detail-row {
+  height: 0;
+
+}
+
+/* termina */
+.example-tooltip-uppercase {
+  /* text-transform: uppercase; */
+  transform: translateY(-100px) translateX(0px) !important;
+}
+
+
+
+.header{
+    font-size: 24px;
+    color: rgba(56, 53, 53, 0.938);
+  }
+  .info{
+    background-color: rgb(30, 30, 40);
+    color: aliceblue;
+    cursor: pointer;
+ 
+  }
+  .subtitulo{
+    color: aliceblue;
+    font-size: 15px;
+    font-weight: bold;
+  }
+  .subtitulo2{
+    color: aliceblue;
+    font-size: 22px;
+    font-weight: bold;
+  }
+  .titleTable{
+    color: aliceblue;
+    font-size: 14px;
+
+  }
+
+  .mat-header-cell {
+   
+    background: rgb(59, 69, 89);
+    color: aliceblue;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    font-size: 12px;
+  
+  }
+  .mat-cell{
+
+    font-size: 10px;
+    font-family: 'Montserrat', sans-serif;
+    text-align: left;
+    text-overflow: ellipsis;
+  }
+
+ 
+
+  .mat-cell:hover{
+    transform: scale(.98);
+    transition: .4s ease;
+  }
+  
+ 
+  
+  .title-center {
+    flex: 1 1 auto;
+    text-align: center;
+    color: aliceblue;
+    font-weight: bold;
+   
+    
+  }
+
+  .tool{
+    background-color: rgb(59, 69, 89);
+  }
+
+.tdCenter{
+  text-align: center;
+}
+
+.tdLeft{
+  text-align: left;
+  font-weight: bold;
+}
+
+.example-element-position{
+  background: rgba(173, 13, 13, 0.226) !important;
+  height: 55px !important;
+  color: white !important;
+  line-height: 22px !important;
+  font-size: 13px !important;
+}
+
+.example-element-detail {
+  overflow: hidden;
+  display: flex;
+}
+
+tr.example-detail-row {
+  height: 0;
+
+}
+
+/* termina */
+.example-tooltip-uppercase {
+  /* text-transform: uppercase; */
+  transform: translateY(-100px) translateX(0px) !important;
+}
+
+
+.cabe{
+  color: aliceblue;
+  font-size: 12px;
+  font-family: 'Montserrat', sans-serif;
+  font-weight: bold;
+
+}
+
+.data{
+  color: aliceblue;
+  font-size: 12px;
+  font-family: 'Montserrat', sans-serif;
+ 
+}
+.table-container {
+  height: 300px; /* Ajusta la altura deseada para la tabla */
+  overflow: auto;
+}
+

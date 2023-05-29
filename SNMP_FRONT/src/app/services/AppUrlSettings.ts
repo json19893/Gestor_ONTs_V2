@@ -48,6 +48,7 @@ export class AppUrlSettings{
     public static POLEO_METRICA_OID="snmpv2/metrica/poleo"
     public static CAMBIOS="snmp-monitor/api/v2/limpieza/onts/repetidas/"
     public static ACTUALIZA_OLT_BY_ONT="snmp-monitor/actualizaOltOnOnt/"
+    public static GET_RECHAZADOS_NCE= 'snmp-monitor/getSinActualizar'
     
    
     
