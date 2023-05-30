@@ -80,14 +80,14 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 			,"{'$match':{'numero_serie':?0} }"})
 	List<inventarioOntsEntidad> findOntBySerieT(@Param("serie") String serie);
 	
-	@Aggregation(pipeline = { "{'$match':{'alias':?0} } "})
+	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}", "{'$match':{'alias':?0} } "})
 	List<inventarioOntsEntidad> findOntByAliasT(@Param("alias") String alias);
 	
 	@Aggregation(pipeline = { "{$unionWith: 'tb_inventario_onts_pdm'}"
 			, "{'$match':{'$and':[{'numero_serie':?0},{'tipo':'E'}]}}" })
 	List<inventarioOntsEntidad> findOntBySerieE(@Param("serie") String serie);
 	
-	@Aggregation(pipeline = { "{'$match':{'$and':[{'alias':?0},{'tipo':'E'}]}}" })
+	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}", "{'$match':{'$and':[{'alias':?0},{'tipo':'E'}]}}" })
 	List<inventarioOntsEntidad> findOntByAliasE(@Param("alias") String alias);
 	
 	@Query("{numero_serie: ?0}")

@@ -169,7 +169,7 @@ public ses:any;
 
   }
 
-
+ 
 
 
 
@@ -310,6 +310,10 @@ export class DialogContentExampleDialog implements OnInit {
 
   ngOnInit() {
     this.mostrar = localStorage.getItem('mostrar');
+    if(  this.mostrar==null||   this.mostrar==undefined){
+   localStorage.setItem('mostrar',"E");
+   this.mostrar ="E"
+    }
     this.usuario =localStorage.getItem('usuario');
     this.rol =localStorage.getItem('rol');
  /*  switch ( this.rol) {
@@ -440,8 +444,9 @@ export class DialogContentExampleDialog implements OnInit {
     localStorage.setItem('busqueda', '1');
     localStorage.setItem('nom', nombre);
     localStorage.setItem('ip', ip);
-
+    this.mostrar = localStorage.getItem('mostrar'); 
     this.getOltsData = new getOlts(ip, nombre, this.mostrar);
+    console.log( " this.getOltsData::: "+this.getOltsData);
     this.service.findOlt(this.getOltsData).subscribe(
       res => {
         if (res.success) {

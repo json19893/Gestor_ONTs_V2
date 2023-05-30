@@ -353,12 +353,12 @@ public class monitorController extends constantes {
         String data = "";
         response.setSuccess(false);
 
-        if (ontData.getNumeroSerie() != null || ontData.getAlias() != null) {
-            data = ontData.getNumeroSerie() != null ? ontData.getNumeroSerie() : ontData.getAlias();
+        if (!ontData.getNumeroSerie().equals("null") || !ontData.getAlias().equals("null")) {
+            data = !ontData.getNumeroSerie().equals("null") ? ontData.getNumeroSerie() : ontData.getAlias();
 
             if (ontData.getTipo() != null) {
 
-                response = consulta.getOnt(ontData.getTipo(), data, ontData.getNumeroSerie() != null);
+                response = consulta.getOnt(ontData.getTipo(), data, !ontData.getNumeroSerie().equals("null") );
 
             } else {
                 response.setMessage("Debe de ingresar una tipo de clasificaciòn");
