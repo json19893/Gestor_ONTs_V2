@@ -23,6 +23,7 @@ public class catOltsEntidad {
 	private Integer pin;
 	private boolean descubrio;
 	private int total_onts;
+	private boolean nce;
 
 	
 

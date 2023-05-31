@@ -353,7 +353,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                 String comando;
                 boolean errorOlt = false;
 
-                if (ont.isError() || ont.getPoleable().intValue() == 0)
+                if (ont!=null && (ont.getPoleable()!=null) && (ont.isError() || ont.getPoleable().intValue() == 0))
                     errorOlt = true;
 
                 log.info("Porcesando la ont con id: " + oid);
