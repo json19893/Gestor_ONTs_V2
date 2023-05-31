@@ -15,6 +15,8 @@ public class ParametrosGeneralesEntity {
 	private Integer id_configuracion;
 	private Integer bloque;
 	private boolean poleo_metrica;
+	private boolean snmp_bulk_walk;
+	private boolean reproceso_empresariales;
 	
 
 }

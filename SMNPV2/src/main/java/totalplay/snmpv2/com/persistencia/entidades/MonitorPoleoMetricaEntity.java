@@ -22,6 +22,7 @@ public class MonitorPoleoMetricaEntity {
 	private String id_poleo;
 	private Integer ontsSnmp;
 	private String stop;
+	private Date fecha_corte;
 
 	
 
