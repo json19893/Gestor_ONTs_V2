@@ -25,6 +25,7 @@ import { BottomSheetOverviewExampleSheet} from'./menu/menu.component';
 import { DialogContentExampleDialog } from './menu/menu.component';
 import { ActualizacionComponent } from './actualizacion/actualizacion.component'
 import {detalleActualizacionOnt} from './detalleOnt/detalleOnt.component'
+
 import { ActualizaOntsDialog, ConsultaOltsComponent ,detalleEjecucionDialog, DialogElementsExampleDialog} from './consultaOlts/consultaOlts.component';
 import { FileSaverModule } from 'ngx-filesaver';
 import {DateFormatPipe} from './pipes/date-format.pipe'
@@ -55,6 +56,7 @@ import { ConvertStatusOntPipe } from './pipes/convert-status-ont.pipe';
     numberPipe,
     textPipe,
     detalleActualizacionOnt,
+
     ConvertStatusOntPipe
 
    
@@ -74,6 +76,7 @@ import { ConvertStatusOntPipe } from './pipes/convert-status-ont.pipe';
     FileSaverModule
   
     ],
+    
     
   providers: [AppRoutinProviders,BrowserModule,pointService,{ provide: MatPaginatorIntl, useValue: getDutchPaginatorIntl() }],
   bootstrap: [AppComponent]
