@@ -1,6 +1,6 @@
 import { Component, ElementRef, Inject, OnInit, ViewChild } from "@angular/core";
 import { FormBuilder, FormGroup, Validators } from "@angular/forms";
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from "@angular/material/dialog";
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA, MatDialogConfig } from "@angular/material/dialog";
 import { MatPaginator } from "@angular/material/paginator";
 import { MatTable, MatTableDataSource } from "@angular/material/table";
 import { NgxSpinnerService } from "ngx-spinner";
@@ -12,9 +12,10 @@ import { SelectionModel } from "@angular/cdk/collections";
 import { ThemePalette } from "@angular/material/core";
 
 
-import {descubrimientoManual} from '../model/descubrimientoManual';
-import {poleoManual} from '../model/poleoManual';
+import { descubrimientoManual } from '../model/descubrimientoManual';
+import { poleoManual } from '../model/poleoManual';
 import * as FileSaver from "file-saver";
+import { OntComponentDialog } from "./components/ont/ont.component";
 const EXCEL_TYPE = 'application/vnd.openxmlformats- officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
 interface Olts {
@@ -26,13 +27,14 @@ interface Olts {
   id_region: number;
   id_configuracion: number;
   estatus: number;
-  total_onts:number;
+  total_onts: number;
   id: string;
-  descubrio:boolean;
+  descubrio: boolean;
+  nce: boolean;
 }
-export interface Bloques { 
+export interface Bloques {
   bloque: number;
-  nombre:string;
+  nombre: string;
 }
 
 @Component({
@@ -44,12 +46,12 @@ export interface Bloques {
 
 export class ConsultaOltsComponent implements OnInit {
   public usuario: any;
-  blo:Bloques[]=[{bloque:1,nombre:"Bloque 1"},{bloque:2,nombre:"Bloque 2"},{bloque:3,nombre:"Bloque 3"},{bloque:4,nombre:"Bloque 4"}]
-  public dat:any;
+  blo: Bloques[] = [{ bloque: 1, nombre: "Bloque 1" }, { bloque: 2, nombre: "Bloque 2" }, { bloque: 3, nombre: "Bloque 3" }, { bloque: 4, nombre: "Bloque 4" }]
+  public dat: any;
   @ViewChild('table') table: ElementRef | undefined;
   public rol: any;
-  public manualDto:descubrimientoManual | undefined;
-  public poleoManualDto:poleoManual|undefined;
+  public manualDto: descubrimientoManual | undefined;
+  public poleoManualDto: poleoManual | undefined;
   acceso = false;
   color: ThemePalette = 'primary';
   public intentos: any;
@@ -59,19 +61,19 @@ export class ConsultaOltsComponent implements OnInit {
   ELEMENT_DATA: Olts[] = [];
   descubrimiento: any = []
   dataSource = new MatTableDataSource<Olts>;
-  columnsToDisplay = ['select', 'ip', 'nombre', 'tecnologia', 'id_region', 'totalOnts', 'descripcion', 'slide','opciones'];
+  columnsToDisplay = ['select', 'ip', 'nombre', 'tecnologia', 'id_region', 'totalOnts', 'descripcion', 'slide', 'opciones', 'eventos'];
   headers = ['Ip OLT', 'Nombre', 'Tecnología', 'Región'];
 
   selection = new SelectionModel<Olts>(true, []);
   constructor(public dialog: MatDialog,
     private spinner: NgxSpinnerService,
     private service: pointService, private _snackBar: MatSnackBar,) {
-      setInterval(() => this.valmaximo(), 100000);
+    setInterval(() => this.valmaximo(), 100000);
 
   }
   /** Whether the number of selected elements matches the total number of rows. */
   ngOnInit() {
- 
+
     this.spinner.show();
     this.getDataTable();
     this.valmaximo();
@@ -89,38 +91,40 @@ export class ConsultaOltsComponent implements OnInit {
         this.acceso = false
         break;
     }
-    
+
   }
 
-  ExportTOExcel()
-{
-  const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.ELEMENT_DATA);
-  const workbook: XLSX.WorkBook = { Sheets: { 'homologacion': worksheet }, 
- SheetNames: ['homologacion'] };
-  const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' 
-});
-  this.saveAsExcelFile(excelBuffer, "listado_OLTs");
-  
-}
-valmaximo(){
-  this.service.validaMaximo().subscribe(
-    res => {
-    
-      this.intentos = res;
+  ExportTOExcel() {
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.ELEMENT_DATA);
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'homologacion': worksheet },
+      SheetNames: ['homologacion']
+    };
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx', type: 'array'
+    });
+    this.saveAsExcelFile(excelBuffer, "listado_OLTs");
 
-    })
-}
+  }
+  valmaximo() {
+    this.service.validaMaximo().subscribe(
+      res => {
 
-saveAsExcelFile(buffer: any, fileName: string) {
-  const data: Blob = new Blob([buffer], { type: EXCEL_TYPE });
-  FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() + 
-EXCEL_EXTENSION);
-}
+        this.intentos = res;
+
+      })
+  }
+
+  saveAsExcelFile(buffer: any, fileName: string) {
+    const data: Blob = new Blob([buffer], { type: EXCEL_TYPE });
+    FileSaver.saveAs(data, fileName + '_export_' + new Date().getTime() +
+      EXCEL_EXTENSION);
+  }
 
   selec(evento: any, ip: any) {
     if (!evento) {
       this.descubrimiento.push(ip);
-    }else{
+    } else {
       this.descubrimiento = this.descubrimiento.filter((item: string) => item !== ip)
     }
     /*this.service.validaMaximo().subscribe(
@@ -155,23 +159,23 @@ EXCEL_EXTENSION);
 
   }
   activar(idOlt: any, estatus: any, tecnologia: any) {
-   // if (tecnologia != "FIBER HOME") {
-      let esta = estatus == 1 ? 0 : 1;
-      this.service.updateEstatus(idOlt, esta,this.usuario).subscribe(
-        res => {
-          this.getDataTable()
-        })
-  /*  } else {
-      this._snackBar.open("No se puede activar la olt porque aun no esta configurada para descubrimiento", "Cerrar", {
-        duration: 4000
-      });
-    }*/
+    // if (tecnologia != "FIBER HOME") {
+    let esta = estatus == 1 ? 0 : 1;
+    this.service.updateEstatus(idOlt, esta, this.usuario).subscribe(
+      res => {
+        this.getDataTable()
+      })
+    /*  } else {
+        this._snackBar.open("No se puede activar la olt porque aun no esta configurada para descubrimiento", "Cerrar", {
+          duration: 4000
+        });
+      }*/
 
   }
   getDataTable() {
     this.service.getOlts().subscribe(
       res => {
-      
+        console.log(res);
         this.ELEMENT_DATA = res;
         this.dataSource = new MatTableDataSource<Olts>(this.ELEMENT_DATA);
         this.dataSource!.paginator = this.paginator!;
@@ -179,31 +183,31 @@ EXCEL_EXTENSION);
       })
   }
 
- 
+
   actaulizaOlts() {
     const dialogRef = this.dialog.open(ActualizaOntsDialog, { disableClose: true });
 
     dialogRef.afterClosed().subscribe(result => {
-   
+
     });
   }
   descubrimientoManual() {
     if (this.descubrimiento.length > 0) {
-     /* if (this.descubrimiento.length > 5) {
-        this._snackBar.open("Solo puedes realizar 5 descubrimientos  por día", "Cerrar", {
-          duration: 4000
-        });
-      } else {*/
-        this.openDetalle()
-        this.manualDto=new descubrimientoManual(this.descubrimiento,this.usuario);
-        this.service.descubrimiento(this.manualDto).subscribe(
-          res => {
-              this._snackBar.open(res.sms, "Cerrar", {
-                duration: 4000
-              });
-              
-          })
-        /*}*/
+      /* if (this.descubrimiento.length > 5) {
+         this._snackBar.open("Solo puedes realizar 5 descubrimientos  por día", "Cerrar", {
+           duration: 4000
+         });
+       } else {*/
+      this.openDetalle()
+      this.manualDto = new descubrimientoManual(this.descubrimiento, this.usuario);
+      this.service.descubrimiento(this.manualDto).subscribe(
+        res => {
+          this._snackBar.open(res.sms, "Cerrar", {
+            duration: 4000
+          });
+
+        })
+      /*}*/
     } else {
       this._snackBar.open("Debes seleccionar al menos una olt", "Cerrar", {
         duration: 4000
@@ -211,37 +215,51 @@ EXCEL_EXTENSION);
     }
   }
 
-  poleoMetrica(idBloque:any) {
+  poleoMetrica(idBloque: any) {
     if (this.descubrimiento.length > 0) {
-      this.poleoManualDto=new poleoManual(this.descubrimiento,this.usuario,idBloque);
-        //this.openDetalle()
-        this.service.poleoMetrica(this.poleoManualDto).subscribe(
-          res => {
-              this._snackBar.open(res.sms, "Cerrar", {
-                duration: 4000
-              });
-          })
-       
+      this.poleoManualDto = new poleoManual(this.descubrimiento, this.usuario, idBloque);
+      //this.openDetalle()
+      this.service.poleoMetrica(this.poleoManualDto).subscribe(
+        res => {
+          this._snackBar.open(res.sms, "Cerrar", {
+            duration: 4000
+          });
+        })
+
     } else {
       this._snackBar.open("Debes seleccionar al menos una olt", "Cerrar", {
         duration: 4000
       });
     }
+  }
+
+  //Aqui mete la funcion
+  //Redireccion al detalle olt
+  openDetalleHomologacion(olt: Olts) {
+    const { id_olt } = olt;
+    const dialogConfig = new MatDialogConfig<Olts>();
+    dialogConfig.disableClose = false;
+    dialogConfig.autoFocus = true;
+    dialogConfig.height = '50vh';
+    dialogConfig.width = '130vw';
+    dialogConfig.data = olt;
+
+    this.dialog.open(OntComponentDialog, dialogConfig);
   }
 
   openDetalle() {
-    this.dialog.open(detalleEjecucionDialog,{
+    this.dialog.open(detalleEjecucionDialog, {
       height: '80vh',
-    width: '130vw',
+      width: '130vw',
     });
   }
 
   openDialog() {
-    this.dialog.open(DialogElementsExampleDialog,{
+    this.dialog.open(DialogElementsExampleDialog, {
       height: '80vh',
-    width: '130vw',
+      width: '130vw',
     });
-    
+
   }
 
   applyFilter(event: Event) {
@@ -445,8 +463,8 @@ export interface data {
   fecha: string;
   estatus: string;
   descripcion: string;
-  onts:number;
-  usuario:string
+  onts: number;
+  usuario: string
 
 }
 
@@ -457,9 +475,9 @@ export interface data {
 })
 
 export class detalleEjecucionDialog implements OnInit {
-archivo:any;
+  archivo: any;
   dataSource = new MatTableDataSource<data>;
-  displayedColumns: string[] = ['ip', 'nombre', 'fecha', 'descripcion', 'usuario','totalOnts','estatus'];
+  displayedColumns: string[] = ['ip', 'nombre', 'fecha', 'descripcion', 'usuario', 'totalOnts', 'estatus'];
   ELEMENT_DATA: data[] = [];
   constructor(
 
@@ -486,7 +504,7 @@ archivo:any;
   getaArchivo() {
     this.service.getArchivo(1).subscribe(
       res => {
-        this.archivo=res;
+        this.archivo = res;
       })
 
   }
@@ -497,183 +515,183 @@ archivo:any;
   templateUrl: 'actualiza-manual.html',
   styleUrls: ['./actualiza-manual.css']
 })
-export class DialogElementsExampleDialog  implements OnInit   {
+export class DialogElementsExampleDialog implements OnInit {
   panelOpenState = false;
   selection = new SelectionModel<Imetricas>(true, []);
-  displayedColumns: string[] = ['nombre', 'huawei', 'zte', 'fh','acciones'];
-  ELEMENT_DATA:lisMetrics[] = [];
-  bloqueAnt:any;
-  dataSourceMe:lisMetrics[] = [];
+  displayedColumns: string[] = ['nombre', 'huawei', 'zte', 'fh', 'acciones'];
+  ELEMENT_DATA: lisMetrics[] = [];
+  bloqueAnt: any;
+  dataSourceMe: lisMetrics[] = [];
   //dataSourceMe= new  MatTableDataSource<lisMetrics>(this.ELEMENT_DATA);
-  arrMetricas: any[]=[]
+  arrMetricas: any[] = []
   selectedValue: string | undefined;
-   blo1:Imetricas []=[];
-   blo2:Imetricas []=[];
-   blo3:Imetricas []=[];
-   blo4:Imetricas []=[];
-   sb:Imetricas []=[];
-   blo:Bloques[]=[{bloque:1,nombre:"Identificación ONTs"},{bloque:2,nombre:"Estatus ONTs"},{bloque:3,nombre:"Performance ONTs"},{bloque:4,nombre:"Otro"},{bloque:5,nombre:"Sin bloque asignado"}]
- 
+  blo1: Imetricas[] = [];
+  blo2: Imetricas[] = [];
+  blo3: Imetricas[] = [];
+  blo4: Imetricas[] = [];
+  sb: Imetricas[] = [];
+  blo: Bloques[] = [{ bloque: 1, nombre: "Identificación ONTs" }, { bloque: 2, nombre: "Estatus ONTs" }, { bloque: 3, nombre: "Performance ONTs" }, { bloque: 4, nombre: "Otro" }, { bloque: 5, nombre: "Sin bloque asignado" }]
+
   constructor(
     private service: pointService,
     private spinner: NgxSpinnerService,
     private _snackbar: MatSnackBar
   ) {
   }
-ngOnInit() {
+  ngOnInit() {
     this.getMetricas();
   }
 
 
-   
-  getMetricas (){
-  
+
+  getMetricas() {
+
     this.service.detalleMetricas().subscribe(
-     res =>{
-    
-      this.ELEMENT_DATA =[]
-        this.dataSourceMe =  []
-        this.blo1=[];
-        this.blo2=[];
-        this.blo3=[];
-        this.blo4=[];
-        this.sb=[];
-      let val
-       for(let d in res.entity){
-         val={
-          nombre:res.entity[d].nombre,
-          oidHuawei:res.entity[d].zte.oid==''?null:res.entity[d].zte.oid,
-          oidZte:res.entity[d].huawei.oid==''?null:res.entity[d].huawei.oid,
-          oidFh:res.entity[d].fh.oid==''?null:res.entity[d].fh.oid,
-          id_metrica:res.entity[d].id_metrica ,
-        }
-        
-      this.asignaBloque(val, res.entity[d].bloque)
+      res => {
 
-      }
-      let valB;
-      const bl=this.blo.filter(nombre => nombre.nombre != "Sin bloque asignado")
-      for(let b in this.blo){
-        valB={
-          grupo:this.blo[b].nombre,
-          items:this.blo[b].bloque==1?this.blo1:
-          this.blo[b].bloque==2?this.blo2:
-          this.blo[b].bloque==3?this.blo3:
-          this.blo[b].bloque==4?this.blo4:this.sb ,
-          bloq:bl.filter(nombre => nombre.nombre !=this.blo[b].nombre),
-          bloque:this.blo[b].bloque
+        this.ELEMENT_DATA = []
+        this.dataSourceMe = []
+        this.blo1 = [];
+        this.blo2 = [];
+        this.blo3 = [];
+        this.blo4 = [];
+        this.sb = [];
+        let val
+        for (let d in res.entity) {
+          val = {
+            nombre: res.entity[d].nombre,
+            oidHuawei: res.entity[d].zte.oid == '' ? null : res.entity[d].zte.oid,
+            oidZte: res.entity[d].huawei.oid == '' ? null : res.entity[d].huawei.oid,
+            oidFh: res.entity[d].fh.oid == '' ? null : res.entity[d].fh.oid,
+            id_metrica: res.entity[d].id_metrica,
+          }
+
+          this.asignaBloque(val, res.entity[d].bloque)
 
         }
-       
-        this.ELEMENT_DATA.push(valB);
+        let valB;
+        const bl = this.blo.filter(nombre => nombre.nombre != "Sin bloque asignado")
+        for (let b in this.blo) {
+          valB = {
+            grupo: this.blo[b].nombre,
+            items: this.blo[b].bloque == 1 ? this.blo1 :
+              this.blo[b].bloque == 2 ? this.blo2 :
+                this.blo[b].bloque == 3 ? this.blo3 :
+                  this.blo[b].bloque == 4 ? this.blo4 : this.sb,
+            bloq: bl.filter(nombre => nombre.nombre != this.blo[b].nombre),
+            bloque: this.blo[b].bloque
+
+          }
+
+          this.ELEMENT_DATA.push(valB);
+        }
+
+        this.dataSourceMe = this.ELEMENT_DATA
+
       }
-      
-      this.dataSourceMe = this.ELEMENT_DATA
-    
-    }
     )
   }
- asignaBloque(data:any,bloque:any){
-  let val
+  asignaBloque(data: any, bloque: any) {
+    let val
 
-  if (bloque.length>0){
-    for(let d in bloque){
-      val={
-        nombre:data.nombre,
-        oidHuawei:data.oidHuawei,
-        oidZte:data.oidZte,
-        oidFh:data.oidFh,
-        id_metrica:data.id_metrica ,
-      
+    if (bloque.length > 0) {
+      for (let d in bloque) {
+        val = {
+          nombre: data.nombre,
+          oidHuawei: data.oidHuawei,
+          oidZte: data.oidZte,
+          oidFh: data.oidFh,
+          id_metrica: data.id_metrica,
+
+        }
+        switch (bloque[d]) {
+          case 1:
+            this.blo1.push(val)
+            break;
+          case 2:
+            this.blo2.push(val)
+            break;
+          case 3:
+            this.blo3.push(val)
+            break;
+          case 4:
+            this.blo4.push(val)
+            break;
+        }
+
       }
-      switch (bloque[d]) {
-        case 1:
-          this.blo1.push(val)
-          break;
-        case 2:
-          this.blo2.push(val)
-          break;
-       case 3:
-          this.blo3.push(val)
-          break;
-        case 4:
-          this.blo4.push(val)
-          break;
+
+    } else {
+      val = {
+        nombre: data.nombre,
+        oidHuawei: data.oidHuawei,
+        oidZte: data.oidZte,
+        oidFh: data.oidFh,
+        id_metrica: data.id_metrica,
       }
-      
+      this.sb.push(val)
+
     }
-    
-  }else{
-    val={
-      nombre:data.nombre,
-      oidHuawei:data.oidHuawei,
-      oidZte:data.oidZte,
-      oidFh:data.oidFh,
-      id_metrica:data.id_metrica ,
-    }
-    this.sb.push(val)
-         
+    this.sb = this.sb.filter(nombre => nombre.nombre != 'SERIAL NUMBER')
   }
-  this.sb=this.sb.filter(nombre => nombre.nombre !='SERIAL NUMBER')
- }
 
-trackByFn(index: number, group: any): number {
-  return group.id;
-}
+  trackByFn(index: number, group: any): number {
+    return group.id;
+  }
 
-hasDetails(_: number, group: any): boolean {
-  return group.items && group.items.length > 0;
-}
+  hasDetails(_: number, group: any): boolean {
+    return group.items && group.items.length > 0;
+  }
 
-selec(idMetrica: any,idBloque:any,tipo:any) {
- 
-  if (tipo=='A'){
-     this.service.changeMetricas(idMetrica,idBloque).subscribe(
-     res =>{
-      this.ELEMENT_DATA =[]
-        this.dataSourceMe =  []
-        this._snackbar.open(res.sms, "Cerrar", {
-          duration: 4000
-        });
-        this.getMetricas();
-    } 
-    )
-   
-  }else{
-    this.service.removeMetricas(idMetrica,idBloque).subscribe(
-      res =>{
-        this.ELEMENT_DATA =[]
-        this.dataSourceMe =  []
-  
-         this._snackbar.open(res.sms, "Cerrar", {
-           duration: 4000
-         });
-         this.getMetricas();
-     } 
-     
-     )
-    
+  selec(idMetrica: any, idBloque: any, tipo: any) {
+
+    if (tipo == 'A') {
+      this.service.changeMetricas(idMetrica, idBloque).subscribe(
+        res => {
+          this.ELEMENT_DATA = []
+          this.dataSourceMe = []
+          this._snackbar.open(res.sms, "Cerrar", {
+            duration: 4000
+          });
+          this.getMetricas();
+        }
+      )
+
+    } else {
+      this.service.removeMetricas(idMetrica, idBloque).subscribe(
+        res => {
+          this.ELEMENT_DATA = []
+          this.dataSourceMe = []
+
+          this._snackbar.open(res.sms, "Cerrar", {
+            duration: 4000
+          });
+          this.getMetricas();
+        }
+
+      )
+
+    }
   }
 }
-}
-export interface Imetricas { 
+export interface Imetricas {
   nombre: string;
   oidHuawei: string;
   oidZte: string;
   oidFh: string;
-  id_metrica:number;
- 
+  id_metrica: number;
+
 }
 
-export interface Bloques { 
+export interface Bloques {
   bloque: number;
-  nombre:string;
+  nombre: string;
 }
-export interface  lisMetrics { 
- grupo:string;
- items:Imetricas[]
- bloq:Bloques[]
- bloque:number
+export interface lisMetrics {
+  grupo: string;
+  items: Imetricas[]
+  bloq: Bloques[]
+  bloque: number
 }
 
 
