@@ -258,18 +258,18 @@
                                       </div>
               
                                     <div class="col-sm-3">
-                                      <span class="cabe">Última fecha arriba:</span>
+                                      <span class="cabe">Last up time:</span>
                                         <br>
                                         <span class="data">{{lastUpTime|dateFormat}}</span>
                                       </div>
               
                                     <div class="col-sm-3">
-                                      <span class="cabe">Bytes de subida:</span>
+                                      <span class="cabe">Up bytes:</span>
                                         <br>
                                         <span class="data">{{upBytes=="" ? "--": upBytes | number: '1.0-0'}} MB</span>
                                       </div>
                                       <div class="col-sm-3">
-                                        <span class="cabe">Bytes de bajada</span>
+                                        <span class="cabe">Down bytes</span>
                                           <br>
                                           <span class="data">{{downBytes=="" ? "--": downBytes | number: '1.0-0'}} MB</span>
                                         </div>
@@ -278,25 +278,25 @@
                                   <br>
                                   <div class="row" >
                                         <div class="col-sm-3">
-                                          <span class="cabe">Paquetes arriba:</span>
+                                          <span class="cabe">Up packets:</span>
                                         <br>
                                         <span class="data"> {{upPackets ==""? "--" : upPackets | number: '1.0-0'}} MB</span>
                                       </div>
               
                                     <div class="col-sm-3">
-                                      <span class="cabe">Paquetes perdidos:</span>
+                                      <span class="cabe">Down packets:</span>
                                         <br>
                                         <span class="data">{{downPackets=="" ? "--":downPackets | number: '1.0-0'}} MB</span>
                                       </div>
               
                                     <div class="col-sm-3">
-                                        <span class="cabe">Paquetes perdidos de subida:</span>
+                                        <span class="cabe">Drop up packets:</span>
                                         <br>
                                         <span class="data">{{dropUpPackets=="" ? "--": dropUpPackets | number: '1.0-0'}} MB</span>
                                       </div>
               
                                       <div class="col-sm-3">
-                                        <span class="cabe">Paquetes perdidos de bajada:</span>
+                                        <span class="cabe">Drop down packets:</span>
                                         <br>
                                         <span class="data">{{dropDownPackets ==""? "--":dropDownPackets | number: '1.0-0'}} MB </span>
                                       </div>
@@ -304,36 +304,32 @@
                                   <br>
                                   <div class="row" >
                                         <div class="col-sm-3">
-                                        <span class="cabe">CPU ocupado:</span>
+                                        <span class="cabe">CPU:</span>
                                         <br>
-                                        <span class="data">{{cpu == "" ? "--":cpu}} %</span>
+                                        <span class="data">{{cpu}} %</span>
                                       </div>
               
                                     <div class="col-sm-3">
-                                      <span class="cabe">Memoria ocupada:</span>
+                                      <span class="cabe">Memoria:</span>
                                         <br>
-                                        <span class="data">{{memoria == "" ? "--" : memoria}} %</span>
+                                        <span class="data">{{ memoria}} %</span>
                                       </div>
               
                                     <div class="col-sm-3">
-                                      <span class="cabe">Nombre de perfil:</span>
+                                      <span class="cabe">Prof name:</span>
                                         <br>
                                         <span class="data">{{profName == "" ? "--": profName}}</span>
                                       </div>
+                                 
                                       <div class="col-sm-3">
-                                        <span class="cabe">Paquetes recibidos :</span>
+                                        <span class="cabe">Timeout:</span>
                                         <br>
-                                        <span class="data">{{upPackets==""? "--": upPackets | number: '1.0-0'}} MB</span>
+                                        <span class="data">{{timeOut=="" ? "--":timeOut}}</span>
                                       </div>
-                                     
                                   </div>
                                   <br>
                                   <div class="row" >
-                                    <div class="col-sm-3">
-                                      <span class="cabe">Periodo de trabajo:</span>
-                                      <br>
-                                      <span class="data">{{timeOut=="" ? "--":timeOut}}</span>
-                                    </div>
+                                    
 
                                   </div>
                               </div>

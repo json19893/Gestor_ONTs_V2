@@ -54,7 +54,7 @@ public class LoginServiceImpl implements IloginService {
 			if(exite>0) {
 				if(u.equals("amagos")||u.equals("jsalgadom")) {
 					usuariosEntity usuario=	usuarios.findByNombreUsuario(u);
-					if(usuario.getSesion()==0 ) {
+					//if(usuario.getSesion()==0 ) {
 						Optional<RolesEntity>  rol= roles.findById(usuario.getRol());
 						response.setCod(0);
 						response.setSms("OK");
@@ -71,7 +71,7 @@ public class LoginServiceImpl implements IloginService {
 						intentos.add(request.getC());
 						usuario.setIpConexionIntentos(intentos);
 						usuarios.save(usuario);
-						}else {
+				/* 		}else {
 					response.setCod(1);
 					response.setSms("Ya existe una seion activa par el usuario: "+ u);
 					usuario.setIntentos(usuario.getIntentos()+1);
@@ -80,14 +80,14 @@ public class LoginServiceImpl implements IloginService {
 					usuario.setIpConexionIntentos(intentos);
 					usuarios.save(usuario);
 					return response;
-				}
+				}*/
 			}else {
 				
 				String res = validaUsuario(u,p);
 				usuariosEntity usuario=	usuarios.findByNombreUsuario(u);
 				if (res == "LDAP_SUCCESS") {
 		
-					if(usuario.getSesion()==0) {
+					//if(usuario.getSesion()==0) {
 					Optional<RolesEntity>  rol= roles.findById(usuario.getRol());
 					
 					response.setCod(0);
@@ -104,7 +104,7 @@ public class LoginServiceImpl implements IloginService {
 					intentos.add(request.getC());
 					usuario.setIpConexionIntentos(intentos);
 					usuarios.save(usuario);
-			}else {
+		/*	}else {
 					response.setCod(1);
 					response.setSms("Ya existe una seion activa par el usuario: "+ u);
 					usuario.setIntentos(usuario.getIntentos()+1);
@@ -113,7 +113,7 @@ public class LoginServiceImpl implements IloginService {
 					usuario.setIpConexionIntentos(intentos);
 					usuarios.save(usuario);
 					return response;
-				}
+				}*/
 				
 				}else {
 					response.setCod(1);

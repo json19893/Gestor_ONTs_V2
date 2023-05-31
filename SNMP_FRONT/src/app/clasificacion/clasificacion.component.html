@@ -1,13 +1,11 @@
 <div class="container" *ngIf="muestraHome=='false'
  && muestraDetalle=='false'
   && detalleClasificacion=='false' 
-   &&  detalleOnts=='false' 
-   && inventarioNce=='false' 
+   &&  detalleOnts=='false'  
   || muestraHome==undefined 
    && muestraDetalle==undefined 
    && detalleClasificacion==undefined 
-   && detalleOnts==undefined 
-   && inventarioNce==undefined" >
+   && detalleOnts==undefined " >
   <span class="title-center2"> Monitoreo de OLTs</span>
 <br><br>
 <mat-divider></mat-divider>
@@ -346,4 +344,3 @@
 
   <app-consultaOlts *ngIf=" detalleOnts=='true'"></app-consultaOlts> 
 
-  <app-inventarioNce *ngIf=" inventarioNce=='true'"></app-inventarioNce>

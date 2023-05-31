@@ -152,7 +152,7 @@ public ses:any;
     localStorage.setItem('muestraHome', 'false');
     localStorage.setItem('muestraDetalle', 'false');
     localStorage.setItem('detalleOnts', 'false');
-    localStorage.setItem('inventarioNce','false')
+
     window.location.reload();
 
   }
@@ -163,21 +163,13 @@ public ses:any;
     localStorage.setItem('muestraHome', 'false');
     localStorage.setItem('muestraDetalle', 'false');
     localStorage.setItem('detalleOnts', 'true');
-    localStorage.setItem('inventarioNce','false')
+
 
     window.location.reload();
 
   }
 
-  getmuestrainventarioNce() {
-    localStorage.setItem( "detalleClasificacion",'false'); 
-    localStorage.setItem('muestraHome', 'false');
-    localStorage.setItem('muestraDetalle', 'false');
-    localStorage.setItem('detalleOnts', 'false');
-    localStorage.setItem('inventarioNce','true')
-
-    window.location.reload();
-  }
+ 
 
 
 
@@ -318,6 +310,10 @@ export class DialogContentExampleDialog implements OnInit {
 
   ngOnInit() {
     this.mostrar = localStorage.getItem('mostrar');
+    if(  this.mostrar==null||   this.mostrar==undefined){
+   localStorage.setItem('mostrar',"E");
+   this.mostrar ="E"
+    }
     this.usuario =localStorage.getItem('usuario');
     this.rol =localStorage.getItem('rol');
  /*  switch ( this.rol) {
@@ -442,15 +438,15 @@ export class DialogContentExampleDialog implements OnInit {
     localStorage.setItem( "detalleClasificacion","false"); 
     localStorage.setItem( "detalleOnts","false");
     localStorage.setItem('muestraDetalle', 'false');
-    localStorage.setItem('inventarioNce','false')
     this.spinner.show();
     var nombre = this.form2.value.nombre == 'null' ? null : this.form2.value.nombre;
     var ip = this.form2.value.ip == 'null' ? null : this.form2.value.ip;
     localStorage.setItem('busqueda', '1');
     localStorage.setItem('nom', nombre);
     localStorage.setItem('ip', ip);
-
+    this.mostrar = localStorage.getItem('mostrar'); 
     this.getOltsData = new getOlts(ip, nombre, this.mostrar);
+    console.log( " this.getOltsData::: "+this.getOltsData);
     this.service.findOlt(this.getOltsData).subscribe(
       res => {
         if (res.success) {
