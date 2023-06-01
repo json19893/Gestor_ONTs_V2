@@ -32,8 +32,7 @@ export class OntComponentDialog implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     'id', 'numero_serie', 'oid', 'tecnologia',
     'frame', 'slot', 'port',
-    'fecha_descubrimiento', 'acciones', 'eventos',
-
+    'fecha_descubrimiento', 'acciones'
   ];
 
   dataSource!: MatTableDataSource<OntResponse>;

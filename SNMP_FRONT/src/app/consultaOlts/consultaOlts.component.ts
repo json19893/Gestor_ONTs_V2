@@ -175,7 +175,6 @@ export class ConsultaOltsComponent implements OnInit {
   getDataTable() {
     this.service.getOlts().subscribe(
       res => {
-        console.log(res);
         this.ELEMENT_DATA = res;
         this.dataSource = new MatTableDataSource<Olts>(this.ELEMENT_DATA);
         this.dataSource!.paginator = this.paginator!;
@@ -240,7 +239,7 @@ export class ConsultaOltsComponent implements OnInit {
     const dialogConfig = new MatDialogConfig<Olts>();
     dialogConfig.disableClose = false;
     dialogConfig.autoFocus = true;
-    dialogConfig.height = '50vh';
+    dialogConfig.height = '65vh';
     dialogConfig.width = '130vw';
     dialogConfig.data = olt;
 
