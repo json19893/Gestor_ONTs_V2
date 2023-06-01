@@ -24,8 +24,8 @@ import { ClasificacionComponent } from './clasificacion/clasificacion.component'
 import { BottomSheetOverviewExampleSheet } from './menu/menu.component';
 import { DialogContentExampleDialog } from './menu/menu.component';
 import { ActualizacionComponent } from './actualizacion/actualizacion.component'
-import { detalleActualizacionOnt } from './detalleOnt/detalleOnt.component'
-import { ActualizaOntsDialog, ConsultaOltsComponent, detalleEjecucionDialog, DialogElementsExampleDialog } from './consultaOlts/consultaOlts.component';
+import {detalleActualizacionOnt} from './detalleOnt/detalleOnt.component'
+import { ActualizaOntsDialog, ConsultaOltsComponent ,detalleEjecucionDialog, DialogElementsExampleDialog} from './consultaOlts/consultaOlts.component';
 import { FileSaverModule } from 'ngx-filesaver';
 import { DateFormatPipe } from './pipes/date-format.pipe'
 import { numberPipe } from './pipes/number-format.pipe'
@@ -36,7 +36,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-
+import { OntComponentDialog } from './consultaOlts/components/ont/ont.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -60,10 +60,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     numberPipe,
     textPipe,
     detalleActualizacionOnt,
-    ConvertStatusOntPipe,
     OntComponentDialog
-
-
+    ConvertStatusOntPipe
   ],
   imports: [
     BrowserModule,
@@ -76,14 +74,8 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
     NgxSpinnerModule,
     GoogleMapsModule,
     HttpClientModule,
-    FileSaverModule,
-    MatFormFieldModule,
-    MatInputModule,
-    MatNativeDateModule,
-    MatDatepickerModule
-  ],
+  providers: [AppRoutinProviders,BrowserModule,pointService,{ provide: MatPaginatorIntl, useValue: getDutchPaginatorIntl() }],
 
-  providers: [AppRoutinProviders, BrowserModule, pointService, { provide: MatPaginatorIntl, useValue: getDutchPaginatorIntl() }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

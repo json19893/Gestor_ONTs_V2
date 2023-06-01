@@ -104,6 +104,14 @@ public class MetricasController extends Constantes {
 		Integer maxOntsEmpresariales;
 		int activas = 0;
 		MonitorPoleoMetricaEntity monitPoleoMetrica;
+		boolean snmpBulkWalk=true;
+		boolean reprocesoEmpresariales=false;
+		
+		ParametrosGeneralesEntity parametros =  parametrosGenerales.getParametros(1);
+		if(parametros != null) {
+			snmpBulkWalk = parametros.isSnmp_bulk_walk();
+			reprocesoEmpresariales = parametros.isReproceso_empresariales(); 
+		}
 		
 			
 		
@@ -113,6 +121,7 @@ public class MetricasController extends Constantes {
 			//Se crea un nuevo registro para el monitor		
 			idMonitorPoleo = monitorPoleo.save(new MonitorPoleoEntity(util.getDate(), null,INICIO_DESC+"POLEO" , INICIO)).getId();
 			
+		
 			
 			List<CatOltsEntity> olts = catOlts.findByEstatus(1);
 			List<CompletableFuture<String>> regionSegmentOnts;
@@ -127,27 +136,31 @@ public class MetricasController extends Constantes {
 					monitPoleoMetrica = monitorMetrica.save(new MonitorPoleoMetricaEntity(Integer.valueOf(j),util.getDate(),idMonitorPoleo));
 					idMonitorMetrica = monitPoleoMetrica.getId(); 
 					//monitPoleoMetrica = monitorMetrica.getMonitorMetrica(idMonitorMetrica);
-					
-					regionSegmentOnts = new ArrayList<CompletableFuture<String>>();			
-					
-					Integer maxOnts = (olts.size() /110) + 1;
-					
-					for (int i = 0; i < olts.size(); i += maxOnts) {
-						Integer limMax = i + maxOnts;
-						if (limMax >= olts.size()) {
-							limMax = olts.size();
-						}
-						List<CatOltsEntity> listSegment = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
-		
-						CompletableFuture<String> executeProcess = poleoMetricas.executeProcess(listSegment, idMonitorPoleo, j);
-						regionSegmentOnts.add(executeProcess);
-					}
-		
-					CompletableFuture.allOf(regionSegmentOnts.toArray(new CompletableFuture[regionSegmentOnts.size()])).join();
+					if(snmpBulkWalk) {
+						regionSegmentOnts = new ArrayList<CompletableFuture<String>>();			
+						
+						Integer maxOnts = (olts.size() /110) + 1;
+						
+						for (int i = 0; i < olts.size(); i += maxOnts) {
+							Integer limMax = i + maxOnts;
+							if (limMax >= olts.size()) {
+								limMax = olts.size();
+							}
+							List<CatOltsEntity> listSegment = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
 			
+							CompletableFuture<String> executeProcess = poleoMetricas.executeProcess(listSegment, idMonitorPoleo, j);
+							regionSegmentOnts.add(executeProcess);
+						}
+			
+						CompletableFuture.allOf(regionSegmentOnts.toArray(new CompletableFuture[regionSegmentOnts.size()])).join();
+					}
+					
 					//Obtener las empresariales no poeladas y mandarlas con otro servicio
-					ontsEmpresariales =  poleoMetricas.getOntsFaltantes(j,idMonitorPoleo, true, false, "auxiliar", 2, null);
+					ontsEmpresariales =  poleoMetricas.getOntsFaltantes(j,idMonitorPoleo, true, reprocesoEmpresariales, "auxiliar", 2, null);
+					
 					monitPoleoMetrica.setOntsSnmp(ontsEmpresariales.size());
+					monitPoleoMetrica.setFecha_corte(util.getDate());					
+					
 					log.info(ontsEmpresariales.size()+"---------------------------------------------");
 					
 					if(ontsEmpresariales != null) {
