@@ -16,6 +16,7 @@ import { descubrimientoManual } from '../model/descubrimientoManual';
 import { poleoManual } from '../model/poleoManual';
 import * as FileSaver from "file-saver";
 import { OntComponentDialog } from "./components/ont/ont.component";
+import { DialogInventarioComponent } from "./components/dialog-inventario/dialog-inventario.component";
 const EXCEL_TYPE = 'application/vnd.openxmlformats- officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
 interface Olts {
@@ -45,6 +46,9 @@ export interface Bloques {
 })
 
 export class ConsultaOltsComponent implements OnInit {
+
+  public listAceptadas!: [];
+
   public usuario: any;
   blo: Bloques[] = [{ bloque: 1, nombre: "Bloque 1" }, { bloque: 2, nombre: "Bloque 2" }, { bloque: 3, nombre: "Bloque 3" }, { bloque: 4, nombre: "Bloque 4" }]
   public dat: any;
@@ -61,8 +65,9 @@ export class ConsultaOltsComponent implements OnInit {
   ELEMENT_DATA: Olts[] = [];
   descubrimiento: any = []
   dataSource = new MatTableDataSource<Olts>;
-  columnsToDisplay = ['select', 'ip', 'nombre', 'tecnologia', 'id_region', 'totalOnts', 'descripcion', 'slide', 'opciones', 'eventos'];
-  headers = ['Ip OLT', 'Nombre', 'Tecnología', 'Región'];
+  columnsToDisplay = ['select', 'ip', 'nombre', 'tecnologia', 'id_region', 'totalOnts',
+    'descripcion', 'slide', 'opciones', 'eventos'];
+  headers = ['Ip OLT', 'Nombre', 'Tecnología', 'Región', 'eventos'];
 
   selection = new SelectionModel<Olts>(true, []);
   constructor(public dialog: MatDialog,
@@ -261,6 +266,23 @@ export class ConsultaOltsComponent implements OnInit {
 
   }
 
+  openDetalleAceptadas(olt: Olts) {
+    let wrapper ={
+      olt: olt,
+      list: this.listAceptadas
+    }
+
+    const { id_olt } = olt;
+    const dialogConfig = new MatDialogConfig<any>();
+    dialogConfig.disableClose = false;
+    dialogConfig.autoFocus = true;
+    dialogConfig.height = '65vh';
+    dialogConfig.width = '130vw';
+    dialogConfig.data = wrapper;
+
+    this.dialog.open(DialogInventarioComponent, dialogConfig);
+  }
+
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
     this.dataSource.filter = filterValue.trim().toLowerCase();
@@ -269,6 +291,23 @@ export class ConsultaOltsComponent implements OnInit {
       this.dataSource.paginator.firstPage();
     }
     this.dataSource!.paginator = this.paginator!;
+  }
+
+  poleoOlt(idOlt: Olts) {
+    console.log('servicio 1');
+    this.spinner.show();
+    this.service.poleoOlt(idOlt.id_olt).subscribe((data) => {
+      console.log(data);
+
+    if (data.cod == 0) {
+    this.service.getAceptadosInventario(idOlt.id_olt, idOlt.ip, new Date().toISOString(), new Date().toISOString()).subscribe((resp) => {
+      console.log('servicio 2');
+      this.spinner.hide();
+      this.listAceptadas = resp;
+      this.openDetalleAceptadas(idOlt);
+    });
+    }
+    });
   }
 
 }

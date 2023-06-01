@@ -8,6 +8,7 @@ import { MatSort } from '@angular/material/sort';
 import { FormControl, FormControlName, FormGroup } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { Olts } from 'src/app/model/names.olts';
+import { getElement } from '@amcharts/amcharts4/core';
 
 @Component({
   selector: 'app-ont',
@@ -15,6 +16,9 @@ import { Olts } from 'src/app/model/names.olts';
   styleUrls: ['./ont.component.css']
 })
 export class OntComponentDialog implements OnInit, AfterViewInit {
+  dateFin: any;
+  fechaFin: any;
+  responseData!: OntResponse[];
 
 
   applyFilter(event: Event) {
@@ -32,7 +36,7 @@ export class OntComponentDialog implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     'id', 'numero_serie', 'oid', 'tecnologia',
     'frame', 'slot', 'port',
-    'fecha_descubrimiento', 'acciones'
+    'fecha_descubrimiento',
   ];
 
   dataSource!: MatTableDataSource<OntResponse>;
@@ -42,8 +46,8 @@ export class OntComponentDialog implements OnInit, AfterViewInit {
   isRateLimitReached: boolean = true;
 
   myGroup = new FormGroup({
-    fechaIni: new FormControl<string>(''),
-    fechaFin: new FormControl<string>(''),
+    fechaIni: new FormControl<Date>(new Date()),
+    fechaFin: new FormControl<Date>(new Date()),
   });
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
@@ -80,7 +84,7 @@ export class OntComponentDialog implements OnInit, AfterViewInit {
       if (!(data.length === 0)) {
         this.isRateLimitReached = data === null;
       }
-
+      this.responseData = data;
       this.resultsLength = data.length;
       this.dataSource = new MatTableDataSource<OntResponse>(data);
     });
@@ -91,18 +95,35 @@ export class OntComponentDialog implements OnInit, AfterViewInit {
     console.log(this.tipo);
   }
 
-  filtrarPorRangoFechas() {
+  filtrarPorRangoFechas(event: Event) {
+    let dt = document.getElementById('dates');
+
     const fechaIni = this.myGroup.value.fechaIni;
     const fechaFin = this.myGroup.value.fechaFin;
-    console.log(fechaIni);
-    console.log(fechaFin);
 
-    this.service.obtenerOnts({
-      idOlt: this.currentOlt.id_olt,
-      ipOlt: this.currentOlt.ip,
-      fechaIni: fechaIni,
-      fechaFin: fechaFin
-    });
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+    this.dataSource.paginator = this.paginator;
+
+    //Aqui filtra y despues 
+    let ontResponse: OntResponse[] = [];
+    let pureArray = this.responseData.map(t => t);
+
+    let list: OntResponse[] = [];
+
+    for (const iterator of pureArray.values()) {
+
+      if (fechaFin != null
+        && fechaIni != null
+        && iterator.fecha_descubrimiento >= fechaIni
+        && iterator.fecha_descubrimiento <= fechaFin) {
+        console.log(iterator)
+        list.push(iterator);
+      }
+    }
+
+    this.dataSource = new MatTableDataSource<OntResponse>(list);
   }
 
   polearOLT(olt: Olts) {
