@@ -24,19 +24,19 @@ import { ClasificacionComponent } from './clasificacion/clasificacion.component'
 import { BottomSheetOverviewExampleSheet } from './menu/menu.component';
 import { DialogContentExampleDialog } from './menu/menu.component';
 import { ActualizacionComponent } from './actualizacion/actualizacion.component'
-import {detalleActualizacionOnt} from './detalleOnt/detalleOnt.component'
-import { ActualizaOntsDialog, ConsultaOltsComponent ,detalleEjecucionDialog, DialogElementsExampleDialog} from './consultaOlts/consultaOlts.component';
+import { detalleActualizacionOnt } from './detalleOnt/detalleOnt.component'
+import { ActualizaOntsDialog, ConsultaOltsComponent, detalleEjecucionDialog, DialogElementsExampleDialog } from './consultaOlts/consultaOlts.component';
 import { FileSaverModule } from 'ngx-filesaver';
 import { DateFormatPipe } from './pipes/date-format.pipe'
 import { numberPipe } from './pipes/number-format.pipe'
 import { textPipe } from './pipes/text-format.pipe'
 import { ConvertStatusOntPipe } from './pipes/convert-status-ont.pipe';
-import { OntComponentDialog } from './consultaOlts/components/ont/ont.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { OntComponentDialog } from './consultaOlts/components/ont/ont.component';
+import { DialogInventarioComponent } from './consultaOlts/components/dialog-inventario/dialog-inventario.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -60,8 +60,8 @@ import { OntComponentDialog } from './consultaOlts/components/ont/ont.component'
     numberPipe,
     textPipe,
     detalleActualizacionOnt,
-    OntComponentDialog
-    ConvertStatusOntPipe
+    OntComponentDialog,
+    DialogInventarioComponent
   ],
   imports: [
     BrowserModule,
@@ -74,8 +74,8 @@ import { OntComponentDialog } from './consultaOlts/components/ont/ont.component'
     NgxSpinnerModule,
     GoogleMapsModule,
     HttpClientModule,
-  providers: [AppRoutinProviders,BrowserModule,pointService,{ provide: MatPaginatorIntl, useValue: getDutchPaginatorIntl() }],
-
+  ],
+  providers: [AppRoutinProviders, BrowserModule, pointService, { provide: MatPaginatorIntl, useValue: getDutchPaginatorIntl() }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
