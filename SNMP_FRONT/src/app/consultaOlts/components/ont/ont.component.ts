@@ -14,28 +14,33 @@ import { Olts } from 'src/app/model/names.olts';
   templateUrl: './ont.component.html',
   styleUrls: ['./ont.component.css']
 })
-export class OntComponentDialog implements OnInit, AfterContentInit, OnDestroy, AfterViewInit {
+export class OntComponentDialog implements OnInit, AfterViewInit {
+
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dataSource.filter = filterValue.trim().toLowerCase();
+
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+    this.dataSource.paginator = this.paginator;
+  }
 
   private currentOlt!: Olts;
 
-  nombre = new FormControl('');
-
   displayedColumns: string[] = [
-    'id',
-    'numero_serie',
-    'tecnologia',
-    'frame',
-    'slot',
-    'port',
-    'fecha_descubrimiento',
-    'tipo',
-    'eventos'
+    'id', 'numero_serie', 'oid', 'tecnologia',
+    'frame', 'slot', 'port',
+    'fecha_descubrimiento', 'acciones', 'eventos',
+
   ];
 
   dataSource!: MatTableDataSource<OntResponse>;
   resultsLength = 0;
+
   isLoadingResults: boolean = true;
-  isRateLimitReached: boolean = false;
+  isRateLimitReached: boolean = true;
 
   myGroup = new FormGroup({
     fechaIni: new FormControl<string>(''),
@@ -45,7 +50,8 @@ export class OntComponentDialog implements OnInit, AfterContentInit, OnDestroy, 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  private obs$!: Observable<OntResponse[]>;
+  private obs$!: Observable<string>;
+  tipo: string = "";
 
   constructor(public dialogRef: MatDialogRef<String>,
     private service: OltsService,
@@ -59,36 +65,31 @@ export class OntComponentDialog implements OnInit, AfterContentInit, OnDestroy, 
     //Solicita las onts
     const { id_olt, ip } = this.currentOlt;
 
-    this.obs$ = this.service.obtenerOnts({
+    const ontsObs = this.service.obtenerOnts({
       idOlt: id_olt,
       ipOlt: ip,
-      fechaIni: '2023-05-16T19:40:58.354+00:00',
-      fechaFin: '2023-05-18T19:40:58.354+00:00'
+      fechaIni: '2023-05-18T19:40:58.354+00:00',
+      fechaFin: '2023-05-30T19:40:58.354+00:00'
     });
 
-    this.obs$.subscribe(data => {
+    this.isRateLimitReached = true;
+
+    ontsObs.subscribe(data => {
+      console.log(data)
       this.isLoadingResults = false;
-      this.isRateLimitReached = data === null;
+
+      if (!(data.length === 0)) {
+        this.isRateLimitReached = data === null;
+      }
+
       this.resultsLength = data.length;
       this.dataSource = new MatTableDataSource<OntResponse>(data);
     });
   }
 
-  ngAfterContentInit(): void {
-
-  }
-
-  AfterViewInit() {
-
-  }
-
-  ngOnDestroy(): void {
-    //Desubcribirte del escucha
-  }
-
 
   marcarOnt() {
-    console.log('');
+    console.log(this.tipo);
   }
 
   filtrarPorRangoFechas() {
@@ -104,8 +105,13 @@ export class OntComponentDialog implements OnInit, AfterContentInit, OnDestroy, 
       fechaFin: fechaFin
     });
   }
-  //Hace la peticion al servidor para registrar la ont
-  procesar(ont: OntResponse) {
-    //this.service.homologarOnt({ numeroSerie: ont.numero_serie, tipo: "E" });
+
+  polearOLT(olt: Olts) {
+    this.isLoadingResults = true;
+    this.isRateLimitReached = false;
+    //Manda a llamar un spinner
+    this.service.polearOLT(olt).subscribe(() => {
+
+    });
   }
 }

@@ -1,43 +1,50 @@
 /* Structure */
 .example-container {
-    position: relative;
-  }
-  
-  .example-table-container {
-    position: relative;
-    min-height: 200px;
-    max-height: 400px;
-    overflow: auto;
-  }
-  
-  table {
-    width: 100%;
-  }
-  
-  .example-loading-shade {
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 10px;
-    right: 0;
-    background: rgba(255, 253, 253, 0.15);
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .example-rate-limit-reached {
-    max-width: 360px;
-    text-align: center;
-  }
-  
-  /* Column Widths */
-  .mat-column-number,
-  .mat-column-state {
-    max-width: 64px;
-  }
-  
-  .mat-column-created {
-    max-width: 124px;
-  }
+  position: relative;
+}
+
+.example-table-container {
+  position: relative;
+  min-height: 200px;
+  max-height: 400px;
+  overflow: auto;
+}
+
+table {
+  width: 100%;
+}
+
+/* Spinner */
+.example-loading-shade {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 5px;
+  right: 0;
+  background: rgba(255, 253, 253, 0.15);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.example-rate-limit-reached {
+  max-width: 360px;
+  text-align: center;
+}
+
+/* Column Widths */
+.mat-column-number,
+.mat-column-state {
+  max-width: 64px;
+}
+
+.mat-column-created {
+  max-width: 124px;
+}
+
+
+.example-container {
+  height: 400px;
+  overflow: auto;
+}

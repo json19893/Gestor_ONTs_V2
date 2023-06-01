@@ -1,6 +1,6 @@
 export interface OntResponse { 
     _id:                  string;
-    oid:                  string;
+    oid:                  null | string;
     uid:                  string;
     valor:                string;
     id_olt:               number;
@@ -16,7 +16,7 @@ export interface OntResponse {
     port:                 number;
     id_puerto:            string;
     numero_serie:         string;
-    tecnologia:           string;
+    tecnologia:           null | string;
     index:                string;
     indexFSP:             string;
     descripcion:          string;
