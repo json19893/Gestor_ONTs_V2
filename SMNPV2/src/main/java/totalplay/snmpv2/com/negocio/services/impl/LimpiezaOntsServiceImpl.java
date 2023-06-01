@@ -276,9 +276,9 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 		String idEjecucion =  monitorEstatus.getLastFinishId().getId();
 		
 		crucesMetricas(1,idEjecucion, "auxiliar_descubrimiento_nce", olts, false, true );
-		crucesMetricas(2,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
+		/*crucesMetricas(2,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
 		crucesMetricas(4,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
-		crucesMetricas(14,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
+		crucesMetricas(14,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );*/
 		crucesMetricas(16,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
 	}
 	
