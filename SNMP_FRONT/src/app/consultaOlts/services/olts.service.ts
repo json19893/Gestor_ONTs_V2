@@ -7,6 +7,7 @@ import { RequestGuardarOnt } from '../interfaces/RequestGuardarOnt';
 import { GuardarOntResponse } from '../interfaces/OntGuardarResponse';
 import { Olts } from 'src/app/model/names.olts';
 import listOnts from './dataDummy';
+import { AppUrlSettings } from 'src/app/services/AppUrlSettings';
 
 @Injectable({
   providedIn: 'root'
@@ -31,11 +32,10 @@ export class OltsService {
    */
   obtenerOnts(request: RequestOnt) {
     const { idOlt, ipOlt, fechaIni, fechaFin } = request;
-    const REQUEST_RESOURCE = `getRechazadasByOlt/${idOlt}/${ipOlt}/${fechaIni}/${fechaFin}`
-    const REQUEST_API = `${this.URL}/${REQUEST_RESOURCE}`
+    const REQUEST_RESOURCE = `${AppUrlSettings.GET_RECHAZADAS_OLT}/${idOlt}/${ipOlt}/${fechaIni}/${fechaFin}`
+    const REQUEST_API = `${AppUrlSettings.BASE_API}/${REQUEST_RESOURCE}`
 
     return this.http.get<OntResponse[]>(`${REQUEST_API}`)
-    //return this.populateData();
   }
 
   /**

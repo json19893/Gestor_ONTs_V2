@@ -49,7 +49,7 @@ export class AppUrlSettings{
     public static CAMBIOS="snmp-monitor/api/v2/limpieza/onts/repetidas/"
     public static ACTUALIZA_OLT_BY_ONT="snmp-monitor/actualizaOltOnOnt/"
     public static GET_RECHAZADOS_NCE= 'snmp-monitor/getSinActualizar'
-    
+    public static GET_RECHAZADAS_OLT='snmp-monitor/getRechazadasByOlt';
    
     
 }
