@@ -31,6 +31,7 @@ export interface up {
     selected:boolean;
     fecha_ultima_caida: string;
     olts:oltsAsignacion[]
+    settings:boolean
   }
 
   export interface clasificacion {
@@ -245,7 +246,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                 desEstatus:res[d].descripcionAlarma,
                 fecha_ultima_caida: res[d].lastDownTime=='0-0-0,0:0:0.0,.0:0'?'1 ':res[d].lastDownTime,
                 selected:false,
-                olts:[]
+                olts:[],
+                settings:res[d].oid==null?true:res[d].oid==""?true:res[d].oid==undefined?true:false
               }
               ELEMENT_DATA.push(dat);
             }
@@ -280,6 +282,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
         
             let dat;
             for(let d in res.listOnts){
+              
+              console.log("ddddd "+res.listOnts[0].oid)
               dat={
                 _id: res.listOnts[0]._id,
                 numero_serie:res.listOnts[0].numero_serie,
@@ -298,7 +302,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                 desEstatus:res.listOnts[0].descripcionAlarma,
                 fecha_ultima_caida: res.listOnts[0].lastDownTime,
                 selected:false,
-                olts:[]
+                olts:[],
+                settings: res.listOnts[0].oid==null?true: res.listOnts[0].oid==""?true: res.listOnts[0].oid==undefined?true:false
               }
               ELEMENT_DATA.push(dat);
            }
@@ -363,7 +368,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
             tipo:res[d].tipo,
             desEstatus:res[d].descripcionAlarma,
             selected:res[d].selected,
-            olts:[]
+            olts:[],
+            settings:res[d].oid!=null?true:res[d].oid!=""?true:res[d].oid==undefined?true:false
           }
           ELEMENT_DATA.push(dat);
         }
@@ -412,7 +418,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                  desEstatus:res[d].descripcionAlarma,
                  fecha_ultima_caida: res[d].lastDownTime=='0-0-0,0:0:0.0,.0:0'?'1 ':res[d].lastDownTime,
                  selected:false,
-                 olts:[]
+                 olts:[],
+                 settings:res[d].oid!=null?true:res[d].oid!=""?true:res[d].oid==undefined?true:false
               }
               ELEMENT_DATA.push(dat);
             }
@@ -448,7 +455,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                  desEstatus:"--",
                  fecha_ultima_caida: "---",
                  selected:false,
-                 olts:res.onts[d].oltList
+                 olts:res.onts[d].oltList,
+                 settings:res[d].oid!=null?true:res[d].oid!=""?true:res[d].oid==undefined?true:false
               }
               ELEMENT_DATA.push(dat);
             }
@@ -517,7 +525,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                 desEstatus:res[d].descripcionAlarma,
                 fecha_ultima_caida: res[d].lastDownTime,
                 selected:false,
-                olts:[]
+                olts:[],
+                settings:res[d].oid===null?true:res[d].oid==""?true:res[d].oid==undefined?true:false
               }
               ELEMENT_DATA.push(dat);
             }
