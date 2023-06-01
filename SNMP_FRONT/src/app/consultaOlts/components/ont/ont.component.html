@@ -1,0 +1,97 @@
+<h5> Homologacion Onts</h5>
+<p>ID OLT: {{olt.id_olt}}{{olt.nombre}} ({{olt.ip}})</p>
+<div>
+  <button mat-button (click)="polearOLT(olt)">Polear OLT</button>
+  <button mat-button (click)="filtrarPorRangoFechas()">Consultar</button>
+</div>
+<mat-divider></mat-divider>
+<br>
+<mat-accordion>
+  <mat-expansion-panel hideToggle>
+    <mat-expansion-panel-header class="panelTitle">
+      <mat-panel-title>
+        <img class="icon-avata" src="./assets/img/search.SVG" />
+
+      </mat-panel-title>
+      <mat-panel-description>
+        Criterios de búsqueda
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <mat-form-field>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" #input>
+    </mat-form-field>
+  </mat-expansion-panel>
+</mat-accordion>
+<br>
+
+<div class="example-container mat-elevation-z8">
+  <div class="example-loading-shade" *ngIf="isLoadingResults || isRateLimitReached">
+    <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+    <div class="example-rate-limit-reached" *ngIf="isRateLimitReached">
+      No hay Información disponible.
+    </div>
+    <div class="example-rate-limit-reached" *ngIf="isLoadingResults">
+      Cargando informacion...
+    </div>
+  </div>
+
+  <div class="example-table-container">
+  <section class="example-container">
+    <table mat-table [dataSource]="dataSource" class="example-table" matSort matSortActive="created" matSortDisableClear
+      matSortDirection="desc">
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef> # </th>
+        <td mat-cell *matCellDef="let element; let i = index;"> {{i + 1}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="numero_serie">
+        <th mat-header-cell *matHeaderCellDef> Numero Serie </th>
+        <td mat-cell *matCellDef="let element"> {{element.numero_serie}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="oid">
+        <th mat-header-cell *matHeaderCellDef> OID </th>
+        <td mat-cell *matCellDef="let element"> {{element.oid | textPipe}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="tecnologia">
+        <th mat-header-cell *matHeaderCellDef> Tecnologia </th>
+        <td mat-cell *matCellDef="let element"> {{element.tecnologia|textPipe}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="frame">
+        <th mat-header-cell *matHeaderCellDef> Frame </th>
+        <td mat-cell *matCellDef="let element"> {{element.frame}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="slot">
+        <th mat-header-cell *matHeaderCellDef> Slot </th>
+        <td mat-cell *matCellDef="let element"> {{element.slot}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="port">
+        <th mat-header-cell *matHeaderCellDef> Port </th>
+        <td mat-cell *matCellDef="let element"> {{element.port}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="fecha_descubrimiento">
+        <th mat-header-cell *matHeaderCellDef> Fecha Descubrimiento </th>
+        <td mat-cell *matCellDef="let element"> {{element.fecha_descubrimiento | dateFormat}} </td>
+      </ng-container>
+
+      <ng-container matColumnDef="acciones">
+        <th mat-header-cell *matHeaderCellDef> Eventos </th>
+        <td mat-cell *matCellDef="let element">
+          <button mat-button (click)="marcarOnt()">Agregar</button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns ;sticky:true"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    </table>
+  </section>
+  </div>
+  <!-- <mat-paginator [length]="resultsLength" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page">
+  </mat-paginator> -->
+
+</div>

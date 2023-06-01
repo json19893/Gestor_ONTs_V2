@@ -42,7 +42,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatFormField } from '@angular/material/form-field';
 
-
 @NgModule({
   imports:[
     MatInputModule
@@ -90,7 +89,7 @@ import { MatFormField } from '@angular/material/form-field';
     MatTreeModule,
     PortalModule,
     ScrollingModule,
-    MatInputModule,
+    MatInputModule
   ]
 })
 export class MaterialModule {}
