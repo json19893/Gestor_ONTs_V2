@@ -140,7 +140,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			 log.info(":::::::::::::::::::::::::: enviar a duplicados  :::::::::::::::::::::::");
 			 updateDescripcion(monitor, INICIO_DESC+" AISLAR DUPLICADOS");
 			 idEjecucion =  monitorEstatus.getLastFinishId().getId();//findFirstByOrderByIdDesc().getId();
-			 poleometricas.getOntsFaltantes(1,idEjecucion, false, false, "auxiliar",2, null);
+			 poleometricas.getOntsFaltantes(1,idEjecucion, false, false, "auxiliar",2, null,null);
 			 inventarioTmp.sendTbDiferencias();
 			
 			//Migrar los datos de inventariotmp a aux
@@ -288,7 +288,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 		if(olts == null)
 			olts= catOltRepository.findByEstatus(1);
 		
-		poleometricas.getOntsFaltantes(metrica, idPoleo, false, false, tabla, 2, null);
+		poleometricas.getOntsFaltantes(metrica, idPoleo, false, false, tabla, 2, null, nce? olts.get(0).getId_olt():null);
 		
 		inventarioTrans.deleteAll();
 		
