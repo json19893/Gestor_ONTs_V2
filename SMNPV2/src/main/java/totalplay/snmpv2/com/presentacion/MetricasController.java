@@ -156,7 +156,7 @@ public class MetricasController extends Constantes {
 					}
 					
 					//Obtener las empresariales no poeladas y mandarlas con otro servicio
-					ontsEmpresariales =  poleoMetricas.getOntsFaltantes(j,idMonitorPoleo, true, reprocesoEmpresariales, "auxiliar", 2, null);
+					ontsEmpresariales =  poleoMetricas.getOntsFaltantes(j,idMonitorPoleo, true, reprocesoEmpresariales, "auxiliar", 2, null, null);
 					
 					monitPoleoMetrica.setOntsSnmp(ontsEmpresariales.size());
 					monitPoleoMetrica.setFecha_corte(util.getDate());					
@@ -240,7 +240,7 @@ public class MetricasController extends Constantes {
 
 				CompletableFuture.allOf(regionSegmentOnts.toArray(new CompletableFuture[regionSegmentOnts.size()])).join();
 				
-				List<OntsConfiguracionDto> ontsEmpresariales =  poleoMetricas.getOntsFaltantes(1,idMonitorPoleo, true, false,"auxiliar_estatus", 3, null);
+				List<OntsConfiguracionDto> ontsEmpresariales =  poleoMetricas.getOntsFaltantes(1,idMonitorPoleo, true, false,"auxiliar_estatus", 3, null, null);
 				
 				ArrayList<CompletableFuture<String>> regionSegmentOntsEmpresariales = new ArrayList<CompletableFuture<String>>();
 				Integer maxOntsEmpresariales = (ontsEmpresariales.size() /42) + 1;
@@ -360,7 +360,7 @@ public class MetricasController extends Constantes {
 						
 						monitPoleoMetrica.setStop(LocalDateTime.now().toString());
 						//Obtener las onts poeladas y mandarlas con otro servicio
-						ontsEmpresariales =  poleoMetricas.getOntsFaltantes(j,idMonitorPoleo, true, false, "auxiliar_poleo_manual", 1, olts);						
+						ontsEmpresariales =  poleoMetricas.getOntsFaltantes(j,idMonitorPoleo, true, false, "auxiliar_poleo_manual", 1, olts, null);						
 						monitPoleoMetrica.setOntsSnmp(ontsEmpresariales.size());
 						
 						if(ontsEmpresariales != null) {
