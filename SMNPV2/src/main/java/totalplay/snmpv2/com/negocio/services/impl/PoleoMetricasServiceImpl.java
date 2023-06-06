@@ -257,14 +257,17 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
 
 
     @Override
-    public List<OntsConfiguracionDto> getOntsFaltantes(int idMetrica, String idEjecucion, boolean resultado, boolean empresariales, String tabla, int tipo, List<CatOltsEntity> olts) {
+    public List<OntsConfiguracionDto> getOntsFaltantes(int idMetrica, String idEjecucion, boolean resultado, boolean empresariales, String tabla, int tipo, List<CatOltsEntity> olts, Integer olt) {
 
         List<OntsConfiguracionDto> faltantes = null;
 
         try {
             switch (idMetrica) {
                 case 1:
-                    poleoEstatus.outToAux(idEjecucion, tabla);
+                	if(olt!= null )
+                		poleoEstatus.outToAux(idEjecucion, tabla,true, olt  );
+                	else
+                        poleoEstatus.outToAux(idEjecucion, tabla,false,null );
                     break;
                 case 2:
                     poleoLastDownCauseRe.outToAux(idEjecucion, tabla);
@@ -309,7 +312,10 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                     poleoProfName.outToAux(idEjecucion, tabla);
                     break;
                 case 16:
-                    poleoFrameSlotPort.outToAux(idEjecucion, tabla);
+                	if(olt!=null)
+                		poleoFrameSlotPort.outToAux(idEjecucion, tabla, true, olt);
+                	else
+                		poleoFrameSlotPort.outToAux(idEjecucion, tabla, false, null);
                     break;
             }
         } catch (Exception e) {
@@ -449,7 +455,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
     	String estatus="";
         log.info("::::::::::::::::::::::::::::::::::::Inicia la actualizaciòn de estatus del inventario final");
 
-        getOntsFaltantes(1, idMonitorPoleo, false, true, "auxiliar_estatus", 2, null);
+        getOntsFaltantes(1, idMonitorPoleo, false, true, "auxiliar_estatus", 2, null, null);
 
 
         try {
