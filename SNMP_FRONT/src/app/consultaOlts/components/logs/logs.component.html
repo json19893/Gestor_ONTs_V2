@@ -1,0 +1,7 @@
+<section style="width: auto; height: 400px;">
+    <cdk-virtual-scroll-viewport appendOnly itemSize="5" class="example-viewport">
+        <div *cdkVirtualFor="let log of logs" class="example-item">
+            {{ log }}
+        </div>
+    </cdk-virtual-scroll-viewport>
+</section>

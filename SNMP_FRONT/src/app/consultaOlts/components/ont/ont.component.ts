@@ -1,6 +1,6 @@
 import { AfterContentInit, AfterViewInit, Component, Inject, OnDestroy, OnInit, ViewChild, inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
-import { OltsService } from '../../services/olts.service';
+import { OltSincronizacionService } from '../../services/olts.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { OntResponse } from '../../interfaces/ResponseOnt';
 import { MatPaginator } from '@angular/material/paginator';
@@ -57,7 +57,7 @@ export class OntComponentDialog implements OnInit, AfterViewInit {
   tipo: string = "";
 
   constructor(public dialogRef: MatDialogRef<String>,
-    private service: OltsService,
+    private service: OltSincronizacionService,
     @Inject(MAT_DIALOG_DATA) public olt: Olts) { }
 
   ngOnInit() {
@@ -130,8 +130,8 @@ export class OntComponentDialog implements OnInit, AfterViewInit {
     this.isLoadingResults = true;
     this.isRateLimitReached = false;
     //Manda a llamar un spinner
-    this.service.polearOLT(olt).subscribe(() => {
+    // this.service.polearOLT(olt).subscribe(() => {
 
-    });
+    // });
   }
 }

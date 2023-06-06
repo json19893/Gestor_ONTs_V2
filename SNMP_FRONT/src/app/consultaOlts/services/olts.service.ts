@@ -1,26 +1,32 @@
-import { Injectable } from '@angular/core';
+import { Injectable, OnInit } from '@angular/core';
 import { OntResponse } from '../interfaces/ResponseOnt';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { RequestOnt } from '../interfaces/RequestOnt';
-import { BehaviorSubject, Subject, tap } from 'rxjs';
+import { BehaviorSubject, Observable, Subject, tap } from 'rxjs';
 import { RequestGuardarOnt } from '../interfaces/RequestGuardarOnt';
 import { GuardarOntResponse } from '../interfaces/OntGuardarResponse';
 import { Olts } from 'src/app/model/names.olts';
 import listOnts from './dataDummy';
 import { AppUrlSettings } from 'src/app/services/AppUrlSettings';
+import { GenericResponse } from '../components/dialog-inventario/dialog-inventario.component';
 
 @Injectable({
   providedIn: 'root'
 })
-export class OltsService {
+export class OltSincronizacionService implements OnInit {
   private ontsConciliar: OntResponse[] = new Array<OntResponse>();
+
   private notify$: Subject<string> = new Subject<string>();
   private responseOnt$: Subject<OntResponse[]> = new Subject<OntResponse[]>();
 
   private readonly URL: string = "http://localhost:9081/snmp-monitor";
-  public subject!: BehaviorSubject<OntResponse[]>;
+  public observer$!: BehaviorSubject<OntResponse[]>;
 
   constructor(private http: HttpClient) { }
+
+  ngOnInit(): void {
+    this.observer$ = this.populateData();
+  }
 
   /**
    * Obtiene las ontstanto para pdm como nce.
@@ -55,25 +61,24 @@ export class OltsService {
     return ontCandidatas;
   }
 
-  obtenerObservable() {
-    return this.notify$.asObservable();
+
+
+  poleoOlt(idOlt: number): Observable<GenericResponse> {
+    return this.http.get<GenericResponse>(AppUrlSettings.BASE_API_LOGIN + AppUrlSettings.GET_RECHAZADAS_OLT_NCE + `/${idOlt}`);
   }
 
+  getAceptadosInventario(settings?: { idOlt: number, ip: string, fechaIni: string, fechaFin: string }) {
+    if (settings) {
+      const params = `/${settings.idOlt}/${settings.ip}/${settings.fechaIni}/${settings.fechaFin}`;
+      let resource = `${AppUrlSettings.BASE_API}${AppUrlSettings.GET_RECHAZADOS_INVENTARIO_FINAL}${params}`;
+      return this.http.get<any>(resource);
+    }
+    return this.populateData();
+  }
 
-  polearOLT(olt: Olts) {
-    //Cuando acabes de polear me avisas para consumir otra api y renderizar.
-    //http://localhost:9084/descubrimientoNCE/1
-    //const REQUEST_RESOURCE = this.URL + `descubrimientoNCE/${olt.id_olt}`
-    const REQUEST_RESOURCE = 'http://localhost:9084/descubrimientoNCE/1';
-
-
-    return this.http.get(REQUEST_RESOURCE)
-      .pipe(
-        tap((response) => {
-          this.notify$.next('POLEO_OLT');
-          console.log(response);
-        })
-      );
+  moverOntInventario(numero_serie: string, tipo: string) {
+    let resource = `${AppUrlSettings.BASE_API}${AppUrlSettings.MOVER_ONT_INVENTARIO_FINAL}/${numero_serie}/${tipo}`;
+    return this.http.get<{ sms: string, cod: number }>(resource);
   }
 
   populateData() {
