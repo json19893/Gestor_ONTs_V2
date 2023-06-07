@@ -6,7 +6,7 @@ import { BehaviorSubject, Observable, Subject, tap } from 'rxjs';
 import { RequestGuardarOnt } from '../interfaces/RequestGuardarOnt';
 import { GuardarOntResponse } from '../interfaces/OntGuardarResponse';
 import { Olts } from 'src/app/model/names.olts';
-import listOnts from './dataDummy';
+import listOnts, { OntInventarioResponse } from './dataDummy';
 import { AppUrlSettings } from 'src/app/services/AppUrlSettings';
 import { GenericResponse } from '../components/dialog-inventario/dialog-inventario.component';
 
@@ -14,13 +14,13 @@ import { GenericResponse } from '../components/dialog-inventario/dialog-inventar
   providedIn: 'root'
 })
 export class OltSincronizacionService implements OnInit {
-  private ontsConciliar: OntResponse[] = new Array<OntResponse>();
+  private ontsConciliar: OntInventarioResponse[] = new Array<OntInventarioResponse>();
 
   private notify$: Subject<string> = new Subject<string>();
   private responseOnt$: Subject<OntResponse[]> = new Subject<OntResponse[]>();
 
   private readonly URL: string = "http://localhost:9081/snmp-monitor";
-  public observer$!: BehaviorSubject<OntResponse[]>;
+  public observer$!: BehaviorSubject<OntInventarioResponse[]>;
 
   constructor(private http: HttpClient) { }
 
@@ -86,7 +86,7 @@ export class OltSincronizacionService implements OnInit {
       || this.ontsConciliar.length === 0) {
       this.ontsConciliar = listOnts;
     }
-    return new BehaviorSubject<OntResponse[]>(this.ontsConciliar);
+    return new BehaviorSubject<OntInventarioResponse[]>(this.ontsConciliar);
   }
 }
 

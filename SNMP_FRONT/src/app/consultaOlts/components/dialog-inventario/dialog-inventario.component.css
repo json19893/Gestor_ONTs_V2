@@ -1,3 +1,7 @@
+mat-card {
+  background-color: #FFFFFF;
+}
+
 /* Structure */
 .example-container {
   position: relative;
@@ -45,7 +49,7 @@ table {
 
 
 .example-container {
-  height: 400px;
+  height: auto;
   overflow: auto;
 }
 
@@ -68,4 +72,10 @@ mat-icon:hover {
 
 .mat-input-element[type="date"] {
   background-color: white;
+}
+
+
+.panelTitle {
+  margin-top: 20px;
+  border-radius: 5px;
 }

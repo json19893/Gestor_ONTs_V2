@@ -1,9 +1,12 @@
 .example-viewport {
-    height: 500px;
-    width: auto;
-  }
-  
-  .example-item {
-    height: 30px;
-  }
-  
+  height: auto;
+  width: auto;
+}
+
+.example-item {
+  height: 30px;
+}
+
+/* .logs_details {
+  height: auto;
+} */

@@ -12,7 +12,7 @@ import * as moment from 'moment';
 import { OltSincronizacionService } from '../../services/olts.service';
 
 
-export interface OntElement {
+export interface OntInventarioResponse {
   _id: string;
   oid: string;
   uid: string;
@@ -54,9 +54,18 @@ export interface Settings { idOlt: number, ip: string, fechaIni: string, fechaFi
   styleUrls: ['./dialog-inventario.component.css']
 })
 export class DialogInventarioComponent implements OnInit {
+  intervalId!: any;
+
+
+  onKeydown($event: KeyboardEvent) {
+    if ($event.key === "Enter") {
+      alert('enter event')
+    }
+  }
+
   public oltSeleccionada!: Olts;
 
-  dt!: OntElement[];
+  dt!: OntInventarioResponse[];
   public estaSincronizandose: boolean = false;
   //Fechas de sincronizacion
   public ultimaActualizacion!: Date;
@@ -67,9 +76,9 @@ export class DialogInventarioComponent implements OnInit {
     'fecha_descubrimiento', 'acciones'
   ];
 
-  public dataSource!: MatTableDataSource<OntElement>;
+  public dataSource!: MatTableDataSource<OntInventarioResponse>;
   private poleoObserver$!: Observable<GenericResponse>;
-  private topic$!: Observable<GenericResponse>;
+  private topic$!: Subscription;
 
   isLoadingResults: boolean = false;
   isRateLimitReached: boolean = false;
@@ -77,21 +86,21 @@ export class DialogInventarioComponent implements OnInit {
   public now!: string;
   public monthAgo = new Date().setMonth(new Date().getMonth() - 1);
 
+  time = new Date();
 
   myGroup = new FormGroup({
     fechaIni: new FormControl<string>('2020-05-06'),
-    fechaFin: new FormControl<string>('2020-06-06')
+    fechaFin: new FormControl<string>('2023-06-06')
   });
 
   status!: string[];
 
   constructor(
-    private pointService: pointService,
+    private service: pointService,
     public dialog: MatDialog,
     private spinner: NgxSpinnerService,
     public dialogRef: MatDialogRef<DialogInventarioComponent>,
-    @Inject(MAT_DIALOG_DATA) public state: { sync: boolean, olt: Olts, topic: Observable<GenericResponse> },
-    private service: OltSincronizacionService) { }
+    @Inject(MAT_DIALOG_DATA) public state: { sync: boolean, olt: Olts, topic: Observable<GenericResponse> }) { }
 
 
 
@@ -100,11 +109,16 @@ export class DialogInventarioComponent implements OnInit {
     let { olt, sync, topic } = this.state;
     this.oltSeleccionada = olt;
 
+    // Sirve para inicializar el relog:
+    this.intervalId = setInterval(() => {
+      this.time = new Date();
+    }, 1000);
+
+    //Que se lance por las que ya estan en el area temporal
+
   }
 
   filtrarPorRangoFechas() {
-
-
     const fechaIni = this.myGroup.value.fechaIni;
     const fechaFin = this.myGroup.value.fechaFin;
 
@@ -112,36 +126,38 @@ export class DialogInventarioComponent implements OnInit {
     const date2 = moment(fechaFin).toDate();
 
 
+    console.log(date1);
+    console.log(date2);
+
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+
     //this.dataSource.paginator = this.paginator;
 
-    //Aqui filtra y despues 
     let ontResponse: OntResponse[] = [];
-    let pureArray = this.dt.map(t => t);
+    let copyArray = this.dataSource.data.map(t => t);
 
-    let list: OntResponse[] = [];
+    let list: OntInventarioResponse[] = [];
 
-    for (const iterator of pureArray.values()) {
-
-      if (fechaFin != null
-        && fechaIni != null
-        && iterator.fecha_descubrimiento >= date1
-        && iterator.fecha_descubrimiento <= date2) {
+    for (const iterator of copyArray.values()) {
+      let fecha = new Date(iterator.fecha_descubrimiento).getTime();
+      if (fecha >= date1.getTime()
+        && fecha <= date2.getTime()) {
         console.log(iterator)
         list.push(iterator);
       }
     }
+    console.log({ list });
 
-    // this.dataSource = new MatTableDataSource<OntResponse>(list);*/
+    this.dataSource = new MatTableDataSource<OntInventarioResponse>(list);
   }
 
   moverAInventario(numero_serie: string, tipo: string) {
   }
 
   request() {
-    return this.service.poleoOlt(this.oltSeleccionada.id_olt);
+    // return this.service.poleoOlt(this.oltSeleccionada.id_olt);
   }
 
   handleError(handleError: HttpErrorResponse) {
@@ -153,30 +169,43 @@ export class DialogInventarioComponent implements OnInit {
     this.estaSincronizandose = true;
 
     console.log('Sincronizando con el servidor...');
+    const { id_olt, ip } = this.oltSeleccionada;
 
-    this.topic$ = new Observable<GenericResponse>((subscriber) => {
-      setTimeout(() => {
-        clearInterval(intervalId);
-        this.estaSincronizandose = false;
-        subscriber.next({ sms: "success", cod: 0 });
-      }, 60000);
-    });
-
-    this.topic$.subscribe((response) => {
-      console.log(response);
-      this.service.getAceptadosInventario().subscribe((data) => {
-        this.dataSource = new MatTableDataSource<OntElement>(data);
-      });
-    });
-
-    let intervalId = setInterval(() => {
-      console.log('running process');
-      this.pointService.getArchivo(2)
-        .subscribe((archivo) => {
-          this.status = archivo;
+    this.topic$ = this.service.sincronizarNCE(id_olt).subscribe((data) => {
+      this.estaSincronizandose = false;
+      if (data.cod == 0) {
+        this.ultimaActualizacion = this.time;
+        //Correr el otro proceso:
+        this.preguntarInventarioFinal().subscribe((data) => {
+          if (data.length == 0) {
+            //No hay data
+            console.log('No hay data');
+          } else {
+            console.log(data);
+            this.dataSource = new MatTableDataSource<OntInventarioResponse>(data)
+          }
         });
-    }, 5000);
+      }
+    });
+  }
+
+  preguntarInventarioFinal() {
+    const { id_olt, ip } = this.oltSeleccionada;
+
+    const fechaIni = this.myGroup.value.fechaIni;
+    const fechaFin = this.myGroup.value.fechaFin;
+
+    const date1 = moment(fechaIni).format();
+    const date2 = moment(fechaFin).format();
+    console.log(date1);
+    console.log(date2);
+    const settings: Settings = {
+      idOlt: id_olt,
+      ip: ip,
+      fechaIni: date1,
+      fechaFin: date2
+    }
+    return this.service.getAceptadosInventario(settings);
   }
 }
-
 
