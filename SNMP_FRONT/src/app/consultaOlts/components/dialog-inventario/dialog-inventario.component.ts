@@ -81,7 +81,7 @@ export class DialogInventarioComponent implements OnInit, AfterViewInit {
 
   displayedColumns: string[] = [
     'numero_serie', 'oid',
-    'frame', 'slot', 'port',
+    // 'frame', 'slot', 'port',
     'fecha_descubrimiento', 'acciones'
   ];
 
@@ -206,7 +206,9 @@ export class DialogInventarioComponent implements OnInit, AfterViewInit {
 
     const { id_olt, ip } = this.oltSeleccionada;
 
+
     this.topic$ = this.service.poleoOlt(id_olt, this.usuario).subscribe((data) => {
+      console.log(data);
       this.estaSincronizandose = false;
       this.newItemEvent.emit(this.estaSincronizandose);
 
@@ -220,7 +222,7 @@ export class DialogInventarioComponent implements OnInit, AfterViewInit {
           this.isLoadingResults = false;
           this.isRateLimitReached = false;
           if (data.length == 0) {
-            //No hay data
+            //No hay datax
             console.log('No hay data');
           } else {
             console.log(data);

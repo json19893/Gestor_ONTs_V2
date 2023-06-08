@@ -6,9 +6,8 @@ import { BehaviorSubject, Observable, Subject, tap } from 'rxjs';
 import { RequestGuardarOnt } from '../interfaces/RequestGuardarOnt';
 import { GuardarOntResponse } from '../interfaces/OntGuardarResponse';
 import { Olts } from 'src/app/model/names.olts';
-import listOnts, { OntInventarioResponse } from './dataDummy';
 import { AppUrlSettings } from 'src/app/services/AppUrlSettings';
-import { GenericResponse } from '../components/dialog-inventario/dialog-inventario.component';
+import { GenericResponse, OntInventarioResponse } from '../components/dialog-inventario/dialog-inventario.component';
 
 @Injectable({
   providedIn: 'root'
@@ -82,10 +81,10 @@ export class OltSincronizacionService implements OnInit {
   }
 
   populateData() {
-    if (!this.ontsConciliar
-      || this.ontsConciliar.length === 0) {
-      this.ontsConciliar = listOnts;
-    }
+    // if (!this.ontsConciliar
+    //   || this.ontsConciliar.length === 0) {
+    //   this.ontsConciliar = listOnts;
+    // }
     return new BehaviorSubject<OntInventarioResponse[]>(this.ontsConciliar);
   }
 }

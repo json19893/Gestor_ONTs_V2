@@ -18,6 +18,7 @@ import * as FileSaver from "file-saver";
 import { OntComponentDialog } from "./components/ont/ont.component";
 import { DialogInventarioComponent, GenericResponse } from "./components/dialog-inventario/dialog-inventario.component";
 import { Observable, Subject, Subscription } from "rxjs";
+import { DialogSyncComponent } from "./components/dialog-sync/dialog-sync.component";
 const EXCEL_TYPE = 'application/vnd.openxmlformats- officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
 interface Olts {
@@ -283,6 +284,29 @@ export class ConsultaOltsComponent implements OnInit {
 
   }
 
+  openDetalleAceptadasSync(olt: Olts) {
+    let wrapper = {
+      olt: olt,
+      list: this.listAceptadas
+    }
+
+    const { id_olt } = olt;
+    const dialogConfig = new MatDialogConfig<any>();
+    dialogConfig.disableClose = false;
+    dialogConfig.autoFocus = true;
+    dialogConfig.height = '65vh';
+    dialogConfig.width = '130vw';
+    dialogConfig.data = wrapper;
+
+    this.dialog.open(DialogInventarioComponent, dialogConfig);
+
+    const dialogRef = this.dialog.open(DialogSyncComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(
+      () => this.getDataTable()
+    )
+  }
+
   //Abre la diaogo
   openDetalleAceptadas(olt: Olts) {
 
@@ -297,13 +321,10 @@ export class ConsultaOltsComponent implements OnInit {
     dialogConfig.width = '50vw';
     dialogConfig.data = state;
 
-    this.dialog.open(DialogInventarioComponent, dialogConfig);
-
     const dialogRef = this.dialog.open(DialogInventarioComponent, dialogConfig);
-
     dialogRef.afterClosed().subscribe(
       () => this.getDataTable()
-    )
+    ).unsubscribe();
   }
 
   applyFilter(event: Event) {
@@ -318,28 +339,15 @@ export class ConsultaOltsComponent implements OnInit {
 
   poleoOlt(idOlt: Olts) {
     this.openDetalleAceptadas(idOlt);
-    console.log('servicio 1');
-    this.spinner.show();
-    this.service.poleoOlt(idOlt.id_olt, this.usuario).subscribe((data) => {
-      console.log(data);
-
-      if (data.cod == 0) {
-        this.service.getAceptadosInventario(idOlt.id_olt, idOlt.ip, new Date().toISOString(), new Date().toISOString(), this.usuario).subscribe((resp) => {
-          console.log('servicio 2');
-          this.spinner.hide();
-          this.listAceptadas = resp;
-          this.openDetalleAceptadas(idOlt);
-        });
-      }
-    });
   }
 
+  // Aqui se manda a llamar el dialog 
   detalleSin(idOlt: Olts) {
     this.service.getAceptadosInventario(idOlt.id_olt, idOlt.ip, new Date().toISOString(), new Date().toISOString(), this.usuario).subscribe((resp) => {
       console.log('servicio 2');
       this.spinner.hide();
       this.listAceptadas = resp;
-      this.openDetalleAceptadas(idOlt);
+      this.openDetalleAceptadasSync(idOlt);
     });
   }
 

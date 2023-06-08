@@ -123,6 +123,10 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 	private String rutaMetrica;
 	@Value("${ruta.archivo.txt}")
 	private String rutaDescubrimiento;
+
+	@Value("${ruta.archivo.nce}")
+	private String rutaNCE;
+
 	@Override
 	public Map<String, Object> consultaNumeroSerie(String oid, String ip) {
 		HashMap<String, Object> response = new HashMap();
@@ -496,9 +500,13 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 	@Override
 	public List<String> getArchivo(Integer arc) {
 		List<String> archivo =new ArrayList<>();
+
+		if(arc.intValue() == 10){
+			
+		}
 		
 		try {
-			BufferedReader lector = new BufferedReader(new FileReader(arc==1?rutaDescubrimiento:rutaMetrica));
+			BufferedReader lector = new BufferedReader(new FileReader(arc==10?rutaNCE:arc==1?rutaDescubrimiento:rutaMetrica));
 			String linea = lector.readLine();
 			while (linea != null) {
 				archivo.add(linea);

@@ -37,6 +37,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { OntComponentDialog } from './consultaOlts/components/ont/ont.component';
 import { DialogInventarioComponent } from './consultaOlts/components/dialog-inventario/dialog-inventario.component';
 import { LogsComponent } from './consultaOlts/components/logs/logs.component';
+import { DialogSyncComponent } from './consultaOlts/components/dialog-sync/dialog-sync.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -62,7 +63,8 @@ import { LogsComponent } from './consultaOlts/components/logs/logs.component';
     detalleActualizacionOnt,
     OntComponentDialog,
     DialogInventarioComponent,
-    LogsComponent
+    LogsComponent,
+    DialogSyncComponent
   ],
   imports: [
     BrowserModule,

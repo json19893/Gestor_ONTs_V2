@@ -16,13 +16,14 @@ export class LogsComponent implements OnInit, OnDestroy {
 
   obtenerLogs!: string;
   splitLogs: any;
-
+  subcription!: Subscription;
   private listener$!: Subscription;
   constructor(private service: pointService,
     private _snackBar: MatSnackBar) { }
 
   ngOnDestroy(): void {
     this.listener$.unsubscribe();
+    this.subcription.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -32,24 +33,23 @@ export class LogsComponent implements OnInit, OnDestroy {
       .subscribe((sincronizacion) => {
         console.log('Iniziando sincronizacion');
         console.log('Conectandose con el servidor');
-        let id = setTimeout(()=> console.clear(), 5000);
 
-
-        let subcription = interval(2000)
+        this.subcription = interval(2000)
           .pipe(
             mergeMap(() => {
-              
+
               return this.preguntarPorLogs()
             })
           ).subscribe(subject);
 
         if (!sincronizacion) {
-          subcription.unsubscribe();
+          this.subcription.unsubscribe();
         }
       });
 
     const subject = {
       next: (archivo: any) => {
+        // console.log(archivo); 
         //Setteo de datos para la renderiza los datos
         this.splitLogs = archivo;
       },
@@ -66,6 +66,6 @@ export class LogsComponent implements OnInit, OnDestroy {
 
   //Si esta sincronizando sigo preguntando por el estado del log
   preguntarPorLogs() {
-    return this.service.getArchivo(2);
+    return this.service.getArchivo(10);
   }
 }
