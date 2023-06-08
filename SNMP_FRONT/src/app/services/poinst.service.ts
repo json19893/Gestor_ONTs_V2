@@ -362,7 +362,7 @@ export class pointService {
   }
 
   getAceptadosInventario(idOlt: number, ip: string, fechaIni: string, fechaFin: string, usuario:string) {
-    const params = `/${idOlt}/${ip}/${usuario}/${fechaIni}/${fechaFin}`;
+    const params = `/${idOlt}/${ip}/${usuario}/${fechaIni}`;
     console.log(params);
     let resource = `${AppUrlSettings.BASE_API}${AppUrlSettings.GET_RECHAZADOS_INVENTARIO_FINAL}${params}`;
     return this.http.get<any>(resource);
