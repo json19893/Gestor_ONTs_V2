@@ -46,6 +46,7 @@ export interface OntInventarioResponse {
   inventario: boolean;
 }
 
+
 export interface GenericResponse { sms: string, cod: number }
 export interface Settings { idOlt: number, ip: string, fechaIni: string, fechaFin: string }
 
@@ -54,10 +55,14 @@ export interface Settings { idOlt: number, ip: string, fechaIni: string, fechaFi
   templateUrl: './dialog-inventario.component.html',
   styleUrls: ['./dialog-inventario.component.css']
 })
+
 export class DialogInventarioComponent implements OnInit, AfterViewInit {
   intervalId!: any;
   resultsLength: NumberInput = 0;
   @Output() newItemEvent = new EventEmitter<boolean>(false);
+  usuario: string = "";
+  dt!: OntInventarioResponse[];
+  olt!: Olts;
 
 
   onKeydown($event: KeyboardEvent) {
@@ -66,9 +71,10 @@ export class DialogInventarioComponent implements OnInit, AfterViewInit {
     }
   }
 
+
   public oltSeleccionada!: Olts;
 
-  dt!: OntInventarioResponse[];
+
   public estaSincronizandose: boolean = false;
   //Fechas de sincronizacion
   public ultimaActualizacion!: Date;
@@ -103,26 +109,31 @@ export class DialogInventarioComponent implements OnInit, AfterViewInit {
     public dialog: MatDialog,
     private spinner: NgxSpinnerService,
     public dialogRef: MatDialogRef<DialogInventarioComponent>,
-    @Inject(MAT_DIALOG_DATA) public state: { sync: boolean, olt: Olts, topic: Observable<GenericResponse> }) { }
+    @Inject(MAT_DIALOG_DATA) public state: { sync: boolean, olt: Olts, topic: Observable<GenericResponse> },
+    @Inject(MAT_DIALOG_DATA) public obj: { olt: Olts, list: OntInventarioResponse[] }) { }
 
   ngAfterViewInit(): void {
     this.sincronizar();
     this.newItemEvent.emit(true);
   }
 
-
-
   ngOnInit(): void {
     this.spinner.hide();
     let { olt, sync, topic } = this.state;
     this.oltSeleccionada = olt;
+    this.newItemEvent.emit(true);
 
+    this.dt = this.obj.list;
+    this.olt = this.obj.olt;
+    this.dataSource = new MatTableDataSource<any>(this.obj.list);
+    this.usuario = localStorage.getItem('usuario')!;
     // Sirve para inicializar el relog:
     this.intervalId = setInterval(() => {
       this.time = new Date();
     }, 1000);
-    //Que se lance por las que ya estan en el area temporal
+
   }
+
 
   filtrarPorRangoFechas() {
     const fechaIni = this.myGroup.value.fechaIni;
@@ -159,7 +170,20 @@ export class DialogInventarioComponent implements OnInit, AfterViewInit {
     this.dataSource = new MatTableDataSource<OntInventarioResponse>(list);
   }
 
-  moverAInventario(numero_serie: string, tipo: string) {
+  moverAInventario(numero_serie: string, tipo: string, ejecucion: string) {
+
+    this.service.moverOntInventario(numero_serie, tipo, ejecucion)
+      .subscribe((response) => {
+        if (response.cod == 0) {
+          this.service.getAceptadosInventario(
+            this.olt.id_olt,
+            this.olt.ip,
+            new Date().toISOString(),
+            new Date().toISOString(), this.usuario!).subscribe(resp => {
+              alert('flujo completo');
+            })
+        }
+      })
   }
 
   request() {
@@ -182,7 +206,7 @@ export class DialogInventarioComponent implements OnInit, AfterViewInit {
 
     const { id_olt, ip } = this.oltSeleccionada;
 
-    this.topic$ = this.service.sincronizarNCE(id_olt).subscribe((data) => {
+    this.topic$ = this.service.poleoOlt(id_olt, this.usuario).subscribe((data) => {
       this.estaSincronizandose = false;
       this.newItemEvent.emit(this.estaSincronizandose);
 
@@ -223,7 +247,9 @@ export class DialogInventarioComponent implements OnInit, AfterViewInit {
       fechaIni: date1,
       fechaFin: date2
     }
-    return this.service.getAceptadosInventario(settings);
+
+
+    return this.service.getAceptadosInventario(id_olt, ip, date1, date2, this.usuario);
   }
 }
 

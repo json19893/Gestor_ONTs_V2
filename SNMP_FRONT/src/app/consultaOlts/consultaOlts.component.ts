@@ -33,6 +33,7 @@ interface Olts {
   id: string;
   descubrio: boolean;
   nce: boolean;
+  descubrimiento: boolean;
 }
 export interface Bloques {
   bloque: number;
@@ -73,8 +74,9 @@ export class ConsultaOltsComponent implements OnInit {
   selection = new SelectionModel<Olts>(true, []);
   constructor(public dialog: MatDialog,
     private spinner: NgxSpinnerService,
-    private service: pointService, private _snackBar: MatSnackBar,) {
+    private service: pointService, private _snackBar: MatSnackBar) {
     setInterval(() => this.valmaximo(), 100000);
+    this.usuario = localStorage.getItem('usuario');
 
   }
   /** Whether the number of selected elements matches the total number of rows. */
@@ -83,7 +85,8 @@ export class ConsultaOltsComponent implements OnInit {
     this.spinner.show();
     this.getDataTable();
     this.valmaximo();
-    this.usuario = localStorage.getItem('usuario');
+    //this.usuario = localStorage.getItem('usuario');
+    console.log(this.usuario);
     this.rol = localStorage.getItem('rol');
     this.intentos = 0;
     switch (this.rol) {
@@ -192,7 +195,7 @@ export class ConsultaOltsComponent implements OnInit {
 
   }
   getDataTable() {
-    this.service.getOlts().subscribe(
+    this.service.getOlts(this.usuario).subscribe(
       res => {
         this.ELEMENT_DATA = res;
         this.dataSource = new MatTableDataSource<Olts>(this.ELEMENT_DATA);
@@ -295,6 +298,12 @@ export class ConsultaOltsComponent implements OnInit {
     dialogConfig.data = state;
 
     this.dialog.open(DialogInventarioComponent, dialogConfig);
+
+    const dialogRef = this.dialog.open(DialogInventarioComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(
+      () => this.getDataTable()
+    )
   }
 
   applyFilter(event: Event) {
@@ -307,23 +316,31 @@ export class ConsultaOltsComponent implements OnInit {
     this.dataSource!.paginator = this.paginator!;
   }
 
-  poleoOlt(olt: Olts) {
-    this.openDetalleAceptadas(olt);
+  poleoOlt(idOlt: Olts) {
+    this.openDetalleAceptadas(idOlt);
+    console.log('servicio 1');
+    this.spinner.show();
+    this.service.poleoOlt(idOlt.id_olt, this.usuario).subscribe((data) => {
+      console.log(data);
 
-    // console.log('servicio 1');
-    // this.spinner.show();
-    // this.service.poleoOlt(idOlt.id_olt).subscribe((data) => {
-    //   console.log(data);
+      if (data.cod == 0) {
+        this.service.getAceptadosInventario(idOlt.id_olt, idOlt.ip, new Date().toISOString(), new Date().toISOString(), this.usuario).subscribe((resp) => {
+          console.log('servicio 2');
+          this.spinner.hide();
+          this.listAceptadas = resp;
+          this.openDetalleAceptadas(idOlt);
+        });
+      }
+    });
+  }
 
-    // if (data.cod == 0) {
-    // this.service.getAceptadosInventario(idOlt.id_olt, idOlt.ip, new Date().toISOString(), new Date().toISOString()).subscribe((resp) => {
-    //   console.log('servicio 2');
-    //   this.spinner.hide();
-    //   this.listAceptadas = resp;
-    //   this.openDetalleAceptadas(idOlt);
-    // });
-    // }
-    // });
+  detalleSin(idOlt: Olts) {
+    this.service.getAceptadosInventario(idOlt.id_olt, idOlt.ip, new Date().toISOString(), new Date().toISOString(), this.usuario).subscribe((resp) => {
+      console.log('servicio 2');
+      this.spinner.hide();
+      this.listAceptadas = resp;
+      this.openDetalleAceptadas(idOlt);
+    });
   }
 
 }

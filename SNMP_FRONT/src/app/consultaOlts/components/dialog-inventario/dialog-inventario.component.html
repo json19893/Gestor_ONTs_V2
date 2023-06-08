@@ -68,6 +68,8 @@
           </mat-grid-tile>
         </form>
       </mat-grid-list>
+
+
     </section>
 
     <mat-card class="mat-elevation-z8">
@@ -96,7 +98,7 @@
                 <td mat-cell *matCellDef="let element"> {{element.oid | textPipe}} </td>
               </ng-container>
 
-              <ng-container matColumnDef="frame">
+              <!-- <ng-container matColumnDef="frame">
                 <th mat-header-cell *matHeaderCellDef> Frame </th>
                 <td mat-cell *matCellDef="let element"> {{element.frame}} </td>
               </ng-container>
@@ -109,7 +111,7 @@
               <ng-container matColumnDef="port">
                 <th mat-header-cell *matHeaderCellDef> Port </th>
                 <td mat-cell *matCellDef="let element"> {{element.port}} </td>
-              </ng-container>
+              </ng-container> -->
 
               <ng-container matColumnDef="fecha_descubrimiento">
                 <th mat-header-cell *matHeaderCellDef> Fecha Descubrimiento </th>
@@ -132,8 +134,10 @@
                     <mat-icon matTooltip="Acciones">settings</mat-icon>
                   </button>
                   <mat-menu #animals="matMenu">
-                    <button mat-menu-item (click)="moverAInventario(row.numero_serie, 'R')">Residencial</button>
-                    <button mat-menu-item (click)="moverAInventario(row.numero_serie, 'E')">Empresarial</button>
+                    <button mat-menu-item
+                      (click)="moverAInventario(row.numero_serie, 'R',row.id_ejecucion)">Residencial</button>
+                    <button mat-menu-item
+                      (click)="moverAInventario(row.numero_serie, 'E',row.id_ejecucion)">Empresarial</button>
                   </mat-menu>
                 </td>
               </ng-container>

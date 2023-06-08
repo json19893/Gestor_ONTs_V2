@@ -1034,5 +1034,16 @@ public interface IcatOltsRepositorio extends MongoRepository<catOltsEntidad, Str
 			, "{ $merge: { into: \"cat_olts\", on: \"_id\", whenMatched: \"replace\", whenNotMatched: \"insert\" } }" })
 	List<catOltsEntidad> updateStatusNCE(@Param("date") Date date);
 	
+	@Aggregation(pipeline = { 
+			  "{\r\n"
+			+ "      $set:{\r\n"
+			+ "            descubrimiento: { $cond: [  {$in :[ \"$id_olt\", ?0  ]}, true, false ] },\r\n"
+			+ "            \r\n"
+			+ "        }\r\n"
+			+ "}"
+			, "{$sort: {descubrimiento:-1} }" 
+	})
+	List<catOltsEntidad>  getOltsUser(@Param("id_olts") List<Integer> idOlts);
+	
 
 }

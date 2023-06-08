@@ -97,6 +97,8 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 	private String ruta2;
 	@Value("${ruta.archivo.metrica}")
 	private String ruta3;
+	@Value("${ruta.archivo.metrica}")
+	private String ruta4;
 	
 
 	@Override																					
@@ -163,7 +165,7 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
     			
     			
     			data= limpiezaCadena.getMetricasBypoleo(proces, metrica, idOlt,
-    					configuracion.getIdRegion(), idProceso, configuracion.getTecnologia(),entidad, cadenasMetrica, saveErroneos, contador,manual);
+    					configuracion.getIdRegion(), idProceso, configuracion.getTecnologia(),entidad, cadenasMetrica, saveErroneos, contador,manual, nce);
 
     			log.info("count data "+data.size());
     			
@@ -211,7 +213,9 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 		if(manual){
 			utls.crearArchivos(ruta2,"Total de onts : "+ data.size());
 			utls.crearArchivos(ruta,DESC_FIN+configuracion.getIp());
-			}
+		}else if(nce){
+			utls.crearArchivos(ruta4,utls.prefixLog("Termina el proceso de descubrimiento."));
+		}
     	return CompletableFuture.completedFuture(new GenericResponseDto(String.valueOf(data.size()), exitValue));
 }
 	@Override
