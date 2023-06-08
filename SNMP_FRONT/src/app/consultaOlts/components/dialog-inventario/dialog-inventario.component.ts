@@ -45,6 +45,7 @@ export interface OntElement {
   styleUrls: ['./dialog-inventario.component.css']
 })
 export class DialogInventarioComponent implements OnInit {
+  usuario:string = "";
   dt!: OntElement[];
   marcarOnt() {
     throw new Error('Method not implemented.');
@@ -72,12 +73,15 @@ export class DialogInventarioComponent implements OnInit {
 
   constructor(public dialogRef: MatDialogRef<String>,
     @Inject(MAT_DIALOG_DATA) public obj: { olt: Olts, list: OntElement[] },
-    private service: pointService) { }
+    private service: pointService) {
+      
+     }
 
   ngOnInit(): void {
     this.dt = this.obj.list;
     this.olt = this.obj.olt;
     this.dataSource = new MatTableDataSource<any>(this.obj.list);
+    this.usuario = localStorage.getItem('usuario')!;
   }
 
   filtrarPorRangoFechas(event: Event) {
@@ -111,15 +115,16 @@ export class DialogInventarioComponent implements OnInit {
     this.dataSource = new MatTableDataSource<OntResponse>(list);
   }
 
-  moverAInventario(numero_serie: string, tipo: string) {
-    this.service.moverOntInventario(numero_serie, tipo)
+  moverAInventario(numero_serie: string, tipo: string, ejecucion:string ) {
+
+    this.service.moverOntInventario(numero_serie, tipo, ejecucion)
       .subscribe((response) => {
         if (response.cod == 0) {
           this.service.getAceptadosInventario(
             this.olt.id_olt,
             this.olt.ip,
             new Date().toISOString(),
-            new Date().toISOString()).subscribe(resp => {
+            new Date().toISOString(), this.usuario!).subscribe(resp => {
               alert('flujo completo');
             })
         }

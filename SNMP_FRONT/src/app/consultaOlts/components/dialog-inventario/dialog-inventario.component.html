@@ -86,8 +86,8 @@
               <mat-icon matTooltip="Acciones">settings</mat-icon>
             </button>
             <mat-menu #animals="matMenu">
-              <button mat-menu-item (click)="moverAInventario(row.numero_serie, 'R')">Residencial</button>
-              <button mat-menu-item (click)="moverAInventario(row.numero_serie, 'E')">Empresarial</button>
+              <button mat-menu-item (click)="moverAInventario(row.numero_serie, 'R', row.id_ejecucion)">Residencial</button>
+              <button mat-menu-item (click)="moverAInventario(row.numero_serie, 'E', row.id_ejecucion)">Empresarial</button>
             </mat-menu>
           </td>
         </ng-container>

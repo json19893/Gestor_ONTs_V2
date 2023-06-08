@@ -98,11 +98,12 @@
     </th>
     <td mat-cell *matCellDef="let row">
       <button [disabled]="!row.nce" mat-icon-button [matMenuTriggerFor]="animals" aria-label="Example icon-button with a menu">
-        <mat-icon matTooltip="Acciones">more_horiz</mat-icon>
+        <mat-icon [class.color_green]="row.descubrimiento" matTooltip="Acciones">more_horiz</mat-icon>
       </button>
       <mat-menu #animals="matMenu">
-        <button mat-menu-item (click)="openDetalleHomologacion(row)">Detalle</button>
-        <button mat-menu-item (click)="poleoOlt(row)">Sincronizar</button>
+        <button class="ps-2" mat-menu-item (click)="openDetalleHomologacion(row)">Detalle</button>
+        <button class="ps-2" mat-menu-item (click)="poleoOlt(row)">Sincronizar</button>
+        <button class="ps-2" *ngIf="row.descubrimiento" mat-menu-item (click)="detalleSin(row)">Detalle Sinc</button>
       </mat-menu>
     </td>
   </ng-container>

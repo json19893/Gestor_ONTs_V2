@@ -141,6 +141,10 @@ public class Utils extends Constantes {
         return true;
 
     }
+    
+    public String prefixLog(String texto) {
+    	return "[ " + getLocalDateTimeZone() + " ] " + " INFO " + texto ;
+    }
 
 
     public List<String> getReplace(Integer idMetrica, String tecnologia) {

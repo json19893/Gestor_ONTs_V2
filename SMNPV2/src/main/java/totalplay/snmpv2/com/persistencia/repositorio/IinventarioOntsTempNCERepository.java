@@ -129,14 +129,22 @@ public interface IinventarioOntsTempNCERepository extends MongoRepository<Invent
 			+ " }\n"
 			, " {\n"
 			+ "        $set:{\n"
-			+ "            frame:{$ifNull:[{$arrayElemAt : ['$metrica.frame',0]}, '']},\n"
-			+ "            slot:{$ifNull:[{$arrayElemAt : ['$metrica.slot',0]}, '']},\n"
-			+ "            port:{$ifNull:[{$arrayElemAt : ['$metrica.port',0]}, '']}\n"
+			+ "            frame:{$ifNull:[{$arrayElemAt : ['$metrica.frame',0]}, null]},\n"
+			+ "            slot:{$ifNull:[{$arrayElemAt : ['$metrica.slot',0]}, null]},\n"
+			+ "            port:{$ifNull:[{$arrayElemAt : ['$metrica.port',0]}, null]}\n"
 			+ "        }\n"
 			+ " }\n"
 			, "{$unset:[\"metrica\", '_id']}\n"
 			, "{$out: 'tb_inventario_onts_tmp_nce'}\n"
 			})
 	List<InventarioAuxTransEntity> getFrameSlotPort(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt);
+	
+	
+	@Aggregation(pipeline = { 
+			"{$unset:['_id']}"
+			,"{ $merge: { into: \"tb_inventario_onts_descubrimiento_nce\", on: \"_id\", whenMatched: \"replace\", whenNotMatched: \"insert\" } }"
+	})
+	void outToInv();
+	
 	
 }

@@ -11,6 +11,7 @@ import java.util.Optional;
 
 import java.util.concurrent.CompletableFuture;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -24,12 +25,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import lombok.extern.slf4j.Slf4j;
 import totalplay.snmpv2.com.helper.EncryptorHelper;
 import totalplay.snmpv2.com.configuracion.Constantes;
 import totalplay.snmpv2.com.configuracion.Utils;
 import totalplay.snmpv2.com.negocio.dto.DescubrimientoManualDto;
+import totalplay.snmpv2.com.negocio.dto.DescubrimientoNCEUsuariosDto;
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.negocio.services.IUpdateTotalOntsService;
 import totalplay.snmpv2.com.negocio.services.IasyncMethodsService;
@@ -38,8 +41,9 @@ import totalplay.snmpv2.com.negocio.services.IlimpiezaOntsService;
 import totalplay.snmpv2.com.persistencia.entidades.BitacoraEventosEntity;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.IBitacoraEventosRepository;
-
+import totalplay.snmpv2.com.persistencia.repositorio.IUsuariosPermitidosRepositorio;
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsDescubrimientoNCERepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsErroneas;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempNCERepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
@@ -47,9 +51,11 @@ import totalplay.snmpv2.com.persistencia.repositorio.ImonitorEjecucionRepository
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorPoleoNCERepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ItblDescubrimientoManualRepositorio;
 import totalplay.snmpv2.com.persistencia.entidades.MonitorEjecucionEntity;
+import totalplay.snmpv2.com.persistencia.entidades.UsuariosPermitidosEntidad;
 import totalplay.snmpv2.com.persistencia.entidades.monitorPoleoNCEEntidad;
 @Slf4j
 @RestController
+//@RequestMapping(path = "/snmpv2")
 public class DescubrimientoController extends Constantes {
 
 	@Autowired
@@ -77,6 +83,12 @@ public class DescubrimientoController extends Constantes {
 	IinventarioOntsTempNCERepository tempNCE; 
 	@Autowired
 	ImonitorPoleoNCERepository monitorNCE;
+	@Autowired
+	IUsuariosPermitidosRepositorio usuariosPermitidos;
+	@Autowired
+	IinventarioOntsDescubrimientoNCERepository inventarioDesNCE;
+	
+	
 	
 	
 	private Integer valMaxOlts = 50;
@@ -84,6 +96,8 @@ public class DescubrimientoController extends Constantes {
 	Utils util =new Utils();
 	@Value("${ruta.archivo.txt}")
 	private String ruta;
+	@Value("${ruta.archivo.nce}")
+	private String ruta2;
 	
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	//@Scheduled(cron = "0 2 0 * * *", zone = "CST")
@@ -185,12 +199,64 @@ public class DescubrimientoController extends Constantes {
 	}
 	
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-	@GetMapping("/descubrimientoNCE/{idOlt}")
-	public GenericResponseDto descubrimientoNCE(@PathVariable("idOlt") Integer idOlt) throws Exception {
+	@GetMapping("/descubrimientoNCE/{idOlt}/{user}")
+	public GenericResponseDto descubrimientoNCE(@PathVariable("idOlt") Integer idOlt, @PathVariable("user") String user) throws Exception {
 		monitorPoleoNCEEntidad monitor=null;
 		try {
+			
+			File file = new File(ruta2);
+			
+			if(file.exists())
+				file.delete();
+						
+			util.crearArchivos(ruta2, util.prefixLog("Inicia el proceso de descubrimiento."));
+			
 			monitor= monitorNCE.save(new monitorPoleoNCEEntidad(util.getDate(),"POLEO DE NCE, OLT: "+ idOlt,INICIO, idOlt));
+			//1. TODO: La limpieza de tabla se realizarà a media noche
 			tempNCE.deleteAll();
+			//2. TODOSe realizarà la limpieza de regstros por usuario en la noche
+			//3. TODO: En un areglo guardas los id del proceso de ejecucion en la tabla de usuarios 
+			
+			//Encontrar el registro del usuario
+			UsuariosPermitidosEntidad usuario =  usuariosPermitidos.getUsuario(user);
+			//UsuariosPermitidosEntidad usuario = usuarios.get(1);
+			
+			
+			//buscar si ya habìa realizado un descubrimiento sobre esa olt
+			List<DescubrimientoNCEUsuariosDto> descubrimientos = usuario.getDescubrimientos();
+			
+			
+			
+			//seter los valores del descubrimiento
+			DescubrimientoNCEUsuariosDto descubrimiento = new  DescubrimientoNCEUsuariosDto();
+			descubrimiento.setId_ejecucion(monitor.getId());
+			descubrimiento.setOlt(idOlt);
+			
+			Integer index = descubrimientos.indexOf(descubrimiento);
+			
+			
+			if( index != -1) {
+				
+				try {
+					inventarioDesNCE.deleteEjecucion(descubrimientos.get(index).getId_ejecucion());					
+				}catch (Exception e) {
+					// TODO: handle exception
+				}
+				
+				descubrimientos.remove(index.intValue());
+			}
+			
+			descubrimientos.add(descubrimiento);
+			
+			usuario.setDescubrimientos(descubrimientos);
+			
+			usuariosPermitidos.save(usuario);
+			
+			
+			System.out.println(usuario.getNombreCompleto());
+			
+			
+			
 			List<CatOltsEntity> olts = new ArrayList<CatOltsEntity>();
 			CatOltsEntity olt=catOltRepository.getOlt(idOlt);
 			olts.add(olt);
@@ -204,7 +270,7 @@ public class DescubrimientoController extends Constantes {
 				}
 				List<CatOltsEntity> segmentOlts = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
 				CompletableFuture<GenericResponseDto> executeProcess = descubrimientoService
-						.getDescubrimiento(segmentOlts, idProceso, false,"", true);
+						.getDescubrimiento(segmentOlts, monitor.getId(), false,"", true);
 				thredOlts.add(executeProcess);
 			}
 			
@@ -212,6 +278,13 @@ public class DescubrimientoController extends Constantes {
 			
 			//hacer le cruce de las mètricas
 			limpiezaOnts.LimpiezaNCE(olts);
+			//Enviar el descubrimiento a una tabla final
+			try {
+				tempNCE.outToInv();
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			
 			monitor.setFecha_fin(util.getDate());
 			
 			monitorNCE.save(monitor);
@@ -224,7 +297,11 @@ public class DescubrimientoController extends Constantes {
 			return  new GenericResponseDto(EJECUCION_ERROR, 1);
 		}
 		
-		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
+		if(monitor != null) {
+			return new GenericResponseDto(monitor.getId(), 0);
+		}
+		
+		return new GenericResponseDto(EJECUCION_ERROR, 1);
 		
 	}
 	

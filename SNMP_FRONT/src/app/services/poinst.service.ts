@@ -193,12 +193,15 @@ export class pointService {
 
   }
 
-  getOlts(): Observable<any> {
+  getOlts(usuario?:string): Observable<any> {
     var headers = new HttpHeaders({
       'mode': 'no-cors',
       'Access-Control-Allow-Origin': '*'
     });
-    return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.GET_OLTS, { headers });
+
+    console.log(usuario);
+
+    return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.GET_OLTS+usuario, { headers });
 
   }
 
@@ -354,19 +357,19 @@ export class pointService {
     return this.http.post<any>(AppUrlSettings.BASE_API + AppUrlSettings.POLEO_METRICA_OID, data, { headers });
   }
 
-  poleoOlt(idOlt: number) {
-    return this.http.get<{ sms: string, cod: number }>(AppUrlSettings.BASE_API_LOGIN + AppUrlSettings.GET_RECHAZADAS_OLT_NCE + `/${idOlt}`);
+  poleoOlt(idOlt: number, usuario:string) {
+    return this.http.get<{ sms: string, cod: number }>(AppUrlSettings.BASE_API_LOGIN + AppUrlSettings.GET_RECHAZADAS_OLT_NCE + `/${idOlt}/${usuario}`);
   }
 
-  getAceptadosInventario(idOlt: number, ip: string, fechaIni: string, fechaFin: string) {
-    const params = `/${idOlt}/${ip}/${fechaIni}/${fechaFin}`;
+  getAceptadosInventario(idOlt: number, ip: string, fechaIni: string, fechaFin: string, usuario:string) {
+    const params = `/${idOlt}/${ip}/${usuario}/${fechaIni}/${fechaFin}`;
     console.log(params);
     let resource = `${AppUrlSettings.BASE_API}${AppUrlSettings.GET_RECHAZADOS_INVENTARIO_FINAL}${params}`;
     return this.http.get<any>(resource);
   }
 
-  moverOntInventario(numero_serie: string, tipo: string) {
-    let resource = `${AppUrlSettings.BASE_API}${AppUrlSettings.MOVER_ONT_INVENTARIO_FINAL}/${numero_serie}/${tipo}`;
+  moverOntInventario(numero_serie: string, tipo: string, ejecucion:string ) {
+    let resource = `${AppUrlSettings.BASE_API}${AppUrlSettings.MOVER_ONT_INVENTARIO_FINAL}/${numero_serie}/${tipo}/${ejecucion}`;
     return this.http.get<{ sms: string, cod: number }>(resource);
   }
 }
