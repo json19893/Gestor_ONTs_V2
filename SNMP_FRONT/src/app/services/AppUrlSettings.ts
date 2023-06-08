@@ -1,7 +1,7 @@
 export class AppUrlSettings{
 
-    //public static BASE_API = 'http://10.180.199.75:9100/Totalplay/';
-    public static BASE_API = 'http://localhost:9081/';
+    public static BASE_API = 'http://10.180.199.75:9100/Totalplay/';
+    //public static BASE_API = 'http://localhost:9081/';
     //public static BASE_API_LOGIN = 'http://localhost:9084/';
     //public static BASE_API_DESCUBRIMIENTO = 'http://localhost:9080/';
     //public static BASE_API = 'http://10.180.199.75:9081/';

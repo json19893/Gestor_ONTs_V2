@@ -354,7 +354,7 @@ export class pointService {
     var headers = new HttpHeaders({
       'mode': 'no-cors'
     });
-    return this.http.post<any>(AppUrlSettings.BASE_API + AppUrlSettings.POLEO_METRICA_OID, data, { headers });
+    return this.http.post<any>(AppUrlSettings.BASE_API_LOGIN + AppUrlSettings.POLEO_METRICA_OID, data, { headers });
   }
 
   poleoOlt(idOlt: number, usuario:string) {

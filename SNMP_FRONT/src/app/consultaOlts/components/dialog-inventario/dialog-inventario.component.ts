@@ -5,6 +5,7 @@ import { Olts } from 'src/app/model/names.olts';
 import { OntResponse } from '../../interfaces/ResponseOnt';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { pointService } from 'src/app/services/poinst.service';
+import { poleoMetricaOidRequest } from 'src/app/model/poleoMetricaOidRequest';
 
 export interface OntElement {
   _id: string;
@@ -47,6 +48,9 @@ export interface OntElement {
 export class DialogInventarioComponent implements OnInit {
   usuario:string = "";
   dt!: OntElement[];
+
+  public requestPoleoOid:poleoMetricaOidRequest | undefined;
+
   marcarOnt() {
     throw new Error('Method not implemented.');
   }
@@ -74,8 +78,16 @@ export class DialogInventarioComponent implements OnInit {
   constructor(public dialogRef: MatDialogRef<String>,
     @Inject(MAT_DIALOG_DATA) public obj: { olt: Olts, list: OntElement[] },
     private service: pointService) {
-      
-     }
+      //setInterval(() => this.getaArchivo(), 1000);
+    }
+  
+  // getaArchivo() {
+  //     this.service.getArchivo(1).subscribe(
+  //       res => {
+  //         this.archivo = res;
+  //   })
+  
+  // }
 
   ngOnInit(): void {
     this.dt = this.obj.list;
@@ -126,8 +138,20 @@ export class DialogInventarioComponent implements OnInit {
             new Date().toISOString(),
             new Date().toISOString(), this.usuario!).subscribe(resp => {
               alert('flujo completo');
+              this.actualizarFrame(numero_serie);
+              
             })
         }
       })
   }
+
+  actualizarFrame(serie:string){
+      
+    this.requestPoleoOid=new poleoMetricaOidRequest(serie,13);      
+    this.service.poleoMetricaOid(this.requestPoleoOid).subscribe(
+        res =>{}
+    )
+  }
+
+
 }

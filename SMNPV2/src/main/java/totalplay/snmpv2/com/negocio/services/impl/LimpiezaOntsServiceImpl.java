@@ -291,7 +291,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 		crucesMetricas(4,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
 		crucesMetricas(14,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );*/
 		crucesMetricas(16,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
-		utls.crearArchivos(ruta, utls.prefixLog("Inicia el proceso de cruce de métricas."));
+		utls.crearArchivos(ruta, utls.prefixLog("Termina el proceso de cruce de métricas."));
 	}
 	
 	private void crucesMetricas(int metrica, String idPoleo, String tabla, List<CatOltsEntity> olts, boolean manual, boolean nce ) {
