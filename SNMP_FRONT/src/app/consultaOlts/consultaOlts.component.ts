@@ -290,8 +290,8 @@ export class ConsultaOltsComponent implements OnInit {
 
     const dialogConfig = new MatDialogConfig<any>();
     dialogConfig.autoFocus = true;
-    dialogConfig.height = 'auto';
-    dialogConfig.width = '130vw';
+    dialogConfig.height = '80vh';
+    dialogConfig.width = '50vw';
     dialogConfig.data = state;
 
     this.dialog.open(DialogInventarioComponent, dialogConfig);

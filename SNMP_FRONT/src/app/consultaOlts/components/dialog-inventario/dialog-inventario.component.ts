@@ -1,4 +1,4 @@
-import { AfterContentInit, Component, Inject, OnInit } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { Olts } from 'src/app/model/names.olts';
@@ -10,6 +10,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { NgxSpinnerService } from 'ngx-spinner';
 import * as moment from 'moment';
 import { OltSincronizacionService } from '../../services/olts.service';
+import { NumberInput } from '@angular/cdk/coercion';
 
 
 export interface OntInventarioResponse {
@@ -53,8 +54,10 @@ export interface Settings { idOlt: number, ip: string, fechaIni: string, fechaFi
   templateUrl: './dialog-inventario.component.html',
   styleUrls: ['./dialog-inventario.component.css']
 })
-export class DialogInventarioComponent implements OnInit {
+export class DialogInventarioComponent implements OnInit, AfterViewInit {
   intervalId!: any;
+  resultsLength: NumberInput = 0;
+  @Output() newItemEvent = new EventEmitter<boolean>(false);
 
 
   onKeydown($event: KeyboardEvent) {
@@ -93,7 +96,7 @@ export class DialogInventarioComponent implements OnInit {
     fechaFin: new FormControl<string>('2023-06-06')
   });
 
-  status!: string[];
+  // element: HTMLElement = document.getElementById('auto_trigger') as HTMLElement;
 
   constructor(
     private service: pointService,
@@ -101,6 +104,11 @@ export class DialogInventarioComponent implements OnInit {
     private spinner: NgxSpinnerService,
     public dialogRef: MatDialogRef<DialogInventarioComponent>,
     @Inject(MAT_DIALOG_DATA) public state: { sync: boolean, olt: Olts, topic: Observable<GenericResponse> }) { }
+
+  ngAfterViewInit(): void {
+    this.sincronizar();
+    this.newItemEvent.emit(true);
+  }
 
 
 
@@ -113,9 +121,7 @@ export class DialogInventarioComponent implements OnInit {
     this.intervalId = setInterval(() => {
       this.time = new Date();
     }, 1000);
-
     //Que se lance por las que ya estan en el area temporal
-
   }
 
   filtrarPorRangoFechas() {
@@ -164,27 +170,41 @@ export class DialogInventarioComponent implements OnInit {
     return throwError(() => new Error(handleError.error));
   }
 
-  async sincronizar() {
+  sincronizar() {
+    this.isLoadingResults = true;
+    this.isRateLimitReached = true;
+
     //Si esta activo el procesamiento: preguntar al usuario si desea interrumpirlo
     this.estaSincronizandose = true;
+    this.newItemEvent.emit(this.estaSincronizandose);
 
     console.log('Sincronizando con el servidor...');
+
     const { id_olt, ip } = this.oltSeleccionada;
 
     this.topic$ = this.service.sincronizarNCE(id_olt).subscribe((data) => {
       this.estaSincronizandose = false;
+      this.newItemEvent.emit(this.estaSincronizandose);
+
+      this.isLoadingResults = false;
+      this.isRateLimitReached = false;
+
       if (data.cod == 0) {
         this.ultimaActualizacion = this.time;
         //Correr el otro proceso:
         this.preguntarInventarioFinal().subscribe((data) => {
+          this.isLoadingResults = false;
+          this.isRateLimitReached = false;
           if (data.length == 0) {
             //No hay data
             console.log('No hay data');
           } else {
             console.log(data);
+            this.resultsLength = data.length;
             this.dataSource = new MatTableDataSource<OntInventarioResponse>(data)
           }
         });
+
       }
     });
   }
@@ -197,8 +217,6 @@ export class DialogInventarioComponent implements OnInit {
 
     const date1 = moment(fechaIni).format();
     const date2 = moment(fechaFin).format();
-    console.log(date1);
-    console.log(date2);
     const settings: Settings = {
       idOlt: id_olt,
       ip: ip,

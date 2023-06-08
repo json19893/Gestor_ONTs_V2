@@ -1,5 +1,7 @@
 <cdk-virtual-scroll-viewport appendOnly itemSize="5" class="example-viewport">
-    <div *cdkVirtualFor="let log of logs" class="example-item">
+    <p style="font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    font-size: 14px;" *cdkVirtualFor="let log of splitLogs" class="example-item">
         {{ log }}
-    </div>
+    </p>
 </cdk-virtual-scroll-viewport>

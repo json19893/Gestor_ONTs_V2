@@ -1,5 +1,6 @@
-import { AfterContentInit, Component, Input, OnInit } from '@angular/core';
+import { AfterContentInit, AfterViewInit, Component, EventEmitter, Input, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { Observer, Subscription, interval, mergeMap } from 'rxjs';
 import { pointService } from 'src/app/services/poinst.service';
 
 @Component({
@@ -7,36 +8,64 @@ import { pointService } from 'src/app/services/poinst.service';
   templateUrl: './logs.component.html',
   styleUrls: ['./logs.component.css']
 })
-export class LogsComponent implements OnInit, AfterContentInit {
+export class LogsComponent implements OnInit, OnDestroy {
+  observable: any;
 
-  openSnackBar(message: string, action: string) {
-    this._snackBar.open(message, action);
-  }
+  @Input() estaSincronizando = new EventEmitter<boolean>();
+  procesar: boolean = false;
 
-  @Input('logs') logs!: string[];
+  obtenerLogs!: string;
+  splitLogs: any;
 
-  estadoSyncronizacion!: string;
-  splitLogs: string[] = [];
-
+  private listener$!: Subscription;
   constructor(private service: pointService,
     private _snackBar: MatSnackBar) { }
 
-  ngAfterContentInit(): void {
-    this.splitLogs = this.estadoSyncronizacion.split('\n');
+  ngOnDestroy(): void {
+    this.listener$.unsubscribe();
   }
 
   ngOnInit(): void {
-    //Consulta el logs de la sincronizacion
-    this.estadoSyncronizacion = '[ 2023-06-05T13:17:24.727 ] INFO [Ejecutando Poleo Manual]: PoleoMetricasImpl.getPoleoOntMetrica'
-      + '\n[ 2023-06-05T13:17:24.731 ] INFO [Ejecutando el comando snmp]: snpmget procesando peticion...'
-      + '\n[ 2023-06-05T13:17:24.818 ] INFO [Termino la Ejecuccion del Comando snmp]: ifName'
-      + '\n[ 2023-06-05T13:17:24.820 ] INFO [Datos Generales del Poleo]'
-      + '\n[ 2023-06-05T13:17:24.731 ] INFO [Ejecutando el comando snmp]: snpmget procesando peticion...'
-      + '\nfinal del log'
-    //Lee el archivo
-    this.service.getArchivo(2)
-      .subscribe((archivo) => {
-        this.splitLogs = this.estadoSyncronizacion.split('\n');
+
+    this.listener$ = this.estaSincronizando
+      .asObservable()
+      .subscribe((sincronizacion) => {
+        console.log('Iniziando sincronizacion');
+        console.log('Conectandose con el servidor');
+        let id = setTimeout(()=> console.clear(), 5000);
+
+
+        let subcription = interval(2000)
+          .pipe(
+            mergeMap(() => {
+              
+              return this.preguntarPorLogs()
+            })
+          ).subscribe(subject);
+
+        if (!sincronizacion) {
+          subcription.unsubscribe();
+        }
       });
+
+    const subject = {
+      next: (archivo: any) => {
+        //Setteo de datos para la renderiza los datos
+        this.splitLogs = archivo;
+      },
+      error: (err: Error) => {
+        console.log(`Hubo un error en el consumo de la api: ${err.message}`);
+      },
+      complete: () => {
+        console.log('Se completó la sincronización');
+      }
+    };
+
+    this.preguntarPorLogs().subscribe(subject).unsubscribe();
+  }
+
+  //Si esta sincronizando sigo preguntando por el estado del log
+  preguntarPorLogs() {
+    return this.service.getArchivo(2);
   }
 }

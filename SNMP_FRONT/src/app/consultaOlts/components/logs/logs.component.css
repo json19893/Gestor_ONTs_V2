@@ -1,12 +1,8 @@
 .example-viewport {
-  height: auto;
+  height: 600px;
   width: auto;
 }
 
 .example-item {
-  height: 30px;
+  height: 25px;
 }
-
-/* .logs_details {
-  height: auto;
-} */
