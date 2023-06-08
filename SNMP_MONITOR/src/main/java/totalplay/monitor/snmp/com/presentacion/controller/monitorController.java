@@ -46,6 +46,7 @@ import totalplay.monitor.snmp.com.persistencia.repository.*;
 @RestController
 @Slf4j
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+@RequestMapping(path = "/snmp-monitor")
 public class monitorController extends constantes {
     @Autowired
     ImonitorService monitorServicio;
@@ -100,6 +101,9 @@ public class monitorController extends constantes {
     
     @Autowired
     IUpdateOLTsNCEService oltsNCE;
+    @Autowired
+    IUsuariosPermitidosRepositorio usuariosPermitidos;
+    
    
     
     /**
@@ -460,13 +464,28 @@ public class monitorController extends constantes {
     }
 
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-    @RequestMapping(value = "/getOlts", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<catOltsEntidad> getOlts() throws Exception {
-
+    @RequestMapping(value = {"/getOlts/{user}", "/getOlts"}, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<catOltsEntidad> getOlts(@PathVariable(required = false, name = "user") String user) throws Exception {
+    	List<catOltsEntidad> lista=null;
+    	
         try {
-            // List<vwTotalOntsEntidad> lista = vwOnts.findAll();
-            List<catOltsEntidad> lista = catalogoOlt.findAll();
-            return lista;
+        	
+        	UsuariosPermitidosEntidad usuario =  usuariosPermitidos.getUsuario(user);
+    		 		
+    		if(user!=null) {
+    			//buscar sobre la olt
+        		List<DescubrimientoNCEUsuariosDto> descubrimientos = usuario.getDescubrimientos();
+    			List<Integer> olts=new ArrayList<Integer>();
+        		
+    			for(DescubrimientoNCEUsuariosDto des:descubrimientos ) {
+    				olts.add(des.getOlt());
+    			}       		
+        		
+        		lista = catalogoOlt.getOltsUser(olts);
+        	}else {
+    			lista = catalogoOlt.findAll();
+    		}
+    		return lista;
         } catch (Exception e) {
             log.error("error", e);
             return null;
@@ -726,8 +745,8 @@ public class monitorController extends constantes {
     }
     
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-    @RequestMapping(value = {"/getRechazadasByOltInventario/{olt}/{ip}/{initDate}/{finishDate}", "/getRechazadasByOltInventario/{olt}/{ip}/{initDate}" }, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<AceptadasNCEDto> getRechazadasByOltInventario(@PathVariable("olt") Integer olt, @PathVariable("ip") String ip, @PathVariable("initDate") String initDate, @PathVariable(required = false, name = "finishDate") String finishDate) throws Exception {
+    @RequestMapping(value = {"/getRechazadasByOltInventario/{olt}/{ip}/{user}/{initDate}/{finishDate}", "/getRechazadasByOltInventario/{olt}/{ip}/{user}/{initDate}" }, method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<AceptadasNCEDto> getRechazadasByOltInventario(@PathVariable("olt") Integer olt, @PathVariable("ip") String ip, @PathVariable("user") String user, @PathVariable("initDate") String initDate, @PathVariable(required = false, name = "finishDate") String finishDate) throws Exception {
     	
     	String fDate="";
     	Date fechaFinal= null;
@@ -736,6 +755,33 @@ public class monitorController extends constantes {
     	
     	String iDate = initDate.split("T")[0];
 		Date fechaInicial = format.parse(iDate);
+		
+		//Econtrar al usuario y obtener el id de la ejecuciòn
+		
+		UsuariosPermitidosEntidad usuario =  usuariosPermitidos.getUsuario(user);
+		//UsuariosPermitidosEntidad usuario = usuarios.get(1);
+		if(usuario == null)
+				return null;
+		
+		
+		//buscar sobre la olt
+		List<DescubrimientoNCEUsuariosDto> descubrimientos = usuario.getDescubrimientos();
+		
+		
+		
+		//seter los valores del descubrimiento
+		DescubrimientoNCEUsuariosDto descubrimiento = new  DescubrimientoNCEUsuariosDto();
+		descubrimiento.setOlt(olt);
+		
+		int index = descubrimientos.indexOf(descubrimiento);
+		
+		
+		if( index == -1) {
+			return null;
+		}
+		
+		String ejecucion = descubrimientos.get(index).getId_ejecucion();
+		
 		
 		if(finishDate == null ) {
 			fechaFinal = Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(1,ChronoUnit.HOURS));finishDate= LocalDateTime.now().toString();
@@ -746,17 +792,20 @@ public class monitorController extends constantes {
 			fechaFinal= formatTime.parse(fDate);
 		}
     	
-        return rechazadasNCE.getRechazadasNCEInventario(ip, olt, fechaInicial, fechaFinal);
+        return rechazadasNCE.getRechazadasNCEInventario(ip, olt, fechaInicial, fechaFinal, ejecucion);
     }
     
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-	@GetMapping("/insertInventario/{serie}/{tipo}")
-	public GenericResponseDto insertInventario(@PathVariable("serie") String serie, @PathVariable("tipo") String tipo) throws Exception {
+	@GetMapping("/insertInventario/{serie}/{tipo}/{ejecucion}")
+	public GenericResponseDto insertInventario(@PathVariable("serie") String serie, @PathVariable("tipo") String tipo, @PathVariable("ejecucion") String ejecucion) throws Exception {
 		String respuesta = "EJECUCION EXITOSA";
 		
 		try {	
-			if(!serie.equals("") && !tipo.equals("")) {
-					respuesta = inserta.insertInventario(serie, tipo);
+			
+			if(!serie.equals("") && !tipo.equals("") && !ejecucion.equals("")) {
+					respuesta = inserta.insertInventario(serie, tipo,ejecucion );
+			}else {
+				return  new GenericResponseDto("EJECUCION ERROR", 1);
 			}				
 		} catch (Exception e) {
 			return  new GenericResponseDto("EJECUCION ERROR", 1);

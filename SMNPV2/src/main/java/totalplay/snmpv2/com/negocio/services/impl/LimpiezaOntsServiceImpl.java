@@ -6,11 +6,12 @@ import java.util.concurrent.CompletableFuture;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
 import totalplay.snmpv2.com.configuracion.Constantes;
-
+import totalplay.snmpv2.com.configuracion.Utils;
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.negocio.dto.LimpiezaManualDto;
 import totalplay.snmpv2.com.negocio.services.IasyncMethodsService;
@@ -81,6 +82,14 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 	IinventarioOntsAuxManualRepository inventarioAuxManual;
 	@Autowired
 	IinventarioOntsTempNCERepository tempNCE;
+	
+	
+	@Value("${ruta.archivo.nce}")
+	private String ruta;
+	
+	Utils utls = new Utils();
+	
+	
 	
 	@Override
 	public boolean getInventarioPuertos(MonitorEjecucionEntity monitor, List<CatOltsEntity> olts) {
@@ -275,11 +284,14 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 		String idPoleo =  monitorPoleo.getLastFinishId().getId();
 		String idEjecucion =  monitorEstatus.getLastFinishId().getId();
 		
+		utls.crearArchivos(ruta, utls.prefixLog("Inicia el proceso de cruce de métricas."));
+		
 		crucesMetricas(1,idEjecucion, "auxiliar_descubrimiento_nce", olts, false, true );
 		/*crucesMetricas(2,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
 		crucesMetricas(4,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
 		crucesMetricas(14,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );*/
 		crucesMetricas(16,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
+		utls.crearArchivos(ruta, utls.prefixLog("Inicia el proceso de cruce de métricas."));
 	}
 	
 	private void crucesMetricas(int metrica, String idPoleo, String tabla, List<CatOltsEntity> olts, boolean manual, boolean nce ) {
@@ -311,7 +323,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 		try {
 			if(manual)
 				inventarioTrans.outToInvAuxManual();
-			else 
+			else if(!nce)
 				inventarioTrans.outToInvAux();
 		
 		}catch (Exception e) {

@@ -24,6 +24,7 @@ public class catOltsEntidad {
 	private boolean descubrio;
 	private int total_onts;
 	private boolean nce;
+	private boolean descubrimiento;
 
 	
 

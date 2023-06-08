@@ -17,12 +17,14 @@ import totalplay.monitor.snmp.com.negocio.service.IDiferenciaCargaManualService;
 import totalplay.monitor.snmp.com.negocio.service.IinsertaOntsService;
 import totalplay.monitor.snmp.com.persistencia.entidad.DiferenciasEntity;
 import totalplay.monitor.snmp.com.persistencia.entidad.DiferenciasManualEntity;
+import totalplay.monitor.snmp.com.persistencia.entidad.InventarioOntsDescubrimientoNCEEntity;
 import totalplay.monitor.snmp.com.persistencia.entidad.catOltsEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsEntidad;
 import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsPdmEntidad;
 import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IdiferenciasManualRepository;
 import totalplay.monitor.snmp.com.persistencia.repository.IdiferenciasRepository;
+import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsDescubrimientoNCERepository;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsPdmRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsRepositorio;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsTempNCERepository;
@@ -46,13 +48,16 @@ public class InsertaOntsServiceImpl implements IinsertaOntsService {
 	IinventarioOntsRepositorio inventarioOnts;
 	@Autowired
 	IdiferenciasRepository diferencias;
+	@Autowired
+    IinventarioOntsDescubrimientoNCERepository inventarioDescNCE;
 	
 	@Override
-	public String insertInventario(String serie, String tipo) {
+	public String insertInventario(String serie, String tipo, String ejecucion) {
 		//TODO: Buscar en inventario si existe una ont con la serie
 		try{
 			inventarioOntsEntidad ontInv =  inventarioOnts.getOntBySerialNumber(serie);
-			inventarioOntsEntidad ontNCE =  tempNCE.finOntSerie(serie) ;
+			//inventarioOntsEntidad ontNCE =  tempNCE.finOntSerie(serie) ;			
+			inventarioOntsEntidad ontNCE = inventarioDescNCE.findOnt(serie, ejecucion);
 			inventarioOntsPdmEntidad ontPDM =  inventarioPdm.finOntSerie(serie);
 			
 			if(ontNCE == null ) return "No hay una ont Aceptada para inyectar en inventario";
