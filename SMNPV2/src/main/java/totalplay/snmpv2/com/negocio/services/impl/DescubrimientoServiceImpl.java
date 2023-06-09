@@ -92,9 +92,9 @@ public class DescubrimientoServiceImpl extends Constantes implements Idescubrimi
 			}
 			
 			if(nce)
-				 descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpNCEEntity.class, true, "", false,manual, nce);
+				 descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpNCEEntity.class, true, "", false,manual, nce,false);
 			else
-				descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpEntity.class, true, "", false,manual, nce);
+				descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpEntity.class, true, "", false,manual, nce,false);
 			
 			CompletableFuture.allOf(descubrimiento);
 			if(manual){

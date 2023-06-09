@@ -647,63 +647,63 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 		case 2:
 			//poleoMetrica.saveAll(list);
 			List data = getErrores(PoleosLastDownCauseEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 3:
 			data = getErrores(PoleosLastUpTimeEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 4:
 			data = getErrores(PoleosLastDownTimeEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 5:
 			data = getErrores(PoleosUpBytesEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 6:
 			data = getErrores(PoleosDownBytesEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 7:
 			data = getErrores(PoleosTimeOutEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 8:
 			data = getErrores(PoleosUpPacketsEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 9:
 			data = getErrores(PoleosDownPacketsEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 10:
 			data = getErrores(PoleosDropUpPacketsEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 11:
 			data = getErrores(PoleosDropDownPacketsEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 12:
 			data = getErrores(PoleosCpuEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 13:
 			data = getErrores(PoleosLastUpTimeEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 14:
 			data = getErrores(PoleosAliasEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 15:
 			data = getErrores(PoleosProfNameEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 16:
 			data = getErrores(PoleosFrameSlotPortEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 			
 		

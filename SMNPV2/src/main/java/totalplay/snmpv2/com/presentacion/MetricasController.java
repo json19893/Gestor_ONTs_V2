@@ -178,7 +178,7 @@ public class MetricasController extends Constantes {
 							List<OntsConfiguracionDto> listSegment = new ArrayList<OntsConfiguracionDto>(ontsEmpresariales.subList(i, limMax));
 							
 							
-							CompletableFuture<String> executeProcess = poleoMetricas.getMetricaEmpresarialesByMetrica( listSegment,idMonitorPoleo, j);
+							CompletableFuture<String> executeProcess = poleoMetricas.getMetricaEmpresarialesByMetrica( listSegment,idMonitorPoleo, j, false);
 							
 							regionSegmentOntsEmpresariales.add(executeProcess);
 						}
@@ -255,7 +255,7 @@ public class MetricasController extends Constantes {
 					List<OntsConfiguracionDto> listSegment = new ArrayList<OntsConfiguracionDto>(ontsEmpresariales.subList(i, limMax));
 					
 					
-					CompletableFuture<String> executeProcess = poleoMetricas.getMetricaEmpresarialesByMetrica( listSegment,idMonitorPoleo, 1); 
+					CompletableFuture<String> executeProcess = poleoMetricas.getMetricaEmpresarialesByMetrica( listSegment,idMonitorPoleo, 1, false); 
 					regionSegmentOntsEmpresariales.add(executeProcess);
 				}
 
@@ -377,7 +377,7 @@ public class MetricasController extends Constantes {
 								List<OntsConfiguracionDto> listSegment = new ArrayList<OntsConfiguracionDto>(ontsEmpresariales.subList(i, limMax));
 								
 								
-								CompletableFuture<String> executeProcess = poleoMetricas.getMetricaEmpresarialesByMetrica( listSegment,idMonitorPoleo, j);
+								CompletableFuture<String> executeProcess = poleoMetricas.getMetricaEmpresarialesByMetrica( listSegment,idMonitorPoleo, j, false);
 								
 								regionSegmentOntsEmpresariales.add(executeProcess);
 							}
