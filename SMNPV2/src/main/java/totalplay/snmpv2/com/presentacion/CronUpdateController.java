@@ -33,7 +33,7 @@ public class CronUpdateController {
 	
 	Utils utl=new Utils();
 	
-	//@Scheduled(fixedRate =3600000)
+	@Scheduled(fixedRate =300000)
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @GetMapping(value = "/updateStatuslOlt", produces = MediaType.APPLICATION_JSON_VALUE)
     public GenericResponseDto updateStatuslOlt() {
