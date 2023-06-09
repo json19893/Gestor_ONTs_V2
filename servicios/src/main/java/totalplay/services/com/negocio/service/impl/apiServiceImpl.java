@@ -288,7 +288,7 @@ public class apiServiceImpl implements IapiService {
 				catOltsEntidad olt = catalogoOlts.getOltByIpName(d.getIp(), d.getNombre());
 				if (olt == null) {
 					act.setCausa(d.getCausa());
-					act.setDescripcion(d.getDescripcion());
+					act.setDescripcion("No se informacion de la olt ");
 					act.setFechaRecibida(d.getFecha());
 					act.setIp(d.getIp());
 					act.setNombre(d.getNombre());
@@ -307,6 +307,16 @@ public class apiServiceImpl implements IapiService {
 						oltsPolear.setId_olt(olt.getId_olt());
 						oltsPolear.setNombre(olt.getNombre());
 						oltsPo.add(oltsPolear);
+						
+						act.setCausa(d.getCausa());
+						act.setDescripcion(d.getDescripcion());
+						act.setFechaRecibida(d.getFecha());
+						act.setIp(d.getIp());
+						act.setNombre(d.getNombre());
+						act.setStatus(d.getStatus());
+						act.setFechaRegistro(util.getDate());
+						act.setCorrecta(0);
+						actualizadas.add(act);
 
 					} else if (d.getStatus().equals("DOWN")) {
 						olt.setDescripcion(d.getDescripcion() + " -> Causa: " + d.getCausa());
@@ -328,16 +338,27 @@ public class apiServiceImpl implements IapiService {
 						}
 						
 						catalogoOlts.save(olt);
+						act.setCausa(d.getCausa());
+						act.setDescripcion(d.getDescripcion());
+						act.setFechaRecibida(d.getFecha());
+						act.setIp(d.getIp());
+						act.setNombre(d.getNombre());
+						act.setStatus(d.getStatus());
+						act.setFechaRegistro(util.getDate());
+						act.setCorrecta(0);
+						actualizadas.add(act);
+					}else {
+						act.setCausa(d.getCausa());
+						act.setDescripcion("No se informo el estatus  ");
+						act.setFechaRecibida(d.getFecha());
+						act.setIp(d.getIp());
+						act.setNombre(d.getNombre());
+						act.setStatus(d.getStatus());
+						act.setFechaRegistro(util.getDate());
+						act.setCorrecta(1);
+						noActualizadas.add(act);	
 					}
-					act.setCausa(d.getCausa());
-					act.setDescripcion(d.getDescripcion());
-					act.setFechaRecibida(d.getFecha());
-					act.setIp(d.getIp());
-					act.setNombre(d.getNombre());
-					act.setStatus(d.getStatus());
-					act.setFechaRegistro(util.getDate());
-					act.setCorrecta(0);
-					actualizadas.add(act);
+					
 				}
 
 				if (oltsPo != null) {
