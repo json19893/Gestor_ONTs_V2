@@ -147,11 +147,13 @@ public class apiServiceImpl implements IapiService {
 
 	@Override
 	public respuestaStatusDto putStatusOnt(List<requestEstatusDto> datos) throws Exception {
+
 		respuestaStatusDto response = new respuestaStatusDto();
 		List<detalleActualizacionesEntidad> actualizadas = new ArrayList<>();
 		List<detalleActualizacionesEntidad> noActualizadas = new ArrayList<>();
 		try {
 			for (requestEstatusDto d : datos) {
+				
 				detalleActualizacionesEntidad na = new detalleActualizacionesEntidad();
 				catOltsEntidad olt = catalogoOlts.getIp(d.getIp());
 				if (olt == null) {
@@ -281,9 +283,9 @@ public class apiServiceImpl implements IapiService {
 		List<oltsNcePolearEntidad> oltsPo = new ArrayList<oltsNcePolearEntidad>();
 		try {
 			for (requestEstatusOltDto d : datos) {
-				catOltsEntidad olt = catalogoOlts.getOltByIpName(d.getIp(), d.getNombre());
 				detalleActualizacionesOltEntidad act = new detalleActualizacionesOltEntidad();
 				oltsNcePolearEntidad oltsPolear = new oltsNcePolearEntidad();
+				catOltsEntidad olt = catalogoOlts.getOltByIpName(d.getIp(), d.getNombre());
 				if (olt == null) {
 					act.setCausa(d.getCausa());
 					act.setDescripcion(d.getDescripcion());
