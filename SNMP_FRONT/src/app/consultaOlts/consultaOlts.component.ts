@@ -283,7 +283,7 @@ export class ConsultaOltsComponent implements OnInit {
     dialogConfig.width = '130vw';
     dialogConfig.data = wrapper;
 
-    this.dialog.open(DialogInventarioComponent, dialogConfig);
+    //this.dialog.open(DialogInventarioComponent, dialogConfig);
 
     const dialogRef = this.dialog.open(DialogInventarioComponent, dialogConfig);
 
