@@ -206,7 +206,7 @@ public class MetricasController extends Constantes {
 	}
 
 	
-		@Scheduled(fixedRate =300000)
+		//@Scheduled(fixedRate =300000)
 		@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 		@RequestMapping(value = "/updateStatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 		public String UpdateStatus() throws Exception {
