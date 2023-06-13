@@ -206,7 +206,7 @@ public class MetricasController extends Constantes {
 	}
 
 	
-		@Scheduled(fixedRate =3600000)
+		@Scheduled(fixedRate =600000)
 		@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 		@RequestMapping(value = "/updateStatus", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
 		public String UpdateStatus() throws Exception {
@@ -225,8 +225,8 @@ public class MetricasController extends Constantes {
 				ArrayList<CompletableFuture<String>> regionSegmentOnts = new ArrayList<CompletableFuture<String>>();			
 				
 				maxOnts = (olts.size() / 42) + 1;
-				
-				for (int i = 0; i < olts.size(); i += maxOnts) {
+				//se comenta para que no pole por snmpbulwalk
+				/*for (int i = 0; i < olts.size(); i += maxOnts) {
 					Integer limMax = i + maxOnts;
 					if (limMax >= olts.size()) {
 						limMax = olts.size();
@@ -238,9 +238,9 @@ public class MetricasController extends Constantes {
 					regionSegmentOnts.add(executeProcess);
 				}
 
-				CompletableFuture.allOf(regionSegmentOnts.toArray(new CompletableFuture[regionSegmentOnts.size()])).join();
+				CompletableFuture.allOf(regionSegmentOnts.toArray(new CompletableFuture[regionSegmentOnts.size()])).join();*/
 				
-				List<OntsConfiguracionDto> ontsEmpresariales =  poleoMetricas.getOntsFaltantes(1,idMonitorPoleo, true, false,"auxiliar_estatus", 3, null, null);
+				List<OntsConfiguracionDto> ontsEmpresariales =  poleoMetricas.getOntsFaltantes(1,idMonitorPoleo, true, true,"auxiliar_estatus", 3, null, null);
 				
 				ArrayList<CompletableFuture<String>> regionSegmentOntsEmpresariales = new ArrayList<CompletableFuture<String>>();
 				Integer maxOntsEmpresariales = (ontsEmpresariales.size() /42) + 1;

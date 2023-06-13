@@ -1,9 +1,5 @@
 package totalplay.services.com.negocio.dto;
 
-import java.util.Date;
-
-
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
@@ -21,7 +17,7 @@ public class requestEstatusOltDto {
 	@NonNull
 	private String nombre;
 	@NonNull
-	private Date fecha;
+	private String fecha;
 	@NonNull
 	private String status;
 }

@@ -18,7 +18,7 @@ public class detalleActualizacionesOltEntidad {
 	private String causa;
 	private String descripcion;
 	private String nombre;
-	private Date fechaRecibida;
+	private String fechaRecibida;
 	private Date fechaRegistro;
 	private String status;
 	private Integer correcta;//1-error,0-exito

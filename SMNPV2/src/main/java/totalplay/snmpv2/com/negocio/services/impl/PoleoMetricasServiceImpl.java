@@ -367,13 +367,13 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                 if (oid != null && ont.getId_configuracion() != 0 && !ont.getIp().equals("")) {
 
                     if (tecnologia != "FIBER HOME") {
-                        comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + "2" + SPACE
+                        comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + "1" + SPACE
                                 + conf.getVersion() + USER_NAME + conf.getUsuario() + LEVEL + conf.getNivel()
                                 + PROTOCOL_ENCR + conf.getProt_encriptado() + PASSPHRASE + conf.getPassword()
                                 + PROTOCOL_PRIV + conf.getProt_privado() + PROTOCOL_PHRASE + conf.getFrase() + SPACE + IR
                                 + ont.getIp() + SPACE;
                     } else {
-                        comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + "2"
+                        comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + "1"
                                 + SPACE + conf.getVersion() + " -c " + conf.getProt_privado() + SPACE
                                 + ont.getIp() + SPACE;
                     }

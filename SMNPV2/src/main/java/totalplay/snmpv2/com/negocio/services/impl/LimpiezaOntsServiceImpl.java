@@ -199,7 +199,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			 updateDescripcion(monitor, INICIO_DESC+" OBTENER VIPS");
 			 getEmpresarialesVips(false);
 			 updateDescripcion(monitor, INICIO_DESC+" OBTENER PDM");
-			 deleteInventarioPdm();
+			
 			
 			//Respaldar inventario
 			try {
@@ -220,7 +220,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			}catch (Exception e) {
 				log.error("Falló la actualización del inventario "+e);
 			}
-			 
+			 deleteInventarioPdm(); 
 		} catch (Exception e) {
 			log.info(e.toString());
 		}
@@ -273,6 +273,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			
 			
 			saveOnts(inventarioAuxManual.getInv());
+			 deleteInventarioPdm(); 
 			log.info("FIN");
 		}catch (Exception e) {
 			log.error(e.toString());
