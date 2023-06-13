@@ -670,5 +670,8 @@ List<FaltantesMetricasManualEntity> getFaltantesMetricasManual(@Param("idRegion"
 		  , " {$unset: ['_id', \"ont.olt\"]}"})
 	List<OntsConfiguracionDto> getEmpresarialesByOlt(@Param("olt") Integer idOlt);
 	
+
+InventarioOntsEntity findByIndex(String index);
+	
 	
 }

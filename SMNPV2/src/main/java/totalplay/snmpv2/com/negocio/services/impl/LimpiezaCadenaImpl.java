@@ -24,11 +24,15 @@ import totalplay.snmpv2.com.negocio.dto.EjecucionDto;
 import totalplay.snmpv2.com.negocio.dto.GenericPoleosDto;
 import totalplay.snmpv2.com.negocio.services.IlimpiezaCadena;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsErroneas;
+import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsRepository;
 import totalplay.snmpv2.com.persistencia.entidades.inventarioOntsErroneas;
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IdetalleActualizacionRepositorio;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.IhistoricoConteoOltRepository;
 import totalplay.snmpv2.com.persistencia.entidades.HistoricoConteosOltsEntity;
+import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
+import totalplay.snmpv2.com.persistencia.entidades.detalleActualizacionesEntidad;
 @Slf4j
 @Service
 public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
@@ -38,6 +42,10 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
 	IcatOltsRepository catOltRepository;
     @Autowired
     IhistoricoConteoOltRepository historicoOlt;
+    	@Autowired
+	IinventarioOntsRepository invOnts;
+    	@Autowired
+	IdetalleActualizacionRepositorio detalleRepositorio;
     
     Utils util=new Utils();
     @Value("${ruta.archivo.txt}")
@@ -139,6 +147,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                                     metrica.setTecnologia(tecnologia);
                                     metrica.setIndexFSP(idOlt+"-"+metrica.getOid());
                                     response.add(metrica);
+                                     
                                 }
                             } else {
                                 
@@ -186,7 +195,28 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                                 metrica.setIndex(idOlt+"-"+metrica.getOid());
                                 
                                 response.add(metrica);
-                             
+                                if (idmetrica==1){
+                                         
+                                           InventarioOntsEntity re=  invOnts.findByIndex(metrica.getIndex());
+                                
+                                          if (metrica.getEstatus()==1||metrica.getEstatus()==2){
+                                               log.info("ESTATUS :::::::::::::::::::::::: "+metrica.getEstatus() );
+                                            	detalleActualizacionesEntidad na = new detalleActualizacionesEntidad();
+                                            re.setEstatus(metrica.getEstatus());
+                                            re.setFecha_modificacion(util.getDate());
+                                            invOnts.save(re);
+                                            na.setCausa(metrica.getEstatus()==1?"Actualizacion a UP":"Actualizacion a DOWN");
+                                            na.setNumeroSerie(re.getNumero_serie());
+                                            na.setIp(proces.getIp());
+                                            na.setFrame(re.getFrame());
+                                            na.setSlot(re.getSlot());
+                                            na.setPort(re.getPort());
+                                            na.setDescripcionAlarma(re.getDescripcionAlarma());
+                                            na.setFechaActualizacion(util.getDate());
+                                            na.setUid(re.getUid());
+                                            detalleRepositorio.save(na);
+                                            }
+                                            }
                               
                             }
                         }else if(saveErroneos){
@@ -254,7 +284,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                     	if(saveErroneos)
                     		erroneasRepositori.saveAll(erroneasList);
                     	
-                    }if(intentos==3 && !proces.getOid().equals("")) {
+                    }if(intentos==1 && !proces.getOid().equals("")) {
                     	try (final BufferedReader b = new BufferedReader(new InputStreamReader(
                     			proces.getProceso().getErrorStream()))) {
                            
@@ -313,7 +343,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                     
                     try {
                     	proces.getProceso().waitFor(5000, TimeUnit.MILLISECONDS);
-                    	if(proces.getProceso()==null || proces.getProceso().exitValue() == 0 || intentos == 3 ) {
+                    	if(proces.getProceso()==null || proces.getProceso().exitValue() == 0 || intentos == 1 ) {
 		                	if(!proces.getOid().equals("")) {
 		                		T metrica = entidad.getConstructor().newInstance();
 		                        metrica.setOid(proces.getOid());
