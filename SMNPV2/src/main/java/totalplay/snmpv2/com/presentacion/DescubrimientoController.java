@@ -99,7 +99,7 @@ public class DescubrimientoController extends Constantes {
 	private String ruta2;
 	
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-	@Scheduled(cron = "0 2 0 * * *", zone = "CST")
+	//@Scheduled(cron = "0 2 0 * * *", zone = "CST")
 	@GetMapping("/descubrimiento")
 	public GenericResponseDto getDescubrimientoOnts() throws IOException {
 		String idProceso="";

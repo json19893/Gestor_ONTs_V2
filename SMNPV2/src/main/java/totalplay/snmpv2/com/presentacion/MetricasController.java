@@ -240,8 +240,8 @@ public class MetricasController extends Constantes {
 
 				CompletableFuture.allOf(regionSegmentOnts.toArray(new CompletableFuture[regionSegmentOnts.size()])).join();*/
 				
-				List<OntsConfiguracionDto> ontsEmpresariales =  poleoMetricas.getOntsFaltantes(1,idMonitorPoleo, true, true,"auxiliar_estatus", 3, null, null);
-				
+				//List<OntsConfiguracionDto> ontsEmpresariales =  poleoMetricas.getOntsFaltantes(1,idMonitorPoleo, true, true,"auxiliar_estatus", 3, null, null);
+				List<OntsConfiguracionDto> ontsEmpresariales = inventarioOnts.findOntsEmpresarialesEstatus();
 				ArrayList<CompletableFuture<String>> regionSegmentOntsEmpresariales = new ArrayList<CompletableFuture<String>>();
 				Integer maxOntsEmpresariales = (ontsEmpresariales.size() /42) + 1;
 				
