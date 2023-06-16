@@ -4,10 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import totalplay.monitor.snmp.com.negocio.dto.EnvoltorioAuxiliarDto;
 import totalplay.monitor.snmp.com.negocio.dto.EnvoltorioAuxiliarOntsByTecnologiaDto;
 import totalplay.monitor.snmp.com.negocio.dto.datosRegionDto;
-import totalplay.monitor.snmp.com.negocio.dto.totalesActivoDto;
 import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
 import totalplay.monitor.snmp.com.negocio.service.procesobatch.IObtenerOntsByTecnologiaService;
 import totalplay.monitor.snmp.com.persistencia.entidad.EnvoltorioOntsTotalesActivoEntidad;
@@ -15,9 +13,7 @@ import totalplay.monitor.snmp.com.persistencia.entidad.TotalesByTecnologiaEntida
 import totalplay.monitor.snmp.com.persistencia.repository.ITotalesByTecnologiaRepository;
 import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsRepositorio;
 
-import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -30,34 +26,40 @@ public class ObtenerOntsByTecnologiaServiceImpl implements IObtenerOntsByTecnolo
     @Autowired
     IinventarioOntsRepositorio inventario;
 
+    @Autowired
+    ImonitorService negocio;
+
+    //target process: negocio.getTotalesByTecnologia(consultar)
     @Override
-    @Scheduled(fixedDelay = 5000)
-    public void process() {
+    //@Scheduled(fixedDelay = 60000, initialDelay = 5000)
+    public synchronized void process() {
         System.out.println("Ejecutando proceso para consultar los totales de las onts por tecnologia");
         //Meter el tiempo que tomo para actualizar:+
         long time1 = System.currentTimeMillis();
 
         //Estructura principal: top-level
-        EnvoltorioOntsTotalesActivoEntidad envoltura = new EnvoltorioOntsTotalesActivoEntidad();
+        EnvoltorioAuxiliarOntsByTecnologiaDto envoltura = new EnvoltorioAuxiliarOntsByTecnologiaDto();
         envoltura.setDate(LocalDateTime.now());
 
         try {
             //Estructura Segundaria: Segundo nivel.
-            CompletableFuture<EnvoltorioAuxiliarOntsByTecnologiaDto> alta1 = obtenerResumenOntsByTecnologia(ONT_TOTALES);
-            CompletableFuture<EnvoltorioAuxiliarOntsByTecnologiaDto> alta2 = obtenerResumenOntsByTecnologia(ONT_EMPRESARIALES);
-            CompletableFuture<EnvoltorioAuxiliarOntsByTecnologiaDto> alta3 = obtenerResumenOntsByTecnologia(ONT_VIP);
+            CompletableFuture<EnvoltorioAuxiliarOntsByTecnologiaDto> ontsTotales = obtenerResumenOntsByTecnologia(ONT_TOTALES);
+            CompletableFuture<EnvoltorioAuxiliarOntsByTecnologiaDto> ontsEmpresariales = obtenerResumenOntsByTecnologia(ONT_EMPRESARIALES);
+            CompletableFuture<EnvoltorioAuxiliarOntsByTecnologiaDto> ontsVips = obtenerResumenOntsByTecnologia(ONT_VIP);
 
             // Wait until they are all done
-            CompletableFuture.allOf(alta1, alta2, alta3).join();
+            //CompletableFuture.allOf(ontsTotales, ontsEmpresariales, ontsVips).join();
 
-            EnvoltorioAuxiliarOntsByTecnologiaDto resumenEstadoOntTotales = alta1.get();  // ONT_TOTALES
-            EnvoltorioAuxiliarOntsByTecnologiaDto resumenEstadoOntEmpresariales = alta2.get();  // ONT_EMPRESARIALES
-            EnvoltorioAuxiliarOntsByTecnologiaDto resumenEstadoOntVip = alta3.get();  // ONT_VIP
+            EnvoltorioAuxiliarOntsByTecnologiaDto resumenEstadoOntTotales = ontsTotales.get();  // ONT_TOTALES
+            EnvoltorioAuxiliarOntsByTecnologiaDto resumenEstadoOntEmpresariales = ontsEmpresariales.get();  // ONT_EMPRESARIALES
+            EnvoltorioAuxiliarOntsByTecnologiaDto resumenEstadoOntVip = ontsVips.get();  // ONT_VIP
 
             persistirInformacion(adapterEntidad(resumenEstadoOntTotales));
             persistirInformacion(adapterEntidad(resumenEstadoOntEmpresariales));
             persistirInformacion(adapterEntidad(resumenEstadoOntVip));
+
             //System.out.println("El proceso actualizacion del resumen: estatus de onts tomo: " +  df.format(minutos)  + " segundos en terminar la ejecuccion.");
+            System.out.println("Finalizo el proceso para consultar los totales de las onts por tecnologia");
         } catch (Exception ex) {
             System.out.println("Error en el proceso para crear los resumenes de estatus para las onts. Reintentando... en 5 segundos");
         }
@@ -74,7 +76,7 @@ public class ObtenerOntsByTecnologiaServiceImpl implements IObtenerOntsByTecnolo
 
     public TotalesByTecnologiaEntidad adapterEntidad(EnvoltorioAuxiliarOntsByTecnologiaDto dto){
         TotalesByTecnologiaEntidad entity = new TotalesByTecnologiaEntidad();
-        entity.setDateTime(dto.getDateTime());
+        entity.setDateTime(dto.getDate());
         entity.setTipo(dto.getTipo());
         entity.setDescripcionCorta(dto.getDescripcionCorta());
         entity.setDescripcionLarga(dto.getDescripcionLarga());
@@ -83,7 +85,7 @@ public class ObtenerOntsByTecnologiaServiceImpl implements IObtenerOntsByTecnolo
     }
 
     @Async("taskExecutor")
-    CompletableFuture<EnvoltorioAuxiliarOntsByTecnologiaDto> obtenerResumenOntsByTecnologia(String tipo) throws Exception {
+    private CompletableFuture<EnvoltorioAuxiliarOntsByTecnologiaDto> obtenerResumenOntsByTecnologia(String tipo) throws Exception {
         List<datosRegionDto> lista;
         String consultar = "";
         String descripcion_corta = "";
@@ -101,22 +103,18 @@ public class ObtenerOntsByTecnologiaServiceImpl implements IObtenerOntsByTecnolo
                 descripcion_corta = "[Vip, Empresariales, residenciales]";
                 descripcion_larga = "Resumen del estado de todas las onts";
                 auxiliar.setTipo(consultar);
-                auxiliar.setDateTime(LocalDateTime.now());
+                auxiliar.setDate(LocalDateTime.now());
                 auxiliar.setDescripcionCorta(descripcion_corta);
                 auxiliar.setDescripcionLarga(descripcion_larga);
-                List<datosRegionDto> datosTotales = inventario.getTotalesRegion();
-                auxiliar.setResumenStatusOnts(datosTotales);
                 break;
             case ONT_EMPRESARIALES:
                 consultar = "E";
                 descripcion_corta = "Empresariales";
                 descripcion_larga = "Resumen del estado de las onts empresariales";
                 auxiliar.setTipo(consultar);
-                auxiliar.setDateTime(LocalDateTime.now());
+                auxiliar.setDate(LocalDateTime.now());
                 auxiliar.setDescripcionCorta(descripcion_corta);
                 auxiliar.setDescripcionLarga(descripcion_larga);
-                List<datosRegionDto> datosEmpresariales = inventario.getTotalesEmpresariales();
-                auxiliar.setResumenStatusOnts(datosEmpresariales);
                 break;
             case ONT_VIP:
                 //Settea los datos:
@@ -124,14 +122,19 @@ public class ObtenerOntsByTecnologiaServiceImpl implements IObtenerOntsByTecnolo
                 descripcion_corta = "Vip";
                 descripcion_larga = "Resumen del estado de las onts Vip";
                 auxiliar.setTipo(consultar);
-                auxiliar.setDateTime(LocalDateTime.now());
+                auxiliar.setDate(LocalDateTime.now());
                 auxiliar.setDescripcionCorta(descripcion_corta);
                 auxiliar.setDescripcionLarga(descripcion_larga);
-                List<datosRegionDto> datosVip = inventario.getTotalesRegionesVips();
-                auxiliar.setResumenStatusOnts(datosVip);
                 break;
         }
 
+        try {
+            List<datosRegionDto> totales = negocio.getTotalesByTecnologia(consultar);
+            auxiliar.setResumenStatusOnts(totales);
+        }catch (Exception ex){
+            System.out.println(ex.getStackTrace());
+        }
+        //return auxiliar;
         return CompletableFuture.completedFuture(auxiliar);
     }
 }

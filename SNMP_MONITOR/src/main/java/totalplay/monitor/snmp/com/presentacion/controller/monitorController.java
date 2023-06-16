@@ -119,26 +119,11 @@ public class monitorController extends constantes {
     public responseRegionDto getOltsByRegion(@PathVariable("idRegion") Integer idRegion,
             @PathVariable("tipo") String tipo) throws Exception {
         responseRegionDto response = new responseRegionDto();
-
         if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
             try {
-                EnvoltorioGetOltsByRegionEntidad region = getOltsByRegionRepository.obtenerEntidad(idRegion);
-                if(region !=null){
-                    switch (tipo){
-                        case "T":
-                            return region.getRegionOntTodoEstatus().getResumenStatusOnts();
-                        case "E":
-                            return region.getRegionOntEmpresarialesEstatus().getResumenStatusOnts();
-                        case "V":
-                            return region.getRegionOntVipsEstatus().getResumenStatusOnts();
-                    }
-                }
-
-                //response = monitorServicio.getOltsByRegion(idRegion, tipo, false);
+                response = monitorServicio.getOltsByRegion(idRegion, tipo, false);
             } catch (Exception e) {
-
             }
-
             return response;
         }
         return null;
@@ -255,8 +240,10 @@ public class monitorController extends constantes {
         LocalTime timeRequestClient = utils.getDateTime().toLocalTime();
 
         if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
-            //Busco el ultmo resumen en la base de datos:
-            List<EnvoltorioOntsTotalesActivoEntidad> resumenEstadoOntsList = new ArrayList<>();
+            monitorServicio.getTotalesActivo(tipo);
+
+            //Busco el ultimo resumen en la base de datos:
+            /*List<EnvoltorioOntsTotalesActivoEntidad> resumenEstadoOntsList = new ArrayList<>();
 
             resumenEstadoOntsList = repositorioOntEstatusTotales.findAll(Sort.by(Sort.Direction.DESC, "id"));
             EnvoltorioOntsTotalesActivoEntidad resumenEstadoOnts = new EnvoltorioOntsTotalesActivoEntidad();
@@ -279,7 +266,7 @@ public class monitorController extends constantes {
 
             if (tipo.equals(resumenEstadoOnts.getTotalesOnstsActivasEmpresariales().getTipo())) {
                 return resumenEstadoOnts.getTotalesOnstsActivasEmpresariales().getResumenStatusOnts();
-            }
+            }*/
         }
         return null;
     }
