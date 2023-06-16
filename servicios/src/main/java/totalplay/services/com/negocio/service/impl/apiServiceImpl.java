@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import totalplay.services.com.negocio.dto.datosNumeroSerieDto;
 import totalplay.services.com.negocio.dto.ejecucionDto;
 import totalplay.services.com.negocio.dto.requestAltaOnts;
+import totalplay.services.com.negocio.dto.requestCambioOltDto;
 import totalplay.services.com.negocio.dto.requestDto;
 import totalplay.services.com.negocio.dto.requestEstatusDto;
 import totalplay.services.com.negocio.dto.requestEstatusOltDto;
@@ -33,6 +34,7 @@ import totalplay.services.com.negocio.utils.GetToken;
 import totalplay.services.com.negocio.utils.util;
 import totalplay.services.com.persistencia.entidad.InventarioOntsRespNCEEntity;
 import totalplay.services.com.persistencia.entidad.catOltsEntidad;
+import totalplay.services.com.persistencia.entidad.catOltsInventarioEntidad;
 import totalplay.services.com.persistencia.entidad.catOtsProcesadoEntidad;
 import totalplay.services.com.persistencia.entidad.detalleActualizacionesEntidad;
 import totalplay.services.com.persistencia.entidad.detalleActualizacionesOltEntidad;
@@ -40,6 +42,7 @@ import totalplay.services.com.persistencia.entidad.inventarioOntsEntidad;
 import totalplay.services.com.persistencia.entidad.inventarioOntsTempEntidad;
 import totalplay.services.com.persistencia.entidad.oltsNcePolearEntidad;
 import totalplay.services.com.persistencia.repositorio.IDetalleActualizacionesOltRepositorio;
+import totalplay.services.com.persistencia.repositorio.IcatOltsInventarioRepositorio;
 import totalplay.services.com.persistencia.repositorio.IcatOltsProcesadoRepositorio;
 import totalplay.services.com.persistencia.repositorio.IcatOltsRepositorio;
 import totalplay.services.com.persistencia.repositorio.IdetalleActualizacionRepositorio;
@@ -70,6 +73,8 @@ public class apiServiceImpl implements IapiService {
 	IoltsNcePolearRepositorio ncePolearRepositorio;
 	@Autowired
 	IDetalleActualizacionesOltRepositorio detalleActualizacionesOlt;
+	@Autowired
+	IcatOltsInventarioRepositorio catalogoOltsInventario;
 
 	@Value("${ruta.archivo.shell}")
 	private String ruta;
@@ -153,7 +158,7 @@ public class apiServiceImpl implements IapiService {
 		List<detalleActualizacionesEntidad> noActualizadas = new ArrayList<>();
 		try {
 			for (requestEstatusDto d : datos) {
-				
+
 				detalleActualizacionesEntidad na = new detalleActualizacionesEntidad();
 				catOltsEntidad olt = catalogoOlts.getIp(d.getIp());
 				if (olt == null) {
@@ -307,7 +312,7 @@ public class apiServiceImpl implements IapiService {
 						oltsPolear.setId_olt(olt.getId_olt());
 						oltsPolear.setNombre(olt.getNombre());
 						oltsPo.add(oltsPolear);
-						
+
 						act.setCausa(d.getCausa());
 						act.setDescripcion(d.getDescripcion());
 						act.setFechaRecibida(d.getFecha());
@@ -327,16 +332,16 @@ public class apiServiceImpl implements IapiService {
 						List<inventarioOntsEntidad> ontFinal = onts.getOntByOlt(olt.getId_olt());
 						try {
 							onts2.updateOnt(olt.getId_olt());
-						
+
 						} catch (Exception e) {
-						
+
 						}
 						try {
 							onts.updateOnt(olt.getId_olt());
 						} catch (Exception e) {
 							// TODO: handle exception
 						}
-						
+
 						catalogoOlts.save(olt);
 						act.setCausa(d.getCausa());
 						act.setDescripcion(d.getDescripcion());
@@ -347,7 +352,7 @@ public class apiServiceImpl implements IapiService {
 						act.setFechaRegistro(util.getDate());
 						act.setCorrecta(0);
 						actualizadas.add(act);
-					}else {
+					} else {
 						act.setCausa(d.getCausa());
 						act.setDescripcion("No se informo el estatus  ");
 						act.setFechaRecibida(d.getFecha());
@@ -356,9 +361,9 @@ public class apiServiceImpl implements IapiService {
 						act.setStatus(d.getStatus());
 						act.setFechaRegistro(util.getDate());
 						act.setCorrecta(1);
-						noActualizadas.add(act);	
+						noActualizadas.add(act);
 					}
-					
+
 				}
 
 				if (oltsPo != null) {
@@ -705,6 +710,62 @@ public class apiServiceImpl implements IapiService {
 		onts2.save(res2);
 
 		return res2;
+	}
+
+	@Override
+	public respuestaStatusDto cambioIPOlt(requestCambioOltDto datos) throws Exception {
+		respuestaStatusDto response = new respuestaStatusDto();
+		try {
+			catOltsEntidad olt = catalogoOlts.getIp(datos.getIpAnterior());
+			if (olt != null) {
+				catOltsEntidad oltNueva = catalogoOlts.getIp(datos.getIpNueva());
+				if (oltNueva == null) {
+					catOltsInventarioEntidad oltAnterior = new catOltsInventarioEntidad();
+					oltAnterior.set_id(olt.get_id());
+					oltAnterior.setDescripcion(olt.getDescripcion());
+					oltAnterior.setIp(olt.getIp());
+					oltAnterior.setNombre(olt.getNombre());
+					oltAnterior.setTecnologia(olt.getTecnologia());
+					oltAnterior.setId_region(olt.getId_region());
+					catalogoOltsInventario.save(oltAnterior);
+					olt.setIp(datos.getIpNueva());
+					catalogoOlts.save(olt);
+				} else {
+					List<inventarioOntsEntidad> res = onts.getOntByOlt(oltNueva.getId_olt());
+					catOltsInventarioEntidad oltAnterior = new catOltsInventarioEntidad();
+					oltAnterior.set_id(olt.get_id());
+					oltAnterior.setDescripcion(olt.getDescripcion());
+					oltAnterior.setIp(olt.getIp());
+					oltAnterior.setNombre(olt.getNombre());
+					oltAnterior.setTecnologia(olt.getTecnologia());
+					oltAnterior.setId_region(olt.getId_region());
+					catalogoOltsInventario.save(oltAnterior);
+					oltNueva.setId_region(olt.getId_region());
+					oltNueva.setId_configuracion(olt.getId_configuracion());
+					oltNueva.setTecnologia(olt.getTecnologia());
+					oltNueva.setEstatus(1);
+					catalogoOlts.save(oltNueva);
+					catalogoOlts.delete(olt);
+					if (!res.isEmpty()) {
+						for (inventarioOntsEntidad r : res) {
+							r.setId_olt(oltNueva.getId_olt());
+							r.setIndex(oltNueva.getId_olt()+r.getOid());
+							r.setIndexFSP(oltNueva.getId_olt()+r.getId_puerto());
+							onts.save(r);
+						}
+					}
+				}
+			}
+			response.setCod(0);
+			response.setSms("Exito");
+
+		} catch (Exception e) {
+			log.info("Error a actualizar estatus: " + e);
+			response.setCod(1);
+			response.setSms("Error al acualizar " + e);
+		}
+
+		return response;
 	}
 
 }

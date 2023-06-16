@@ -64,6 +64,8 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 			+ "    }\r\n"
 			+ "  }" })
 	void updateOnt(@Param("idOlt") Integer idOlt);
+
+	
 	
 
 }
