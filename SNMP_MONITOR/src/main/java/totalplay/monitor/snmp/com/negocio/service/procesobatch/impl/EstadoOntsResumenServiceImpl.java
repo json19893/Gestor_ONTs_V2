@@ -28,45 +28,40 @@ public class EstadoOntsResumenServiceImpl implements IEstadoOntsResumenService {
     IEnvoltorioOntsTotalesActivoRepositorio repository;
     @Autowired
     ImonitorService negocio;
-
-    //Objetivo Process: ImonitorService.getTotalesActivo(tipo);
-
-    //Agrega un cron para ejecutar cada dos minutos
+    /*
+        Target - Process: ImonitorService.getTotalesActivo(tipo);
+        El cron se ejecuta cada dos minutos:
+    */
     @Scheduled(fixedDelay = 120000, initialDelay = 1000)
     public void process() {
         System.out.println("Ejecutando proceso para obtener el estatus los totales de todas las onts");
         //Meter el tiempo que tomo para actualizar:+ 
         long time1 = System.currentTimeMillis();
-
-        //Estructura principal: top-level
-        EnvoltorioOntsTotalesActivoEntidad envoltura = new EnvoltorioOntsTotalesActivoEntidad();
-        envoltura.setDate(LocalDateTime.now());
-
         try {
             //Estructura Segundaria: Segundo nivel.
-            CompletableFuture<EnvoltorioAuxiliarDto> alta1 = obtenerResumenAltasOnts(ONT_TOTALES);
-            //CompletableFuture<EnvoltorioAuxiliarDto> alta2 = obtenerResumenAltasOnts(ONT_EMPRESARIALES);
-            //CompletableFuture<EnvoltorioAuxiliarDto> alta3 = obtenerResumenAltasOnts(ONT_VIP);
+            CompletableFuture<EnvoltorioAuxiliarDto> estatusTotales = obtenerResumenAltasOnts(ONT_TOTALES);
+            CompletableFuture<EnvoltorioAuxiliarDto> estatusEmpresariales = obtenerResumenAltasOnts(ONT_EMPRESARIALES);
+            CompletableFuture<EnvoltorioAuxiliarDto> estatusVips = obtenerResumenAltasOnts(ONT_VIP);
 
             // Wait until they are all done
-            //CompletableFuture.allOf(alta1, alta2, alta3).join();
+            CompletableFuture.allOf(estatusTotales, estatusEmpresariales, estatusVips).join();
 
-            EnvoltorioAuxiliarDto resumenEstadoOntTotales = alta1.get();  // ONT_TOTALES
-            //EnvoltorioAuxiliarDto resumenEstadoOntEmpresariales = alta2.get();  // ONT_EMPRESARIALES
-            //EnvoltorioAuxiliarDto resumenEstadoOntVip = alta3.get();  // ONT_VIP
+            EnvoltorioAuxiliarDto resumenEstadoOntTotales = estatusTotales.get();
+            EnvoltorioAuxiliarDto resumenEstadoOntEmpresariales = estatusEmpresariales.get();
+            EnvoltorioAuxiliarDto resumenEstadoOntVip = estatusVips.get();
 
             persistirInformacion(adapterEntidad(resumenEstadoOntTotales));
-            //persistirInformacion(adapterEntidad(resumenEstadoOntEmpresariales));
-            //persistirInformacion(adapterEntidad(resumenEstadoOntVip));
+            persistirInformacion(adapterEntidad(resumenEstadoOntEmpresariales));
+            persistirInformacion(adapterEntidad(resumenEstadoOntVip));
 
             System.out.println("Finalizo proceso para obtener el estatus los totales de todas las onts");
         } catch (Exception ex) {
-                System.out.println("Error en el proceso para crear los resumenes de estatus para las onts. Reintentando... en 5 segundos");
+            System.out.println("Error en el proceso para crear los resumenes de estatus para las onts. Reintentando... en 5 segundos");
         }
     }
     public EnvoltorioOntsTotalesActivoEntidad adapterEntidad(EnvoltorioAuxiliarDto dto){
         EnvoltorioOntsTotalesActivoEntidad entity = new EnvoltorioOntsTotalesActivoEntidad();
-        entity.setDate(dto.getDate());
+        entity.setDate(LocalDateTime.now());
         entity.setTipo(dto.getTipo());
         entity.setDescripcionCorta(dto.getDescripcionCorta());
         entity.setDescripcionLarga(dto.getDescripcionLarga());
@@ -81,11 +76,12 @@ public class EstadoOntsResumenServiceImpl implements IEstadoOntsResumenService {
         }
         repository.save(entidad);
     }
+
     /**
-     * Consulta el estado de las puntas en funcion del parametro
-     *
-     * @param tipo representa el resumen del estado de las puntas
-     * @return
+     * Devuelve un objeto asincrono encapsulando la ejecuccion de la logica del negocio para relizar el conteo del estado de las puntas.
+     * @param tipo - Recibe el tipo de Onts que se requiere consultar para realizar un conteo agrupado por tipo:{Empresarial, Vip o Ambas}
+     * @return - CompletableFuture Objeto asyncrono que se ejecutara en un hilo.
+     * @throws Exception
      */
     @Async("taskExecutor")
     CompletableFuture<EnvoltorioAuxiliarDto> obtenerResumenAltasOnts(String tipo) throws Exception {
@@ -99,30 +95,29 @@ public class EstadoOntsResumenServiceImpl implements IEstadoOntsResumenService {
             case ONT_TOTALES:
                 //Agregar estos valores a constantes:
                 consultar = "T";
-                descripcion_corta = "[Vip, Empresariales, residenciales]";
-                descripcion_larga = "Resumen del estado de todas las onts";
+                descripcion_corta = "Todas las Ont's: {Vip, Empresarial, Residencial}";
+                descripcion_larga = "Resumen Conteo: Estado Actual de todas las Ont's ";
                 break;
             case ONT_EMPRESARIALES:
                 consultar = "E";
                 descripcion_corta = "Empresariales";
-                descripcion_larga = "Resumen del estado de las onts empresariales";
+                descripcion_larga = "Resumen - Conteo: Estado de las Ont's Empresariales (Agrupadas por Tipo Empresarial)";
                 break;
             case ONT_VIP:
                 //Settea los datos:
                 consultar = "V";
                 descripcion_corta = "Vip";
-                descripcion_larga = "Resumen del estado de las onts Vip";
+                descripcion_larga = "Resumen - Conteo: Estado de las Ont's Vip (Agrupadas por Tipo Vip)";
                 break;
         }
-
-        //Estructura Segundaria: Segundo nivel.
+        //Estructura de datos para almacenar datos resultantes del proceso:
         EnvoltorioAuxiliarDto auxiliar = new EnvoltorioAuxiliarDto();
 
         auxiliar.setTipo(consultar);
         auxiliar.setDescripcionCorta(descripcion_corta);
         auxiliar.setDescripcionLarga(descripcion_larga);
 
-        //Parte del negocio
+        //Se ejecuta el negocio para consultar el estado de la infraestrutura:
         totalesActivoDto estatusOnts = negocio.getTotalesActivo(consultar);
         auxiliar.setResumenStatusOnts(estatusOnts);
         return CompletableFuture.completedFuture(auxiliar);

@@ -7,7 +7,7 @@ import totalplay.monitor.snmp.com.negocio.dto.EnvoltorioAuxiliarDto;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
 import totalplay.monitor.snmp.com.negocio.dto.totalesActivoDto;
-@Document(collection = "OntEstatusTotales_tmp")
+@Document(collection = "ResumenOntEstatusTotales_tmp")
 @Data
 public class EnvoltorioOntsTotalesActivoEntidad {
     @Id
