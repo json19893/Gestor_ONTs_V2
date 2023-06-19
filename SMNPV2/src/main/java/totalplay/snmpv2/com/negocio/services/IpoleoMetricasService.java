@@ -11,7 +11,7 @@ import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 
 public interface IpoleoMetricasService {
 	CompletableFuture<String> executeProcess(List<CatOltsEntity> olts, String idMonitorPoleo, int idMetrica) throws Exception;
-	CompletableFuture<String> getMetricaEmpresarialesByMetrica(List<OntsConfiguracionDto> ontsEmpresariales, String idPoleo, int idMetrica);
+	CompletableFuture<String> getMetricaEmpresarialesByMetrica(List<OntsConfiguracionDto> ontsEmpresariales, String idPoleo, int idMetrica, boolean oltsNCE);
 	List<OntsConfiguracionDto> getOntsFaltantes(int idMetrica, String idEjecucion, boolean resultado, boolean empresariales, String tabla, int tipo, List<CatOltsEntity> olts, Integer idOlt);
 	String joinUpdateStatus(String idMonitorPoleo);
 	GenericResponseDto getPoleoOntMetrica(RequestPostMetrica request) throws Exception;

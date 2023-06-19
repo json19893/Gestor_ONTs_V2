@@ -16,7 +16,7 @@ public interface IinventarioOntsPdmRepository extends MongoRepository<Inventario
 	@Aggregation(pipeline = { 
 	          "{\n"
 	        + "		\"$lookup\":{\n"
-	        + "			from: \"tb_inventario_onts_aux\",\n"
+	        + "			from: \"tb_inventario_onts\",\n"
 	        + "			localField:\"numero_serie\",\n"
 	        + "			foreignField:\"numero_serie\",\n"
 	        + "			as: \"onts\",\n"

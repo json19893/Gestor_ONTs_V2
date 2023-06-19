@@ -1,19 +1,13 @@
-import { AfterContentInit, AfterViewInit, Component, EventEmitter, Inject, OnInit, Output } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { Olts } from 'src/app/model/names.olts';
 import { OntResponse } from '../../interfaces/ResponseOnt';
-import { MAT_DIALOG_DATA, MatDialog, MatDialogConfig, MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { pointService } from 'src/app/services/poinst.service';
-import { Observable, Observer, Subscription, catchError, throwError } from 'rxjs';
-import { HttpErrorResponse } from '@angular/common/http';
-import { NgxSpinnerService } from 'ngx-spinner';
-import * as moment from 'moment';
-import { OltSincronizacionService } from '../../services/olts.service';
-import { NumberInput } from '@angular/cdk/coercion';
+import { poleoMetricaOidRequest } from 'src/app/model/poleoMetricaOidRequest';
 
-
-export interface OntInventarioResponse {
+export interface OntElement {
   _id: string;
   oid: string;
   uid: string;
@@ -46,131 +40,94 @@ export interface OntInventarioResponse {
   inventario: boolean;
 }
 
-
-export interface GenericResponse { sms: string, cod: number }
-export interface Settings { idOlt: number, ip: string, fechaIni: string, fechaFin: string }
-
 @Component({
   selector: 'app-dialog-inventario',
   templateUrl: './dialog-inventario.component.html',
   styleUrls: ['./dialog-inventario.component.css']
 })
+export class DialogInventarioComponent implements OnInit {
+  usuario:string = "";
+  dt!: OntElement[];
 
-export class DialogInventarioComponent implements OnInit, AfterViewInit {
-  intervalId!: any;
-  resultsLength: NumberInput = 0;
-  @Output() newItemEvent = new EventEmitter<boolean>(false);
-  usuario: string = "";
-  dt!: OntInventarioResponse[];
-  olt!: Olts;
+  public requestPoleoOid:poleoMetricaOidRequest | undefined;
 
-
-  onKeydown($event: KeyboardEvent) {
-    if ($event.key === "Enter") {
-      alert('enter event')
-    }
+  marcarOnt() {
+    throw new Error('Method not implemented.');
   }
 
 
-  public oltSeleccionada!: Olts;
-
-
-  public estaSincronizandose: boolean = false;
-  //Fechas de sincronizacion
-  public ultimaActualizacion!: Date;
-
   displayedColumns: string[] = [
     'numero_serie', 'oid',
-    // 'frame', 'slot', 'port',
+    'frame', 'slot', 'port',
     'fecha_descubrimiento', 'acciones'
   ];
 
-  public dataSource!: MatTableDataSource<OntInventarioResponse>;
-  private poleoObserver$!: Observable<GenericResponse>;
-  private topic$!: Subscription;
+  dataSource!: MatTableDataSource<any>;
+  resultsLength = 0;
 
   isLoadingResults: boolean = false;
   isRateLimitReached: boolean = false;
 
-  public now!: string;
-  public monthAgo = new Date().setMonth(new Date().getMonth() - 1);
-
-  time = new Date();
-
   myGroup = new FormGroup({
-    fechaIni: new FormControl<string>('2020-05-06'),
-    fechaFin: new FormControl<string>('2023-06-06')
+    fechaIni: new FormControl<Date>(new Date()),
+    fechaFin: new FormControl<Date>(new Date()),
   });
 
-  // element: HTMLElement = document.getElementById('auto_trigger') as HTMLElement;
+  olt!: Olts;
 
-  constructor(
-    private service: pointService,
-    public dialog: MatDialog,
-    private spinner: NgxSpinnerService,
-    public dialogRef: MatDialogRef<DialogInventarioComponent>,
-    @Inject(MAT_DIALOG_DATA) public state: { sync: boolean, olt: Olts, topic: Observable<GenericResponse> },
-    @Inject(MAT_DIALOG_DATA) public obj: { olt: Olts, list: OntInventarioResponse[] }) { }
-
-  ngAfterViewInit(): void {
-    this.sincronizar();
-    this.newItemEvent.emit(true);
-  }
+  constructor(public dialogRef: MatDialogRef<String>,
+    @Inject(MAT_DIALOG_DATA) public obj: { olt: Olts, list: OntElement[] },
+    private service: pointService) {
+      //setInterval(() => this.getaArchivo(), 1000);
+    }
+  
+  // getaArchivo() {
+  //     this.service.getArchivo(1).subscribe(
+  //       res => {
+  //         this.archivo = res;
+  //   })
+  
+  // }
 
   ngOnInit(): void {
-    this.spinner.hide();
-    let { olt, sync, topic } = this.state;
-    this.oltSeleccionada = olt;
-    this.newItemEvent.emit(true);
-
     this.dt = this.obj.list;
     this.olt = this.obj.olt;
     this.dataSource = new MatTableDataSource<any>(this.obj.list);
     this.usuario = localStorage.getItem('usuario')!;
-    // Sirve para inicializar el relog:
-    this.intervalId = setInterval(() => {
-      this.time = new Date();
-    }, 1000);
-
   }
 
+  filtrarPorRangoFechas(event: Event) {
+    let dt = document.getElementById('dates');
 
-  filtrarPorRangoFechas() {
     const fechaIni = this.myGroup.value.fechaIni;
     const fechaFin = this.myGroup.value.fechaFin;
-
-    const date1 = moment(fechaIni).toDate();
-    const date2 = moment(fechaFin).toDate();
-
-
-    console.log(date1);
-    console.log(date2);
 
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
-
     //this.dataSource.paginator = this.paginator;
 
+    //Aqui filtra y despues 
     let ontResponse: OntResponse[] = [];
-    let copyArray = this.dataSource.data.map(t => t);
+    let pureArray = this.dt.map(t => t);
 
-    let list: OntInventarioResponse[] = [];
+    let list: OntResponse[] = [];
 
-    for (const iterator of copyArray.values()) {
-      let fecha = new Date(iterator.fecha_descubrimiento).getTime();
-      if (fecha >= date1.getTime()
-        && fecha <= date2.getTime()) {
+    for (const iterator of pureArray.values()) {
+
+      if (fechaFin != null
+        && fechaIni != null
+        && iterator.fecha_descubrimiento >= fechaIni
+        && iterator.fecha_descubrimiento <= fechaFin) {
         console.log(iterator)
         list.push(iterator);
       }
     }
-    console.log({ list });
 
-    this.dataSource = new MatTableDataSource<OntInventarioResponse>(list);
+    this.dataSource = new MatTableDataSource<OntResponse>(list);
   }
 
-  moverAInventario(numero_serie: string, tipo: string, ejecucion: string) {
+  moverAInventario(numero_serie: string, tipo: string, ejecucion:string ) {
 
     this.service.moverOntInventario(numero_serie, tipo, ejecucion)
       .subscribe((response) => {
@@ -181,77 +138,20 @@ export class DialogInventarioComponent implements OnInit, AfterViewInit {
             new Date().toISOString(),
             new Date().toISOString(), this.usuario!).subscribe(resp => {
               alert('flujo completo');
+              this.actualizarFrame(numero_serie);
+              
             })
         }
       })
   }
 
-  request() {
-    // return this.service.poleoOlt(this.oltSeleccionada.id_olt);
+  actualizarFrame(serie:string){
+      
+    this.requestPoleoOid=new poleoMetricaOidRequest(serie,13);      
+    this.service.poleoMetricaOid(this.requestPoleoOid).subscribe(
+        res =>{}
+    )
   }
 
-  handleError(handleError: HttpErrorResponse) {
-    return throwError(() => new Error(handleError.error));
-  }
 
-  sincronizar() {
-    this.isLoadingResults = true;
-    this.isRateLimitReached = true;
-
-    //Si esta activo el procesamiento: preguntar al usuario si desea interrumpirlo
-    this.estaSincronizandose = true;
-    this.newItemEvent.emit(this.estaSincronizandose);
-
-    console.log('Sincronizando con el servidor...');
-
-    const { id_olt, ip } = this.oltSeleccionada;
-
-
-    this.topic$ = this.service.poleoOlt(id_olt, this.usuario).subscribe((data) => {
-      console.log(data);
-      this.estaSincronizandose = false;
-      this.newItemEvent.emit(this.estaSincronizandose);
-
-      this.isLoadingResults = false;
-      this.isRateLimitReached = false;
-
-      if (data.cod == 0) {
-        this.ultimaActualizacion = this.time;
-        //Correr el otro proceso:
-        this.preguntarInventarioFinal().subscribe((data) => {
-          this.isLoadingResults = false;
-          this.isRateLimitReached = false;
-          if (data.length == 0) {
-            //No hay datax
-            console.log('No hay data');
-          } else {
-            console.log(data);
-            this.resultsLength = data.length;
-            this.dataSource = new MatTableDataSource<OntInventarioResponse>(data)
-          }
-        });
-
-      }
-    });
-  }
-
-  preguntarInventarioFinal() {
-    const { id_olt, ip } = this.oltSeleccionada;
-
-    const fechaIni = this.myGroup.value.fechaIni;
-    const fechaFin = this.myGroup.value.fechaFin;
-
-    const date1 = moment(fechaIni).format();
-    const date2 = moment(fechaFin).format();
-    const settings: Settings = {
-      idOlt: id_olt,
-      ip: ip,
-      fechaIni: date1,
-      fechaFin: date2
-    }
-
-
-    return this.service.getAceptadosInventario(id_olt, ip, date1, date2, this.usuario);
-  }
 }
-

@@ -202,7 +202,8 @@ public interface IinventarioOntsRepository extends MongoRepository<InventarioOnt
 
 
 	@Aggregation(pipeline = {
-		        "{ $match:{$or:[{tipo:'E'}, {vip:1}, {sa:true}]} }\n"
+		"{$unionWith:\"tb_inventario_onts_pdm\"}"
+		     ,   "{ $match:{$or:[{tipo:'E'}, {vip:1}, {sa:true}]} }\n"
 		      , "{\n"
 		      + "		\"$lookup\":{\n"
 		      + "			from: \"tb_inventario_onts_aux\",\n"
@@ -536,7 +537,9 @@ List<FaltantesMetricasEntity> getFaltantesMetricas2(@Param("idRegion") Integer i
 List<FaltantesMetricasManualEntity> getFaltantesMetricasManual(@Param("idRegion") Integer idRegion, @Param("idOLt") Integer idOLt, @Param("table") String table, @Param("join") String join);
 	
 	@Aggregation(pipeline = { 
-	        "{ $match:{$or:[{tipo:'E'}, {vip:1}, {sa:true}]} }\n"
+		"{$unionWith:\"tb_inventario_onts_pdm\"}"
+	       , "{ $match:{$or:[{tipo:'E'}, {vip:1}, {sa:true}]} }\n"
+			
 	      , "{\n"
 	      + "		\"$lookup\":{\n"
 	      + "			from: \"tb_inventario_onts_aux_manual\",\n"
@@ -630,6 +633,81 @@ List<FaltantesMetricasManualEntity> getFaltantesMetricasManual(@Param("idRegion"
 		})
 	@Meta(allowDiskUse = true)
 	List<InventarioOntsEntity> eliminarSobrantes();
+	
+	@Aggregation(pipeline = {
+			"{$match:{id_olt:?0 }}\n"
+		  , " {$match:{tipo:\"E\"}}\n"
+		  , " {\n"
+		  + "      $lookup: {\n"
+		  + "    	from: 'cat_olts',\n"
+		  + "    	localField: 'id_olt',\n"
+		  + "    	foreignField: 'id_olt',\n"
+		  + "    	pipeline: [\n"
+		  + "    	{\n"
+		  + "    	  $lookup: {\n"
+		  + "    		from: 'cat_configuracion',\n"
+		  + "    		localField: 'id_configuracion',\n"
+		  + "    		foreignField: 'id_configuracion',\n"
+		  + "    		as: 'configuracion',\n"
+		  + "    	  },\n"
+		  + "    	},\n"
+		  + "    	{$unwind: {path: '$configuracion',preserveNullAndEmptyArrays: true}},\n"
+		  + "    	],\n"
+		  + "    	as: 'olt',\n"
+		  + "      },\n"
+		  + "}\n"
+		  , "{ $match: {olt: {$ne: []}} }\n"
+		  , "{ $unwind: '$olt' }\n"
+		  , " {\n"
+		  + "        $project: {\n"
+		  + "          ont:\"$$ROOT\",\n"
+		  + "          configuracion: '$olt.configuracion',\n"
+		  + "          ip: '$olt.ip',\n"
+		  + "          tecnologia: '$olt.tecnologia',\n"
+		  + "          id_configuracion: '$olt.id_configuracion',\n"
+		  + "        },\n"
+		  + " }\n"
+		  , " {$unset: ['_id', \"ont.olt\"]}"})
+	List<OntsConfiguracionDto> getEmpresarialesByOlt(@Param("olt") Integer idOlt);
+	
+
+InventarioOntsEntity findByIndex(String index);
+
+
+@Aggregation(pipeline = {
+	    " {$match:{tipo:\"E\"}}\n"
+	  , "{\n"
+	  + "      $lookup: {\n"
+	  + "    	from: 'cat_olts',\n"
+	  + "    	localField: 'id_olt',\n"
+	  + "    	foreignField: 'id_olt',\n"
+	  + "    	pipeline: [\n"
+	  + "    	{\n"
+	  + "    	  $lookup: {\n"
+	  + "    		from: 'cat_configuracion',\n"
+	  + "    		localField: 'id_configuracion',\n"
+	  + "    		foreignField: 'id_configuracion',\n"
+	  + "    		as: 'configuracion',\n"
+	  + "    	  },\n"
+	  + "    	},\n"
+	  + "    	{$unwind: {path: '$configuracion',preserveNullAndEmptyArrays: true}},\n"
+	  + "    	],\n"
+	  + "    	as: 'olt',\n"
+	  + "      },\n"
+	  + "}\n"
+	  , "{ $match: {olt: {$ne: []}} }\n"
+	  , "{ $unwind: '$olt' }\n"
+	  , " {\n"
+	  + "        $project: {\n"
+	  + "          ont:\"$$ROOT\",\n"
+	  + "          configuracion: '$olt.configuracion',\n"
+	  + "          ip: '$olt.ip',\n"
+	  + "          tecnologia: '$olt.tecnologia',\n"
+	  + "          id_configuracion: '$olt.id_configuracion',\n"
+	  + "        },\n"
+	  + " }\n"
+	  , " {$unset: ['_id', \"ont.olt\"]}"})
+List<OntsConfiguracionDto> findOntsEmpresarialesEstatus();
 	
 	
 }

@@ -199,7 +199,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			 updateDescripcion(monitor, INICIO_DESC+" OBTENER VIPS");
 			 getEmpresarialesVips(false);
 			 updateDescripcion(monitor, INICIO_DESC+" OBTENER PDM");
-			 deleteInventarioPdm();
+			
 			
 			//Respaldar inventario
 			try {
@@ -220,7 +220,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			}catch (Exception e) {
 				log.error("Falló la actualización del inventario "+e);
 			}
-			 
+			 deleteInventarioPdm(); 
 		} catch (Exception e) {
 			log.info(e.toString());
 		}
@@ -266,13 +266,14 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			crucesMetricas(14,idPoleo, "auxiliar_descubrimiento_manual", olts, true, false );
 			crucesMetricas(16,idPoleo, "auxiliar_descubrimiento_manual", olts, true, false );
 			
-			getEmpresarialesVips(false);
+			getEmpresarialesVips(true);
 			
 			updateDescripcion(monitor, INICIO_DESC+" SEND INVENTARIO");
 			log.info(INICIO_DESC+" SEND INVENTARIO");
 			
 			
 			saveOnts(inventarioAuxManual.getInv());
+			 deleteInventarioPdm(); 
 			log.info("FIN");
 		}catch (Exception e) {
 			log.error(e.toString());
@@ -291,7 +292,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 		crucesMetricas(4,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
 		crucesMetricas(14,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );*/
 		crucesMetricas(16,idPoleo, "auxiliar_descubrimiento_nce", olts, false, true );
-		utls.crearArchivos(ruta, utls.prefixLog("Inicia el proceso de cruce de métricas."));
+		utls.crearArchivos(ruta, utls.prefixLog("Termina el proceso de cruce de métricas."));
 	}
 	
 	private void crucesMetricas(int metrica, String idPoleo, String tabla, List<CatOltsEntity> olts, boolean manual, boolean nce ) {

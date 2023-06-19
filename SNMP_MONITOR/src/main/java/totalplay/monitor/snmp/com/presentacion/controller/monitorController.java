@@ -42,7 +42,6 @@ import totalplay.monitor.snmp.com.persistencia.repository.*;
 @RestController
 @Slf4j
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-@RequestMapping(path = "/snmp-monitor")
 public class monitorController extends constantes {
     @Autowired
     ImonitorService monitorServicio;
@@ -745,9 +744,11 @@ public class monitorController extends constantes {
 			fechaFinal = Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(1,ChronoUnit.HOURS));finishDate= LocalDateTime.now().toString();
 			
 		}else {
-			finishDate =  finishDate.replaceAll("\\+", "=");
-			fDate = finishDate.split("=")[0];			
-			fechaFinal= formatTime.parse(fDate);
+			fDate = finishDate.split("T")[0];
+			fechaFinal = format.parse(fDate);
+//			finishDate =  finishDate.replaceAll("\\+", "=");
+//			fDate = finishDate.split("=")[0];			
+//			fechaFinal= formatTime.parse(fDate);
 		}
     	
         return rechazadasNCE.getRechazadasNCEInventario(ip, olt, fechaInicial, fechaFinal, ejecucion);

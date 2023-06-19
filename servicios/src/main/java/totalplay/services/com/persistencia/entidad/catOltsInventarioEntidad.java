@@ -6,12 +6,11 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-
-@Document(collection = "cat_olts")
 @Data
 @NoArgsConstructor
-public class catOltsEntidad {
-	@Id
+@Document(collection = "tbl_cat_olts_viejas")
+public class catOltsInventarioEntidad {
+    @Id
 	private String _id;
 	private Integer id_olt;
 	private String nombre;
@@ -23,8 +22,4 @@ public class catOltsEntidad {
 	private Integer estatus;
 	private Integer pin;
 	private boolean descubrio;
-	private Integer onts_exito;
-	private Integer onts_error;
-	private int total_onts;
-	private Boolean nce;
 }

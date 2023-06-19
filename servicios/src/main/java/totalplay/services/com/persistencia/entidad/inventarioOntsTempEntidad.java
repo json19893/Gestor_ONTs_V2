@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 
 @Document(collection = "tb_inventario_onts_pdm")
 @Data
-@NoArgsConstructor
+
 public class inventarioOntsTempEntidad {
 	
 	@Id
