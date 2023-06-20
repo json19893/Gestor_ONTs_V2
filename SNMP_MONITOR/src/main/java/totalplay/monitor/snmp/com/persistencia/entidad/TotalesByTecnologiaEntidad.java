@@ -8,7 +8,7 @@ import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Document(collection = "GetTotalesOntsByTecnoliga_tmp")
+@Document(collection = "ResumenTotalesOntsByTecnologia_tmp")
 //@Document(collection = "GetTotalesOntsByTecnologia_tmp")
 @Data
 public class TotalesByTecnologiaEntidad {
