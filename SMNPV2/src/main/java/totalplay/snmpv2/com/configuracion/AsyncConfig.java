@@ -16,7 +16,7 @@ public class AsyncConfig {
     public Executor taskExecutor(){
         ThreadPoolTaskExecutor executor=new ThreadPoolTaskExecutor();
 System.out.println("procesadores:::  "+Runtime.getRuntime().availableProcessors());
-			executor.setCorePoolSize(Runtime.getRuntime().availableProcessors());
+			executor.setCorePoolSize(250);
 			executor.setMaxPoolSize(Integer.MAX_VALUE);
 			executor.setQueueCapacity(Integer.MAX_VALUE);
 			executor.setPrestartAllCoreThreads(true);
@@ -39,7 +39,7 @@ System.out.println("procesadores:::  "+Runtime.getRuntime().availableProcessors(
     public Executor taskExecutor2(){
         ThreadPoolTaskExecutor executor=new ThreadPoolTaskExecutor();
 System.out.println("procesadores:::  "+Runtime.getRuntime().availableProcessors());
-			executor.setCorePoolSize(Runtime.getRuntime().availableProcessors());
+			executor.setCorePoolSize(250);
 			executor.setMaxPoolSize(Integer.MAX_VALUE);
 			executor.setQueueCapacity(Integer.MAX_VALUE);
 			executor.setPrestartAllCoreThreads(true);

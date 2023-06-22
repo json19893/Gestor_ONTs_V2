@@ -7,5 +7,5 @@ import java.util.List;
 public interface IlimpiezaCadena {
 	<T extends GenericPoleosDto> List<T> getMetricasBypoleo(EjecucionDto proces, Integer idmetrica,
             Integer idOlt, Integer idRegion, String IdEjecucion, String tecnologia, Class<T> entidad, CadenasMetricasDto cadenas, boolean saveErroneos, int intentos,boolean manual, boolean nce) throws IOException;
-    
+	<T extends GenericPoleosDto> List<T> getDataFromPoleo(EjecucionDto proces, Integer idmetrica, Class<T> entidad, String idEjecucion);
 }

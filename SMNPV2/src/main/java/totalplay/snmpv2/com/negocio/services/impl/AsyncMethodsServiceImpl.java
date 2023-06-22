@@ -19,8 +19,10 @@ import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.negocio.dto.OntsConfiguracionDto;
 import totalplay.snmpv2.com.negocio.services.IGenericMetrics;
 import totalplay.snmpv2.com.negocio.services.IasyncMethodsService;
+import totalplay.snmpv2.com.negocio.services.IpoleoMetricasService;
 import totalplay.snmpv2.com.persistencia.repositorio.IauxiliarJoinEstatusRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IconfiguracionMetricaRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesEstatusRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasRepository;
@@ -34,6 +36,7 @@ import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempNCERepos
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsViejoGestorRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioPuertosRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.ImonitorPoleoMetricaRepository;
 import totalplay.snmpv2.com.persistencia.vertica.entidades.BmsGestorOraVerticaEntity;
 import totalplay.snmpv2.com.persistencia.vertica.entidades.OntsViejoGestorEntity;
 
@@ -50,6 +53,7 @@ import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsPdmEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsViejoGestorEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioPuertosEntity;
+import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoMetricaEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosAliasEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosCpuEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosDownBytesEntity;
@@ -100,8 +104,8 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 	@Autowired
 	IinventarioOntsViejoGestorRepository inventarioViejo;
 	@Autowired
-	IinventarioOntsTempNCERepository tempNCE; 
-	
+	IinventarioOntsTempNCERepository tempNCE;
+		
 	
 	Utils util=new Utils();
 	
@@ -737,5 +741,6 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 		}
 		return null;
 	}
+	
 	
 }

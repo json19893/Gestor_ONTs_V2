@@ -1,5 +1,6 @@
 package totalplay.snmpv2.com.negocio.services.impl;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.aggregation.AggregationOperation;
@@ -25,35 +27,14 @@ import totalplay.snmpv2.com.configuracion.Utils;
 import totalplay.snmpv2.com.negocio.dto.*;
 import totalplay.snmpv2.com.negocio.services.IGenericMetrics;
 import totalplay.snmpv2.com.negocio.services.IasyncMethodsService;
+import totalplay.snmpv2.com.negocio.services.IlimpiezaCadena;
 import totalplay.snmpv2.com.negocio.services.IpoleoMetricasService;
 import totalplay.snmpv2.com.persistencia.entidades.*;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.*;
 import org.springframework.scheduling.annotation.Async;
-import totalplay.snmpv2.com.persistencia.repositorio.IauxiliarJoinEstatusRepository;
-import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
-import totalplay.snmpv2.com.persistencia.repositorio.IconfiguracionMetricaRepository;
-import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesEstatusRepository;
-import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasManualRepository;
-import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasRepository;
-import totalplay.snmpv2.com.persistencia.repositorio.IhistoricoConteoOltRepository;
+
 import totalplay.snmpv2.com.presentacion.MetricaController.MetricaPoleo;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosAliasEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosCpuEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosDownBytesEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosDownPacketsEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosDropDownPacketsEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosDropUpPacketsEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosEstatusEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosFrameSlotPortEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosLastDownCauseEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosLastDownTimeEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosLastUpTimeEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosMemoryEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosProfNameEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosTimeOutEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosUpBytesEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosUpPacketsEntity;
 
 
 @Slf4j
@@ -122,16 +103,23 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
     IpoleoLastDownTimeRepositorio poleoLastDownTimeRepo;
     @Autowired
     IpoleoEstatusRepositorio poleoEstatus;
-
     @Autowired
     PoleoMetricasUtilsService poleoMetricasUtilsService;
     @Autowired
     ImonitorPoleoRepository monitorPoleo;
+    @Autowired
+    ICadenasEmpresarialesRepository cadenasRepository;
+	@Autowired
+	IlimpiezaCadena limpiezaCadena;
+    
+    
     Utils util = new Utils();
+    
+    @Value("${ruta.archivo.metricas}")
+	private String rutaMetricas;
 
 
     @Override
-
     @Async("taskExecutor2")
     public CompletableFuture<String> executeProcess(List<CatOltsEntity> olts, String idMonitorPoleo, int idMetrica) throws Exception {
 
@@ -896,6 +884,228 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
 
     }
     
+    @Override
+    @Async("taskExecutor")
+    public CompletableFuture<String> getCadenaEmpresariales(List<OntsConfiguracionDto> ontsEmpresariales) {
+
+        for (OntsConfiguracionDto ont : ontsEmpresariales) {
+            EjecucionDto proces = null;
+            try {
+
+                CatConfiguracionEntity conf = ont.getConfiguracion();
+                InventarioOntsEntity on = ont.getOnt();
+                String oid;
+                Integer idOlt = on.getId_olt();
+                String tecnologia = ont.getTecnologia();//on.getTecnologia();
+                Integer region = on.getId_region();
+                Integer configuracion = ont.getId_configuracion();
+                String comando;
+                String cad;
+                String pre;
+                CadenasMetricasDto cadenasMetrica=null;
+                CadenasOntsEmpresarialesEntity cadena;
+                boolean errorOlt = false;
+
+                cadena = cadenasRepository.getOntBySerialNumber(on.getNumero_serie());
+                if(cadena == null) {
+                	cadena = new CadenasOntsEmpresarialesEntity();                	
+                } 
+                cadena.setNumero_serie(on.getNumero_serie());
+            	cadena.setId_olt(on.getId_olt());
+            	cadena.setConfiguracion(configuracion);
+            	cadena.setTecnologia(tecnologia);
+                
+                
+
+                if (on.getOid() != null && ont.getId_configuracion() != 0 && !ont.getIp().equals("")) {
+                	
+                	pre= "echo '"+on.getId_olt()+"-"+on.getOid()+"-"+on.getTecnologia()+"-$(";
+                    
+                	if (tecnologia != "FIBER HOME") {
+                        comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + "1" + SPACE
+                                + conf.getVersion() + USER_NAME + conf.getUsuario() + LEVEL + conf.getNivel()
+                                + PROTOCOL_ENCR + conf.getProt_encriptado() + PASSPHRASE + conf.getPassword()
+                                + PROTOCOL_PRIV + conf.getProt_privado() + PROTOCOL_PHRASE + conf.getFrase() + SPACE + IR
+                                + ont.getIp() + SPACE;
+                    } else {
+                        comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + "1"
+                                + SPACE + conf.getVersion() + " -c " + conf.getProt_privado() + SPACE
+                                + ont.getIp() + SPACE;
+                    }
+                    
+                    
+                    //Iterar la ont para armar las 16 cadenas
+                    	//obtener el oid a partir de su metrica tecnologìa y configuracion
+                    
+                    for(int i=1;i<=16;i++ ) {
+                    	 oid =  i != 16 ? on.getOid() : on.getId_puerto();
+                    	 
+                    	 pre= "echo '"+on.getId_olt()+"-"+oid+"-"+on.getTecnologia()+"-'$(";
+                    	
+                    	ConfiguracionMetricaEntity confMetrica = configuracionMetrica.getMetrica(i, configuracion);
+            			tecnologia = tecnologia; 
+            			
+            			if (tecnologia.equals("ZTE")) {
+            				cadenasMetrica = confMetrica.getZTE();			
+            			} else if (tecnologia.equals("HUAWEI")){
+            				cadenasMetrica =  confMetrica.getHUAWEI();
+            			}else if (tecnologia.equals("FIBER HOME")){
+            				cadenasMetrica =  confMetrica.getFH();
+            			}
+            			
+            			
+            			if (cadenasMetrica == null || cadenasMetrica.getOid().equals("")) {
+            				cad = pre + "echo 'Sin metrica');";  
+            				
+            			}else {
+            				cad = pre + comando + SPACE + cadenasMetrica.getOid() + "." + oid +" -Ov);";  
+            			}
+            			
+           				switch(i) {
+        					case 1:
+        						cadena.setMetrica_1(cad);
+        					break;
+        					case 2:
+        						cadena.setMetrica_2(cad);
+        					break;
+        					case 3:
+        						cadena.setMetrica_3(cad);
+        					break;
+        					case 4:
+        						cadena.setMetrica_4(cad);
+        					break;
+        					case 5:
+        						cadena.setMetrica_5(cad);
+        					break;
+        					case 6:
+        						cadena.setMetrica_6(cad);
+        					break;
+        					case 7:
+        						cadena.setMetrica_7(cad);
+        					break;
+        					case 8:
+        						cadena.setMetrica_8(cad);
+        					break;
+        					case 9:
+        						cadena.setMetrica_9(cad);
+        					break;
+        					case 10:
+        						cadena.setMetrica_10(cad);
+        					break;
+        					case 11:
+        						cadena.setMetrica_11(cad);
+        					break;
+        					case 12:
+        						cadena.setMetrica_12(cad);
+        					break;
+        					case 13:
+        						cadena.setMetrica_13(cad);
+        					break;
+        					case 14:
+        						cadena.setMetrica_14(cad);
+        					break;
+        					case 15:
+        						cadena.setMetrica_15(cad);
+        					break;
+        					case 16:
+        						cadena.setMetrica_16(cad);
+        					break;
+        				}
+            				
+            			
+                    	
+                    }
+                    
+                    cadenasRepository.save(cadena);
+                }
+            } catch (Exception e) {
+                log.error("error", e);
+            }
+        }
+
+        return null;
+
+    }
     
     
+    @Override
+    @Async("taskExecutor")
+    public <T extends GenericPoleosDto> CompletableFuture<String> poleoEmpresarialesByShell(List<String> onts, Integer  idMetrica, String idEjecucion) {
+
+    	
+    	
+    	List data = new ArrayList<T>();
+    	int contador= 0;
+    	
+    	try {
+    		do {
+    			log.info("proesando " +onts.size()+"En el hilo "+ Thread.currentThread().getName());
+        		//TODO: vaciar las cadenas en un shel y ejecutarlo
+    			EjecucionDto process= util.execBashFromList(onts, rutaMetricas);
+    			//TODO: recuprar la respuesta
+    			switch(idMetrica) {
+    				case 1:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosEstatusEntity.class, idEjecucion);
+    				break;
+    				case 2:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosLastDownCauseEntity.class, idEjecucion);
+    				break;
+    				case 3:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosLastUpTimeEntity.class, idEjecucion);
+    				break;
+    				case 4:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosLastDownTimeEntity.class, idEjecucion);
+    				break;
+    				case 5:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosUpBytesEntity.class, idEjecucion);
+    				break;
+    				case 6:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosDownBytesEntity.class, idEjecucion);
+    				break;
+    				case 7:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosTimeOutEntity.class, idEjecucion);
+    				break;
+    				case 8:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosUpPacketsEntity.class, idEjecucion);
+    				break;
+    				case 9:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosDownPacketsEntity.class, idEjecucion);
+    				break;
+    				case 10:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosDropUpPacketsEntity.class, idEjecucion);
+    				break;
+    				case 11:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosDropDownPacketsEntity.class, idEjecucion);
+    				break;
+    				case 12:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosCpuEntity.class, idEjecucion);
+    				break;
+    				case 13:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosMemoryEntity.class, idEjecucion);
+    				break;
+    				case 14:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosAliasEntity.class, idEjecucion);
+    				break;
+    				case 15:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosProfNameEntity.class, idEjecucion);
+    				break;
+    				case 16:
+    					data = limpiezaCadena.getDataFromPoleo(process, idMetrica, PoleosFrameSlotPortEntity.class, idEjecucion);
+    				break;
+    			}
+    			
+    			contador++;
+    		}while(contador<=1 && data.size()==0);
+			
+			log.info("guardando... " +data.size()+"-------------------- ");
+			
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
+			
+		} catch (IOException e) {
+			log.info(e.toString());
+		}
+    	
+        return null;
+
+    }
 }

@@ -374,7 +374,164 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                 }
                 return response;
         
-            }
-    }
+   } 
     
+    @Override
+	public <T extends GenericPoleosDto> List<T> getDataFromPoleo(EjecucionDto proces, Integer idmetrica, Class<T> entidad, String idEjecucion){
+		
+		   List<T> response = new ArrayList<T>();
+		   String s = "";
+		   Integer idOlt;
+		   String oid;
+		   String tecnologia;
+		   String [] val;
+		   String resultado;
+           		
+		   try {
+			   while ((s = proces.getBuffer().readLine()) != null) {
+	               T metrica = entidad.getConstructor().newInstance();
+	               String[] values = s.split("-", 4);
+	               
+	               //Si hay cuatro posiciones todo està bien
+	               if(values.length==4) {
+	            	   idOlt = Integer.parseInt(values[0]);
+	            	   oid = values[1];
+	            	   tecnologia= values[2];
+	            	   if(idmetrica == 2 || idmetrica == 3 ) {
+	            		   val= values[3].split(":", 2);
+	            		   
+	            	   }else {
+	            		   val= values[3].split(":");
+	            	   }
+	            		   
+	            		   
+	            	   
+	            	   
+	            	   //Se evalúa la longitud de val
+	            	   if(val.length==2) {
+	            		   resultado= val[1].trim();
+	            		   
+	            		   if (idmetrica == 1) {
+	                           if (tecnologia.equals("ZTE")) {
+	                               metrica.setEstatus(resultado.equals("6") ? 1 : 2);
+	                               metrica.setValor(resultado);
+	                           } else if (tecnologia.equals("HUAWEI")) {
+	                               metrica.setEstatus(resultado.equals("up(1)") ? 1 : 2);
+	                               metrica.setValor(resultado.equals("up(1)") ? "up" : "down");
+	                           }else {
+	                               metrica.setEstatus(resultado.equals("0") ? 0 :val[1].trim().equals("1")?1:val[1].trim().equals("2")?2:val[1].trim().equals("3")?3:0);
+	                               metrica.setValor(resultado.trim());
+	                           }
+	                       }else {
+	                           metrica.setEstatus(1);
+	                       }
+	            		   if (idmetrica == 16) {
+	                           String cadena = "";
 
+	                           if(resultado.contains("GPON") || resultado.contains("gpon_") || resultado.contains("xgei_")
+	                        	 || resultado.contains("gei_")) {
+	                        	   
+	                               if (resultado.contains("GPON")) {
+	                                   cadena = util.getCadenaPort(resultado, "GPON");
+	                               } else if (resultado.contains("gpon_")) {
+	                                   cadena = util.getCadenaPort(resultado, "gpon_");
+	                               } else if (resultado.contains("xgei_")) {
+	                                   cadena = util.getCadenaPort(resultado, "xgei_");
+	                               } else if (resultado.contains("gei_")) {
+	                                   cadena = util.getCadenaPort(resultado, "gei_");
+
+	                               }
+	                               String[] ifname = cadena.split("/");
+	                               metrica.setPort(Integer.parseInt(ifname[2]));
+	                               metrica.setSlot(Integer.parseInt(ifname[1]));
+	                               metrica.setFrame(Integer.parseInt(ifname[0]));
+	                               metrica.setOid(oid);
+	                               metrica.setFecha_descubrimiento(util.getDate());
+	                               metrica.setId_olt(idOlt);
+	                               metrica.setValor(resultado.trim());
+	                               metrica.setId_metrica(idmetrica);
+	                               metrica.setId_ejecucion(idEjecucion);
+	                               metrica.setTecnologia(tecnologia);
+	                               metrica.setIndexFSP(idOlt+"-"+oid);
+	                               response.add(metrica);
+	                           }
+	                       } else {
+	                           
+	                           metrica.setFecha_descubrimiento( util.getDate() );
+	                           metrica.setId_olt(idOlt);
+	                          
+	                           if (idmetrica == 2) {
+	                               String dato = resultado.trim().replace("\"", "");
+	                               String valor = util.getValueDownCause(dato);
+	                               metrica.setValor(valor);
+	                           } else {
+	                               metrica.setValor(resultado.trim().replace("\"", ""));
+	                           }
+
+	                           metrica.setOid(oid);
+	                           metrica.setId_metrica(idmetrica);
+	                           metrica.setId_ejecucion(idEjecucion);
+	                           metrica.setTecnologia(tecnologia);
+	                           metrica.setIndex(idOlt+"-"+metrica.getOid());
+	                           
+	                           response.add(metrica);
+	                           //Se actualiza el registro en inventario y se guarda el evento
+	                           if (idmetrica==1){                                    
+	                        	   InventarioOntsEntity re=  invOnts.findByIndex(metrica.getIndex());
+	                           
+	                        	   if (metrica.getEstatus()==1||metrica.getEstatus()==2){
+	                        		   
+	                        		   log.info("ESTATUS :::::::::::::::::::::::: "+metrica.getEstatus() );
+	                                   detalleActualizacionesEntidad na = new detalleActualizacionesEntidad();
+	                                   re.setEstatus(metrica.getEstatus());
+	                                   re.setFecha_modificacion(util.getDate());
+	                                   
+	                                   invOnts.save(re);
+	                                       
+	                                   na.setCausa(metrica.getEstatus()==1?"Actualizacion a UP":"Actualizacion a DOWN");
+	                                   na.setNumeroSerie(re.getNumero_serie());
+	                                   na.setIp(proces.getIp());
+	                                   na.setFrame(re.getFrame());
+	                                   na.setSlot(re.getSlot());
+	                                   na.setPort(re.getPort());
+	                                   na.setDescripcionAlarma(re.getDescripcionAlarma());
+	                                   na.setFechaActualizacion(util.getDate());
+	                                   na.setUid(re.getUid());
+	                                   detalleRepositorio.save(na);
+	                                 }
+	                            }
+	                         
+	                       }           		   
+	            		   
+	            	   }else {
+	            		   //No se tiene el resultado correcto
+	            		   metrica.setOid(oid);
+	            		   metrica.setId_olt(idOlt);
+                           metrica.setId_metrica(idmetrica);
+                           metrica.setFecha_descubrimiento(util.getDate());
+                           metrica.setId_ejecucion(idEjecucion);
+                           metrica.setTecnologia(tecnologia);
+                           
+                           metrica.setError(true);
+                           metrica.setValor(values[3]);
+                           response.add(metrica);
+	            	   }
+	               }else {
+	            	   metrica.setId_ejecucion(idEjecucion);
+	            	   metrica.setFecha_descubrimiento(util.getDate());
+	            	   metrica.setError(true);
+                       metrica.setValor(s);
+                       response.add(metrica);
+	               }
+	           }
+			   
+			   proces.getProceso().waitFor(5000, TimeUnit.MILLISECONDS);
+			
+			} catch (Exception e) {
+				log.info(e.toString());
+			}
+		   
+           return response;
+	}
+	
+}

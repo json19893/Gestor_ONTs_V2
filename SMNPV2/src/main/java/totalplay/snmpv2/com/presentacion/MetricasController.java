@@ -1,8 +1,10 @@
 package totalplay.snmpv2.com.presentacion;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
@@ -29,11 +31,14 @@ import totalplay.snmpv2.com.configuracion.Utils;
 import totalplay.snmpv2.com.negocio.dto.DescubrimientoManualDto;
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.negocio.dto.OntsConfiguracionDto;
+import totalplay.snmpv2.com.negocio.services.ICadenaService;
+import totalplay.snmpv2.com.negocio.services.IMetricasService;
 import totalplay.snmpv2.com.negocio.services.IdescubrimientoService;
 import totalplay.snmpv2.com.negocio.services.IpoleoMetricasService;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.ConfiguracionMetricaEntity;
 import totalplay.snmpv2.com.persistencia.entidades.MonitorActualizacionEstatusEntity;
+import totalplay.snmpv2.com.persistencia.repositorio.ICadenasEmpresarialesRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IconfiguracionMetricaRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsRepository;
@@ -51,7 +56,6 @@ import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoMetricaEntity;
 import totalplay.snmpv2.com.persistencia.entidades.ParametrosGeneralesEntity;
 @Slf4j
 @RestController
-
 public class MetricasController extends Constantes {
 	
 	@Autowired
@@ -74,12 +78,18 @@ public class MetricasController extends Constantes {
 	IinventarioOntsRepository inventarioOnts;
 	@Autowired
 	ImonitorPoleoManualRepository monitorPoleoManual;
+	@Autowired
+	IMetricasService metricasService;
+	@Autowired
+	ICadenasEmpresarialesRepository cadenasRepository;
+	@Autowired
+	ICadenaService cadenasServices;
 	
 	Utils util= new Utils();
 	
 	
 	
-	@Scheduled(cron = "0 2 0 * * *", zone = "CST")
+	//@Scheduled(cron = "0 2 0 * * *", zone = "CST")
 	private void cleanDatabase() {
 		monitorMetrica.deleteAll();
 		monitorOlt.deleteAll();
@@ -91,7 +101,7 @@ public class MetricasController extends Constantes {
 		
 	//@Scheduled(fixedRate = 14400000)
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-	@GetMapping(value = "/poleoMetricas", produces = MediaType.APPLICATION_JSON_VALUE)
+	@GetMapping(value = "/poleoMetricasAnterior", produces = MediaType.APPLICATION_JSON_VALUE)
 	public String separatePoleo() throws Exception {
 		String response = "ok";
 
@@ -156,7 +166,7 @@ public class MetricasController extends Constantes {
 					}
 					
 					//Obtener las empresariales no poeladas y mandarlas con otro servicio
-					ontsEmpresariales =  poleoMetricas.getOntsFaltantes(j,idMonitorPoleo, true, reprocesoEmpresariales, "auxiliar", 2, null, null);
+					ontsEmpresariales =  inventarioOnts.findOntsEmpresarialesEstatus();//poleoMetricas.getOntsFaltantes(j,idMonitorPoleo, true, reprocesoEmpresariales, "auxiliar", 2, null, null);
 					
 					monitPoleoMetrica.setOntsSnmp(ontsEmpresariales.size());
 					monitPoleoMetrica.setFecha_corte(util.getDate());					
@@ -386,8 +396,8 @@ public class MetricasController extends Constantes {
 							
 						}
 						
-//						monitPoleoMetrica.setFecha_fin(LocalDateTime.now().toString());
-//						monitorMetrica.save(monitPoleoMetrica);
+						monitPoleoMetrica.setFecha_fin(util.getDate());
+						monitorMetrica.save(monitPoleoMetrica);
 						
 						
 					}
@@ -415,7 +425,149 @@ public class MetricasController extends Constantes {
 
 			return new GenericResponseDto(FINAL_EXITO +" POLEO MANUAL", 1);
 
+	}
+	
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@GetMapping(value = "/poleoMetricas", produces = MediaType.APPLICATION_JSON_VALUE)
+	public String poleoMetricas() throws Exception {
+		String response = "ok";
+
+		
+		Integer estatusPoleo = FALLIDO;
+		String idMonitorPoleo = "";
+		String idMonitorMetrica = "";
+		List<OntsConfiguracionDto> ontsEmpresariales;
+		ParametrosGeneralesEntity params = null;
+		Integer maxOntsEmpresariales;
+		int activas = 0;
+		MonitorPoleoMetricaEntity monitPoleoMetrica;
+		boolean snmpBulkWalk=true;
+		boolean reprocesoEmpresariales=false;
+		
+		ParametrosGeneralesEntity parametros =  parametrosGenerales.getParametros(1);
+		if(parametros != null) {
+			snmpBulkWalk = parametros.isSnmp_bulk_walk();
+			reprocesoEmpresariales = parametros.isReproceso_empresariales(); 
 		}
 		
+			
+		
+		try {
+			
+			
+			//Se crea un nuevo registro para el monitor		
+			//idMonitorPoleo = monitorPoleo.save(new MonitorPoleoEntity(util.getDate(), null,INICIO_DESC+"POLEO" , INICIO)).getId();
+			idMonitorPoleo = "PRUEBAS";
+			
+			List<CatOltsEntity> olts = catOlts.findByEstatus(1);
+			List<CompletableFuture<String>> metricas =new ArrayList<CompletableFuture<String>>();
+			
+			for(int j=12;j<=13;j++) {				
+				CompletableFuture<String> executeProcess = metricasService.poleoMetricas(j, idMonitorPoleo, olts, snmpBulkWalk, reprocesoEmpresariales);
+				metricas.add(executeProcess);
+			}
+		
+			CompletableFuture.allOf(metricas.toArray(new CompletableFuture[metricas.size()])).join();
+		} catch (Exception e) {
+			log.info("error:" + e);
+			response = "error:::" + e;
+		}finally {
+			MonitorPoleoEntity monitor = monitorPoleo.getMonitorPoleo(idMonitorPoleo);
+			monitor.setFecha_fin(util.getDate());
+			monitorPoleo.save(monitor);
+		}
+
+		return response;
+
+	}
+	@Scheduled(fixedRate =300000)
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@GetMapping(value = "/getCadenasEmpresariales", produces = MediaType.APPLICATION_JSON_VALUE)
+	public String getCadenasEmpresariales() throws Exception {
+		log.info("------------------INICIO de actualizaciòn------------------");
+		boolean all=false; 
+		cadenasServices.getCadenas(all);
+		log.info("------------------FIN de actualizaciòn----------------------");
+		return "hecho";
+	
+	}
+	
+	@Scheduled(fixedRate =300000)
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@GetMapping(value = "/poleoMetricasEmpresariales", produces = MediaType.APPLICATION_JSON_VALUE)
+	public String poleoMetricasEmpresariales() throws Exception {
+		String idMonitorPoleo="";
+		
+		try {
+			log.info("INICIO-------------------------------");
+			
+			idMonitorPoleo = monitorPoleo.save(new MonitorPoleoEntity(util.getDate(), null,INICIO_DESC+"POLEO" , INICIO)).getId();
+			
+			List<CompletableFuture<String>> regionSegmentOnts =new ArrayList<CompletableFuture<String>>();
+			Integer[] metricas= {5,6,12,13};
+			//iterar las 4 metricas que se van a polerar
+			for(int i=2; i<=16; i++ ) {
+				if(Arrays.asList(metricas).indexOf(i) == -1) {
+					continue;
+				}
+				
+				List<String> onts	= cadenasRepository.getOntsByMetrica("metrica_"+i);		
+				
+				
+				log.info("-------------procesando------------------"+onts.size());
+				
+				Integer maxOnts = (onts.size()/45)+1 ;
+				
+				for (int j = 0; j < onts.size(); j += maxOnts) {
+					Integer limMax = i + maxOnts;
+					if (limMax >= onts.size()) {
+						limMax = onts.size();
+					}
+					List<String> listSegment = new ArrayList<String>(onts.subList(i, limMax));
+
+					CompletableFuture<String> executeProcess = poleoMetricas.poleoEmpresarialesByShell(listSegment, i, idMonitorPoleo);
+					regionSegmentOnts.add(executeProcess);
+				}		
+				
+			}
+			
+			CompletableFuture.allOf(regionSegmentOnts.toArray(new CompletableFuture[regionSegmentOnts.size()])).join();
+			
+			log.info("FIN-------------------------------");
+		
+		} catch (Exception e) {
+			log.info("error:" + e);
+		}finally {
+			MonitorPoleoEntity monitor = monitorPoleo.getMonitorPoleo(idMonitorPoleo);
+			monitor.setFecha_fin(util.getDate());
+			monitorPoleo.save(monitor);
+		}
+		
+		
+		return null;
+	}
+
+	
+	
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@GetMapping(value = "/poleoMetricasEmpresariales2", produces = MediaType.APPLICATION_JSON_VALUE)
+	public String poleoMetricasEmpresariales2() throws Exception {
+		log.info("INICIO-------------------------------");
+		
+		List<CompletableFuture<String>> metricaProces =new ArrayList<CompletableFuture<String>>();
+		
+		//iterar las 4 metricas que se van a polerar
+		for(int i=2; i<=2; i++ ) {
+			
+			CompletableFuture<String> executeProcess = cadenasServices.runCommands(i); 
+			metricaProces.add(executeProcess);
+		}
+		
+		CompletableFuture.allOf(metricaProces.toArray(new CompletableFuture[metricaProces.size()])).join();
+		
+		log.info("FIN-------------------------------");
+		return null;
+	}
+
 
 }
