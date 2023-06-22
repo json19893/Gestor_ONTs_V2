@@ -354,7 +354,7 @@ export class pointService {
     var headers = new HttpHeaders({
       'mode': 'no-cors'
     });
-    return this.http.post<any>(AppUrlSettings.BASE_API + AppUrlSettings.POLEO_METRICA_OID, data, { headers });
+    return this.http.post<any>(AppUrlSettings.BASE_API_LOGIN + AppUrlSettings.POLEO_METRICA_OID, data, { headers });
   }
 
   poleoOlt(idOlt: number, usuario:string) {
@@ -362,7 +362,7 @@ export class pointService {
   }
 
   getAceptadosInventario(idOlt: number, ip: string, fechaIni: string, fechaFin: string, usuario:string) {
-    const params = `/${idOlt}/${ip}/${usuario}/${fechaIni}`;
+    const params = `/${idOlt}/${ip}/${usuario}/${fechaIni}/${fechaFin}`;
     console.log(params);
     let resource = `${AppUrlSettings.BASE_API}${AppUrlSettings.GET_RECHAZADOS_INVENTARIO_FINAL}${params}`;
     return this.http.get<any>(resource);

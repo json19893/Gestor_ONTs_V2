@@ -15,6 +15,9 @@ import totalplay.services.com.persistencia.entidad.catOltsEntidad;
 public interface IcatOltsRepositorio extends MongoRepository<catOltsEntidad, String> {
 	@Query(value="{'ip': ?0}")
 	catOltsEntidad getIp(String ip);	
+
+	@Aggregation(pipeline = { "{'$match':{'$and':[{'ip':?0},{'nombre':?1}]}}" })
+	catOltsEntidad getOltByIpName(String ip,String nombre);
 	
 	@Aggregation(pipeline = { "{'$match':{'$and':[{'tecnologia':'HUAWEI'},{estatus:0}]}}" })
 	List<catOltsEntidad> getConfiguracionOlt();

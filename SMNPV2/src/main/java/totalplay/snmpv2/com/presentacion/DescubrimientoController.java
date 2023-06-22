@@ -55,7 +55,6 @@ import totalplay.snmpv2.com.persistencia.entidades.UsuariosPermitidosEntidad;
 import totalplay.snmpv2.com.persistencia.entidades.monitorPoleoNCEEntidad;
 @Slf4j
 @RestController
-//@RequestMapping(path = "/snmpv2")
 public class DescubrimientoController extends Constantes {
 
 	@Autowired
@@ -288,6 +287,8 @@ public class DescubrimientoController extends Constantes {
 			monitor.setFecha_fin(util.getDate());
 			
 			monitorNCE.save(monitor);
+			
+			util.crearArchivos(ruta2, util.prefixLog("Termina el proceso de descubrimiento."));
 		}catch (Exception e) {
 			if(monitor != null)
 				monitor.setFecha_fin(util.getDate());

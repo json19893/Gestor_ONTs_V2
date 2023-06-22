@@ -1,7 +1,6 @@
 package totalplay.monitor.snmp.com.negocio.service.procesobatch.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import totalplay.monitor.snmp.com.negocio.dto.*;
 import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
@@ -27,7 +26,6 @@ public class OltsByRegionServiceImpl implements IOltsByRegionService {
     IEnvoltorioGetOltsByRegionRepository repositorio;
 
     @Override
-    @Scheduled(fixedDelay = 60000)
     public void process() throws Exception {
         System.out.printf("Inicia el proceso consulta estatus regiones onts");
         try {

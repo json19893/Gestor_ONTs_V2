@@ -121,7 +121,43 @@ public class Utils extends Constantes {
         return response;
 
     }
+    
+    public EjecucionDto execBashFromList(List<String> comando, String ruta) throws IOException {
+        EjecucionDto response = new EjecucionDto();
 
+        response.setSms(EJECUCION_EXITOSA);
+        response.setCod(0);
+        Process p;
+        try {
+            String shell = ruta + Thread.currentThread().getId() + ".sh";
+
+            File file = new File(shell);
+            response.setFile(shell);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            FileWriter fw = new FileWriter(file);
+            BufferedWriter bw = new BufferedWriter(fw);
+            for(String cadena: comando) {
+            	bw.write(cadena +"\n");
+            }
+            bw.close();
+            ProcessBuilder pb = new ProcessBuilder(new String[]{"sh", "-c", "chmod 777 " + shell + ";" + shell});
+            p = pb.start();
+            BufferedReader br = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            response.setBuffer(br);
+            response.setProceso(p);
+            //response.setComando(comando);
+        } catch (Exception e) {
+            response.setSms(ERROR_EJECUTAR_COMANDO);
+            response.setCod(1);
+       }
+
+        return response;
+
+    }
+    
+    
     public boolean crearArchivos(String ruta, String escribir) {
 
         try {

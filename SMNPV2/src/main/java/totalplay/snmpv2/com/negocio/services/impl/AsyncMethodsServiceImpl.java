@@ -19,8 +19,10 @@ import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.negocio.dto.OntsConfiguracionDto;
 import totalplay.snmpv2.com.negocio.services.IGenericMetrics;
 import totalplay.snmpv2.com.negocio.services.IasyncMethodsService;
+import totalplay.snmpv2.com.negocio.services.IpoleoMetricasService;
 import totalplay.snmpv2.com.persistencia.repositorio.IauxiliarJoinEstatusRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IconfiguracionMetricaRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesEstatusRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasManualRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasRepository;
@@ -34,6 +36,7 @@ import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempNCERepos
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsTempRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioOntsViejoGestorRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IinventarioPuertosRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.ImonitorPoleoMetricaRepository;
 import totalplay.snmpv2.com.persistencia.vertica.entidades.BmsGestorOraVerticaEntity;
 import totalplay.snmpv2.com.persistencia.vertica.entidades.OntsViejoGestorEntity;
 
@@ -50,6 +53,7 @@ import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsPdmEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsViejoGestorEntity;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioPuertosEntity;
+import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoMetricaEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosAliasEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosCpuEntity;
 import totalplay.snmpv2.com.persistencia.entidades.PoleosDownBytesEntity;
@@ -100,8 +104,8 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 	@Autowired
 	IinventarioOntsViejoGestorRepository inventarioViejo;
 	@Autowired
-	IinventarioOntsTempNCERepository tempNCE; 
-	
+	IinventarioOntsTempNCERepository tempNCE;
+		
 	
 	Utils util=new Utils();
 	
@@ -647,63 +651,63 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 		case 2:
 			//poleoMetrica.saveAll(list);
 			List data = getErrores(PoleosLastDownCauseEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 3:
 			data = getErrores(PoleosLastUpTimeEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 4:
 			data = getErrores(PoleosLastDownTimeEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 5:
 			data = getErrores(PoleosUpBytesEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 6:
 			data = getErrores(PoleosDownBytesEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 7:
 			data = getErrores(PoleosTimeOutEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 8:
 			data = getErrores(PoleosUpPacketsEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 9:
 			data = getErrores(PoleosDownPacketsEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 10:
 			data = getErrores(PoleosDropUpPacketsEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 11:
 			data = getErrores(PoleosDropDownPacketsEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 12:
 			data = getErrores(PoleosCpuEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 13:
 			data = getErrores(PoleosLastUpTimeEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 14:
 			data = getErrores(PoleosAliasEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 15:
 			data = getErrores(PoleosProfNameEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 		case 16:
 			data = getErrores(PoleosFrameSlotPortEntity.class, onts, idMetrica);
-			genericMetrics.guardaInventario(idMetrica, data, false);
+			genericMetrics.guardaInventario(idMetrica, data, false, false);
 			break;
 			
 		
@@ -737,5 +741,6 @@ public class AsyncMethodsServiceImpl extends Constantes implements IasyncMethods
 		}
 		return null;
 	}
+	
 	
 }

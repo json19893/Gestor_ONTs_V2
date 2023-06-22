@@ -1,13 +1,13 @@
 export class AppUrlSettings{
 
-    //public static BASE_API = 'http://10.180.199.75:9100/Totalplay/';
-    public static BASE_API = 'http://localhost:9081/';
+    public static BASE_API = 'http://10.180.199.75:9100/Totalplay/';
+    //public static BASE_API = 'http://localhost:9081/';
     //public static BASE_API_LOGIN = 'http://localhost:9084/';
     //public static BASE_API_DESCUBRIMIENTO = 'http://localhost:9080/';
     //public static BASE_API = 'http://10.180.199.75:9081/';
     //public static BASE_API_DESCUBRIMIENTO = 'http://localhost:9082/';
     //public static BASE_API_LOGIN = 'http://10.180.199.75:9084/';
-    public static BASE_API_LOGIN = 'http://localhost:9084/';
+    public static BASE_API_LOGIN = 'http://10.180.199.75:9084/';
     //public static BASE_API = 'http://10.180.251.83:9081/';
     //public static BASE_API_DESCUBRIMIENTO = 'http://10.180.251.83:9080/';
     //public static BASE_API_LOGIN = 'http://10.180.251.83:9084/';
@@ -46,7 +46,7 @@ export class AppUrlSettings{
     public static CAMBIA_BLOQUE_METRICA="snmp-monitor/changeMetricBlock/"
     public static DESASIGNA_BLOQUE_METRICA="snmp-monitor/removeMetricBlock/"
     public static GET_ARCHIVO="snmp-monitor/getArchivo";
-    public static POLEO_METRICA_OID="snmpv2/metrica/poleo"
+    public static POLEO_METRICA_OID="metrica/poleo"
     public static CAMBIOS="snmp-monitor/api/v2/limpieza/onts/repetidas/"
     public static ACTUALIZA_OLT_BY_ONT="snmp-monitor/actualizaOltOnOnt/"
     public static GET_RECHAZADOS_NCE= 'snmp-monitor/getSinActualizar'

@@ -18,7 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 import totalplay.services.com.negocio.dto.requestAltaOnts;
 import totalplay.services.com.negocio.dto.requestDto;
 import totalplay.services.com.negocio.dto.requestEstatusDto;
+import totalplay.services.com.negocio.dto.requestEstatusOltDto;
 import totalplay.services.com.negocio.dto.responseDto;
+import totalplay.services.com.negocio.dto.responseEstatusOltDto;
 import totalplay.services.com.negocio.dto.respuestaDto;
 import totalplay.services.com.negocio.dto.respuestaStatusDto;
 import totalplay.services.com.negocio.service.IapiService;
@@ -44,7 +46,11 @@ public class apiController {
 
 		return response;
 	}
-	
+	@PutMapping(value = "/putStatusOlt", produces = MediaType.APPLICATION_JSON_VALUE)
+	public responseEstatusOltDto putStatusOlt(@RequestBody List<requestEstatusOltDto> datos) throws Exception {
+
+		return apiService.putStatusOlt(datos);
+	}
 
 	@GetMapping(value = "/getConfiguracionOlt/{tecnologia}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public responseDto getConfiguracionOlt(@PathVariable("tecnologia") String tecnologia) throws Exception {
@@ -69,5 +75,7 @@ public class apiController {
 
 		return response;
 	}
+
+	
 
 }
