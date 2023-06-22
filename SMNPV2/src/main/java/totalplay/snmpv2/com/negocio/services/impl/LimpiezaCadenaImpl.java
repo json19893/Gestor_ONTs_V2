@@ -170,10 +170,10 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                                     }
                                         //metrica.setValor(val[1].trim().replaceAll("'", "").replaceAll(" ", ""));
                                     if (val.length == 2) {
-                                    	metrica.setNumero_serie(val[1].trim().replaceAll("'", "").replaceAll(" ", "").replaceAll("\"", ""));
+                                    	metrica.setNumero_serie(val[1].trim().replaceAll("'", "").replaceAll(" ", "").replaceAll("\"", "").toUpperCase());
                                     	
                                     } else if(val.length == 1){
-                                        metrica.setNumero_serie(val[0].trim().replaceAll("'", "").replaceAll(" ", "").replaceAll("\"", ""));
+                                        metrica.setNumero_serie(val[0].trim().replaceAll("'", "").replaceAll(" ", "").replaceAll("\"", "").toUpperCase());
                                     } 
                                     metrica.setIndexFSP(idOlt+"-"+metrica.getId_puerto());
                                     

@@ -369,6 +369,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                     configPoleo.setComando(comando);
                     configPoleo.setIdConfiguracion(configuracion);
                     configPoleo.setTecnologia(tecnologia);
+                    configPoleo.setIp(ont.getIp());
 
                     // TODO: LLAMAR A LOS COMANDOS PARA LAS MÈTRICAS
                     CompletableFuture<GenericResponseDto> metrica = new CompletableFuture<GenericResponseDto>();
@@ -635,7 +636,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                 OID_METRICA = ont.getOid();// + "." + ont.getUid();
             }
 
-            if (ont.getTecnologia().equalsIgnoreCase("FH")) {
+            if (ont.getTecnologia().equalsIgnoreCase("FIBER HOME")) {
                 OID_METRICA = ont.getOid();// + "." + ont.getUid();
             }
             //Caso especial: Poleo de FRAME
@@ -657,11 +658,16 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
         configuracionPoleo = utilerias.getConfiguracion(out.getMappedResults());
         System.out.println(ont);
 
-        final String BASE_COMMAND = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + TIME_OUT_VALUE
+        final String BASE_COMMAND = tecnologia.equals("FIBER HOME")?SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + TIME_OUT_VALUE
+                + SPACE + configuracionPoleo.getVersion()+ SPACE + C+SPACE+configuracionPoleo.getProtPriv()+SPACE+ IR + olt.getIp() :
+                SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + TIME_OUT_VALUE
                 + SPACE + configuracionPoleo.getVersion() + USER_NAME + configuracionPoleo.getUserName() + LEVEL
                 + configuracionPoleo.getLevel() + PROTOCOL_ENCR + configuracionPoleo.getProtEn() + PASSPHRASE
                 + configuracionPoleo.getPassword() + PROTOCOL_PRIV + configuracionPoleo.getProtPriv()
                 + PROTOCOL_PHRASE + configuracionPoleo.getPhrase() + SPACE + IR + olt.getIp();
+
+ 
+                
 
     
         //String idMonitorPoleo = monitorPoleo.findFirstByOrderByIdDesc().getId();

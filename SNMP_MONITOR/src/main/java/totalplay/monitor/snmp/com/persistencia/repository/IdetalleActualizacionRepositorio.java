@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.data.mongodb.repository.Aggregation;
 import org.springframework.data.mongodb.repository.Meta;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -64,16 +65,12 @@ public interface IdetalleActualizacionRepositorio extends MongoRepository<detall
 				})
 		@Meta(allowDiskUse = true)
 	List<detalleActualizacionesEntidad> getDetalleVips(@Param("date") Date date);
-		
-	
-	
-	
-	
-	@Aggregation(pipeline = { 
-			 "{$match:{$expr:{$gte:['$fechaActualizacion',  ?0   ]}}}\r\n"
-			 
-	})
-	@Meta(allowDiskUse = true)
+
+
+
+
+
+	@Query("{fechaActualizacion: {$gte: '2023-06-10T22:00:11.186'}}")
 	List<detalleActualizacionesEntidad> getDetalle(@Param("date") Date date);
 	
 	@Aggregation(pipeline = { 

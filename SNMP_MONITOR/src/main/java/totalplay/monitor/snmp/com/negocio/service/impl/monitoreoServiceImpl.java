@@ -388,8 +388,7 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 		Integer totalOnts = 0;
 		Integer total=0;
 		try {
-			
-	
+
 		if (tipo.compareTo("T") == 0) {
 			totalesRegion = catOltsRepositorio.getTotalesTecnologiaT();
 		}else if(tipo.compareTo("E") == 0 ){
@@ -485,7 +484,8 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 	    }else {
 	    	 totalOnts = inventario.finOntsByTotal()+inventarioPdm.finOntsByTotalT();
 	    	 ///response.setConteoPdmOnts( inventarioPdm.finOntsByTotalT()+ inventario.findTotalCambiosT());
-			 response.setConteoPdmOnts(detalleAct.getDetalle(fechaDia).size());
+			int detalle = detalleAct.getDetalle(fechaDia).size();
+			response.setConteoPdmOnts(detalle);
 	    }
 	
 		
