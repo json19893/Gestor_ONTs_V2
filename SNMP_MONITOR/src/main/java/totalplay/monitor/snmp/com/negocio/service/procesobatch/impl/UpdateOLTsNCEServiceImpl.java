@@ -36,9 +36,9 @@ public class UpdateOLTsNCEServiceImpl implements IUpdateOLTsNCEService {
     
     
 	@Override
-	//@Scheduled(fixedDelay = 10000)
+	@Scheduled(fixedDelay = 10000)
 	public void updateOlts() {
-    	//System.out.println("Inicia el proceso de actualización de estatus nce");
+    	System.out.println("Inicia el proceso de actualización de estatus nce");
     	try {
 			Date date =  Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(7,ChronoUnit.DAYS).minus(1,ChronoUnit.HOURS));
 			date.setHours(0);
@@ -47,10 +47,10 @@ public class UpdateOLTsNCEServiceImpl implements IUpdateOLTsNCEService {
 			
 			catOlts.updateStatusNCE(date);
     	}catch (Exception e) {
-    		//System.out.println("Termina el proceso de actualización de estatus nce de forma FALLIDA");
+    		System.out.println("Termina el proceso de actualización de estatus nce de forma FALLIDA");
     		return ;
     	}
-		//System.out.println("termina el proceso de actualización de estatus nce");
+		System.out.println("termina el proceso de actualización de estatus nce");
 	}
     
     

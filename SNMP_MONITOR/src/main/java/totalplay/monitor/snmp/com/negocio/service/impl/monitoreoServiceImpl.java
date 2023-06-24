@@ -349,8 +349,10 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 				return inventario.getTotalesRegion();
 			} else if(tipo.compareTo("E") == 0) {
 				return inventario.getTotalesEmpresariales();
-			}else {
+			}else if(tipo.compareTo("V") == 0){
 				return inventario.getTotalesRegionesVips();
+			}else if(tipo.compareTo("S") == 0){
+				return inventario.getTotalesByTecnologiaSA();
 			}
 		}catch(Exception e) {
 			log.error("error", e);
@@ -393,8 +395,10 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 			totalesRegion = catOltsRepositorio.getTotalesTecnologiaT();
 		}else if(tipo.compareTo("E") == 0 ){
 			totalesRegion = catOltsRepositorio.getTotalesTecnologia();
-		}else {
+		}else if(tipo.compareTo("V") == 0 ){
 			totalesRegion = catOltsRepositorio.getTotalesTecnologiaVips();
+		}else if(tipo.compareTo("S") == 0 ){
+			totalesRegion = catOltsRepositorio.getTotalesTecnologiaTSA();
 		}
 
 		result = inventario.getAllOntEmp();
