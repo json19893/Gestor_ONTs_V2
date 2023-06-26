@@ -152,6 +152,7 @@ public ses:any;
     localStorage.setItem('muestraHome', 'false');
     localStorage.setItem('muestraDetalle', 'false');
     localStorage.setItem('detalleOnts', 'false');
+    localStorage.setItem('detalleActualizacionOlts', 'false');
 
     window.location.reload();
 
@@ -163,11 +164,26 @@ public ses:any;
     localStorage.setItem('muestraHome', 'false');
     localStorage.setItem('muestraDetalle', 'false');
     localStorage.setItem('detalleOnts', 'true');
+    localStorage.setItem('detalleActualizacionOlts', 'false');
 
 
     window.location.reload();
 
   }
+
+  getMuestraDetalleActualizacionOlts() {
+
+    localStorage.setItem( "detalleClasificacion",'false'); 
+    localStorage.setItem('muestraHome', 'false');
+    localStorage.setItem('muestraDetalle', 'false');
+    localStorage.setItem('detalleActualizacionOlts', 'true');
+    localStorage.setItem('detalleOnts', 'false');
+
+
+    window.location.reload();
+
+  }
+
 
  
 
