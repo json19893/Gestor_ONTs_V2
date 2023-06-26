@@ -2,10 +2,12 @@
  && muestraDetalle=='false'
   && detalleClasificacion=='false' 
    &&  detalleOnts=='false'  
+   && detalleActualizacionOlts == 'false'
   || muestraHome==undefined 
    && muestraDetalle==undefined 
    && detalleClasificacion==undefined 
-   && detalleOnts==undefined " >
+   && detalleOnts==undefined 
+   && detalleActualizacionOlts == undefined" >
   <span class="title-center2"> Monitoreo de OLTs</span>
 <br><br>
 <mat-divider></mat-divider>
@@ -342,5 +344,7 @@
 
   <app-actualizacion *ngIf=" detalleClasificacion=='true'"></app-actualizacion>  
 
-  <app-consultaOlts *ngIf=" detalleOnts=='true'"></app-consultaOlts> 
+  <app-consultaOlts *ngIf=" detalleOnts=='true'"></app-consultaOlts>
+  
+  <app-detalle-actualizacion-olt *ngIf=" detalleActualizacionOlts=='true'"></app-detalle-actualizacion-olt> 
 
