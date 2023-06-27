@@ -36,7 +36,7 @@ public class OltsController {
     @Autowired
     IinventarioOntsRepository ontsRepository;
     
-    @Scheduled(fixedRate =3600000)
+    @Scheduled(fixedRate =300000)
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @GetMapping(value = "/olts/actualizartotales", produces = MediaType.APPLICATION_JSON_VALUE)
     public GenericResponseDto actualizarTotalOntsPorOlt() {

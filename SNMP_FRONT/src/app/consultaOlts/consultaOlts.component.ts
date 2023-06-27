@@ -315,6 +315,11 @@ export class ConsultaOltsComponent implements OnInit {
       this.listAceptadas = resp;
       this.openDetalleAceptadas(idOlt);
     });
+    }else{
+      this.spinner.hide();
+      this._snackBar.open("En estos momentos se encuentra en proceso una sincronización ", "Cerrar", {
+        duration: 4000
+      });
     }
     });
   }

@@ -1,0 +1,61 @@
+<span class="title-center2"> Detalle de Actualizacion de OLTs</span>
+<br><br>
+<mat-divider></mat-divider>
+<br>
+<mat-accordion>
+  <mat-expansion-panel hideToggle>
+    <mat-expansion-panel-header class="panelTitle">
+      <mat-panel-title >
+          <img  class="icon-avata" src="./assets/img/search.SVG"/>
+        
+      </mat-panel-title>
+      <mat-panel-description>
+          Criterios de búsqueda
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    <mat-form-field >
+      <input matInput (keyup)="applyFilter($event)" placeholder="Buscar" #input>
+    </mat-form-field>    
+  </mat-expansion-panel>
+</mat-accordion>
+<br>
+<table mat-table [dataSource]="dataSource"  class="mat-elevation-z8">
+
+
+    <ng-container matColumnDef="ip">
+      <th mat-header-cell *matHeaderCellDef > IP </th>
+      <td mat-cell *matCellDef="let element"> {{element.ip | textPipe }} </td>
+    </ng-container>
+    <ng-container matColumnDef="causa">
+      <th mat-header-cell *matHeaderCellDef >Causa  </th>
+      <td mat-cell *matCellDef="let element"> {{element.causa | textPipe}} </td>
+    </ng-container>
+    <ng-container matColumnDef="descripcion">
+      <th mat-header-cell *matHeaderCellDef > Descripción </th>
+      <td mat-cell *matCellDef="let element"> {{element.descripcion | textPipe}} </td>
+    </ng-container>
+    <ng-container matColumnDef="nombre">
+      <th mat-header-cell *matHeaderCellDef > Nombre </th>
+      <td mat-cell *matCellDef="let element"> {{element.nombre | textPipe}} </td>
+    </ng-container>
+    <ng-container matColumnDef="fechaRecibida">
+      <th mat-header-cell *matHeaderCellDef >Fecha Recibída </th>
+      <td mat-cell *matCellDef="let element"> {{element.fechaRecibida | textPipe}} </td>
+    </ng-container>
+    <ng-container matColumnDef="fechaRegistro">
+      <th mat-header-cell *matHeaderCellDef > Fecha Registro </th>
+      <td mat-cell *matCellDef="let element"> {{element.fechaRegistro | dateFormat }} </td>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <th mat-header-cell *matHeaderCellDef >Status </th>
+      <td mat-cell *matCellDef="let element"> {{element.status| textPipe}} </td>
+    </ng-container>
+      
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td style="text-align: center;" class="mat-cell" colspan="15">Sin registros </td>
+    </tr>
+  </table>
+  <br>
+  <mat-paginator  #paginator [pageSizeOptions]="[10]" aria-label="Select page"></mat-paginator>

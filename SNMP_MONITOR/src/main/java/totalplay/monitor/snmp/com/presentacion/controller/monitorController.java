@@ -13,7 +13,9 @@ import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +32,7 @@ import totalplay.monitor.snmp.com.negocio.service.IBlockMetricService;
 import totalplay.monitor.snmp.com.negocio.service.IProcesamientoTotalesOntService;
 import totalplay.monitor.snmp.com.negocio.service.IconsultaService;
 import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
+import totalplay.monitor.snmp.com.negocio.service.impl.DiferenciaCargaManualServiceImpl;
 import totalplay.monitor.snmp.com.negocio.service.impl.InsertaOntsServiceImpl;
 import totalplay.monitor.snmp.com.negocio.service.procesobatch.IEstadoOntsResumenService;
 import totalplay.monitor.snmp.com.negocio.service.procesobatch.IUpdateOLTsNCEService;
@@ -771,7 +774,29 @@ public class monitorController extends constantes {
 		}
  		return new GenericResponseDto(respuesta, 0);
 	}
-    
+
+
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+    @GetMapping("/detalleActualizacionOlt")
+    public ResponseEntity<DetalleActualizacionesOltsPojo> getDetalleActualizacionOlt() throws Exception {
+
+        ResponseEntity responseServerHttp = new ResponseEntity("", HttpStatus.OK);
+
+       List<DetalleActualizacionesOltsPojo> listDetalle = new ArrayList<DetalleActualizacionesOltsPojo>();
+        try {
+            listDetalle = consulta.getDetalleActualizacionOlt();
+
+            if (listDetalle.isEmpty()) {
+
+                responseServerHttp = new ResponseEntity(listDetalle, HttpStatus.NOT_FOUND);
+            } else {
+                responseServerHttp = new ResponseEntity(listDetalle, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            responseServerHttp = new ResponseEntity("Error interno del servidor", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseServerHttp;
+    }
     
 
 }
