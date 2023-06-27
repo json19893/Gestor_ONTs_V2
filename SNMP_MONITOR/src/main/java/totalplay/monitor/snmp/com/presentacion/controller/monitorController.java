@@ -45,7 +45,7 @@ import totalplay.monitor.snmp.com.persistencia.repository.*;
 @RestController
 @Slf4j
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-@RequestMapping(path = "/snmp-monitor")
+//@RequestMapping(path = "/snmp-monitor")
 public class monitorController extends constantes {
     @Autowired
     ImonitorService monitorServicio;

@@ -56,7 +56,7 @@ import totalplay.snmpv2.com.persistencia.entidades.UsuariosPermitidosEntidad;
 import totalplay.snmpv2.com.persistencia.entidades.monitorPoleoNCEEntidad;
 @Slf4j
 @RestController
-@RequestMapping(path = "/snmpv2")
+//@RequestMapping(path = "/snmpv2")
 public class DescubrimientoController extends Constantes {
 
 	@Autowired
