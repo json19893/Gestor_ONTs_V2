@@ -125,16 +125,18 @@ public class Utils extends Constantes {
     public boolean crearArchivos(String ruta, String escribir) {
 
         try {
-            File file = new File(ruta);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-
-            FileWriter fw = new FileWriter(file, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(escribir);
-            bw.newLine();
-            bw.close();
+        	if(!ruta.equals("")) {
+	            File file = new File(ruta);
+	            if (!file.exists()) {
+	                file.createNewFile();
+	            }
+	
+	            FileWriter fw = new FileWriter(file, true);
+	            BufferedWriter bw = new BufferedWriter(fw);
+	            bw.write(escribir);
+	            bw.newLine();
+	            bw.close();
+        	}
         } catch (Exception e) {
             return false;
         }

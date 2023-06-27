@@ -104,12 +104,13 @@ public interface IinventarioRechazadosNCERepositorio extends MongoRepository<Inv
 			  + "			as: \"nce\",\r\n"
 			  + "		}\r\n"
 			  + " }\r\n"
-			  , " {\r\n"
-			  + "        $set:{\r\n"
-			  + "            inventario: { $cond: [  {$eq :[ \"$nce\", []  ]}, false, true ] },\r\n"
-			  + "            \r\n"
-			  + "        }\r\n"
-			  + " }"
+//			  , " {\r\n"
+//			  + "        $set:{\r\n"
+//			  + "            inventario: { $cond: [  {$eq :[ \"$nce\", []  ]}, false, true ] },\r\n"
+//			  + "            \r\n"
+//			  + "        }\r\n"
+//			  + " }"
+			  , "{$match:{nce:{$ne: []}}}"	
 			  , "{$unwind: \"$nce\"}\r\n"
 			  , "{\r\n"
 			  + "        $set :{\r\n"
@@ -123,7 +124,8 @@ public interface IinventarioRechazadosNCERepositorio extends MongoRepository<Inv
 			  , "{\r\n"
 			  + "        $unset:[\"nce\"]\r\n"
 			  + "}   "
-			  , "{$match: {inventario:true}}" })
+			  //, "{$match: {inventario:true}}" 
+			  })
 	List<AceptadasNCEDto> getRechazadasNCEInventario(@Param("ip") String ip, @Param("olt") Integer olt, @Param("fechInicial") Date fechaInicial,  @Param("fechaFinal") Date fechaFinal, @Param("ejecucion") String ejecucion );
 	
 }

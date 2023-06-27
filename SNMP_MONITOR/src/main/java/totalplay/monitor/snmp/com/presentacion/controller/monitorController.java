@@ -45,6 +45,7 @@ import totalplay.monitor.snmp.com.persistencia.repository.*;
 @RestController
 @Slf4j
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+//@RequestMapping(path = "/snmp-monitor")
 public class monitorController extends constantes {
     @Autowired
     ImonitorService monitorServicio;
@@ -601,9 +602,9 @@ public class monitorController extends constantes {
     }
 
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-    @RequestMapping(value = "/getArchivo/{archivo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<String> getArchivo(@PathVariable("archivo") Integer archivo) {
-        return consulta.getArchivo(archivo);
+    @RequestMapping(value = "/getArchivo/{archivo}/{usuario}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<String> getArchivo(@PathVariable("archivo") Integer archivo, @PathVariable("usuario") String usuario) {
+        return consulta.getArchivo(archivo, usuario);
     }
     
     @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})

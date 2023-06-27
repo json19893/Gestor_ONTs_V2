@@ -20,4 +20,10 @@ public interface IUsuariosPermitidosRepositorio extends MongoRepository<Usuarios
 			})
 	UsuariosPermitidosEntidad getUsuario(@Param("usuarios") String usuario);
 	
+	@Aggregation(pipeline = {
+			  "{$set:{descubrimientos:[]}}\n"
+			, "{$out:\"tb_usuarios_permitidos\"}"
+			})
+	void cleanDescubrimietosUsuarios();
+	
 }	

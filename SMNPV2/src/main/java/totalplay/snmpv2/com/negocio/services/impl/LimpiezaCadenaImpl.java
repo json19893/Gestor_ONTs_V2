@@ -50,11 +50,10 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
     Utils util=new Utils();
     @Value("${ruta.archivo.txt}")
     private String ruta; 
-    @Value("${ruta.archivo.nce}")
-    private String ruta2; 
+   
     @Override
     public <T extends GenericPoleosDto> List<T> getMetricasBypoleo(EjecucionDto proces, Integer idmetrica,
-            Integer idOlt, Integer idRegion, String IdEjecucion, String tecnologia, Class<T> entidad, CadenasMetricasDto cadenas, boolean saveErroneos, int intentos,boolean manual, boolean  nce  )
+            Integer idOlt, Integer idRegion, String IdEjecucion, String tecnologia, Class<T> entidad, CadenasMetricasDto cadenas, boolean saveErroneos, int intentos,boolean manual, boolean  nce, String rutaNCE )
             throws IOException {
                
     			List<T> response = new ArrayList<T>();
@@ -97,7 +96,7 @@ public class LimpiezaCadenaImpl extends Constantes implements IlimpiezaCadena {
                         if(manual){
                             util.crearArchivos(ruta,s);
                          }else if(nce) {
-                        	 util.crearArchivos(ruta2,util.prefixLog(s));
+                        	 util.crearArchivos(rutaNCE,util.prefixLog(s));
                          }
                         T metrica = entidad.getConstructor().newInstance();
                         String value = s.replaceAll(replace.get(0), "");

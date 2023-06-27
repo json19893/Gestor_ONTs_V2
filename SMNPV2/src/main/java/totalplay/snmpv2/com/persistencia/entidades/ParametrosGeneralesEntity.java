@@ -1,5 +1,7 @@
 package totalplay.snmpv2.com.persistencia.entidades;
 
+import java.util.Date;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -17,6 +19,9 @@ public class ParametrosGeneralesEntity {
 	private boolean poleo_metrica;
 	private boolean snmp_bulk_walk;
 	private boolean reproceso_empresariales;
+	private Date inicio_nce;
+	private Date fin_nce;
+	private Integer olt_actualizada;
 	
 
 }

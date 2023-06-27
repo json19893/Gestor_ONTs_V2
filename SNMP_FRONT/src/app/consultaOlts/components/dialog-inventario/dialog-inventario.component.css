@@ -1,4 +1,14 @@
 /* Structure */
+.log{
+  position: relative;
+  min-height: 200px;
+  max-height: 400px;
+  overflow: auto;
+}
+.log span{
+  font-size: small;
+}
+
 .example-container {
     position: relative;
   }
