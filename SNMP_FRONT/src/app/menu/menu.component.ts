@@ -198,6 +198,7 @@ public ses:any;
   }
   home() {
     localStorage.setItem( "detalleClasificacion","false"); 
+    localStorage.setItem('detalleActualizacionOlts','false');
     localStorage.removeItem('tipo');
     localStorage.setItem('detalleOnts', 'false');
     localStorage.setItem('muestraHome', 'false');
@@ -235,7 +236,6 @@ public ses:any;
     localStorage.removeItem("downDetalle");
     localStorage.removeItem("totalDetalle");
     localStorage.removeItem("cambiosDetalle");
-    localStorage.setItem('detalleActualizacionOlts', 'false');
     window.location.reload();
   }
 
