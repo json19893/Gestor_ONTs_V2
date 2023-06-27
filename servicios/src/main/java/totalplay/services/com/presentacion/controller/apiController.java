@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import totalplay.services.com.negocio.dto.requestAltaOnts;
+import totalplay.services.com.negocio.dto.requestCambioOltDto;
 import totalplay.services.com.negocio.dto.requestDto;
 import totalplay.services.com.negocio.dto.requestEstatusDto;
 import totalplay.services.com.negocio.dto.requestEstatusOltDto;
@@ -76,6 +77,12 @@ public class apiController {
 		return response;
 	}
 
-	
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/altas/cambioIPOlt", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public respuestaStatusDto cambioIPOlt(@RequestBody requestCambioOltDto datos) throws Exception {
+		respuestaStatusDto response = apiService.cambioIPOlt(datos);
+
+		return response;
+	}
 
 }

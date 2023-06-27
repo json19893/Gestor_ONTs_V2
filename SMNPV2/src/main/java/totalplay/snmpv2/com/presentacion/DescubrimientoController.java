@@ -51,6 +51,7 @@ import totalplay.snmpv2.com.persistencia.repositorio.ImonitorEjecucionRepository
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorPoleoNCERepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ItblDescubrimientoManualRepositorio;
 import totalplay.snmpv2.com.persistencia.entidades.MonitorEjecucionEntity;
+import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoManualEntity;
 import totalplay.snmpv2.com.persistencia.entidades.UsuariosPermitidosEntidad;
 import totalplay.snmpv2.com.persistencia.entidades.monitorPoleoNCEEntidad;
 @Slf4j
@@ -202,7 +203,15 @@ public class DescubrimientoController extends Constantes {
 	public GenericResponseDto descubrimientoNCE(@PathVariable("idOlt") Integer idOlt, @PathVariable("user") String user) throws Exception {
 		monitorPoleoNCEEntidad monitor=null;
 		try {
-			
+			long proc = descubrimientoManual.countByEstatus(0);
+			if (proc > 0) {
+				return new GenericResponseDto(PROCESANDO, 1);
+			}
+
+			MonitorPoleoManualEntity procNce = monitorNCE.getUltimoDescubrimiento();
+			if (procNce.getFecha_fin()== null) {
+				return new GenericResponseDto(PROCESANDO, 1);
+			}
 			File file = new File(ruta2);
 			
 			if(file.exists())
