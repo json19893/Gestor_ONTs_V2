@@ -236,7 +236,6 @@ public ses:any;
     localStorage.removeItem("downDetalle");
     localStorage.removeItem("totalDetalle");
     localStorage.removeItem("cambiosDetalle");
-  
     window.location.reload();
   }
 
