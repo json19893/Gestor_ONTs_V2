@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class EnvoltorioAuxiliarOntsByTecnologiaDto {
-    private LocalDateTime dateTime;
+    private LocalDateTime date;
     private String tipo;
     private String descripcionCorta;
     private String descripcionLarga;

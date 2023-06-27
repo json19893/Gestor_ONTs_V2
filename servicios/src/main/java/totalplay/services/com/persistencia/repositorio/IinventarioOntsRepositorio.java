@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import totalplay.services.com.persistencia.entidad.catOltsEntidad;
 import totalplay.services.com.persistencia.entidad.inventarioOntsEntidad;
+import totalplay.services.com.persistencia.entidad.inventarioOntsTempEntidad;
 
 
 
@@ -38,6 +39,33 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 	
 	@Query(value="{'numero_serie': ?0}")
 	inventarioOntsEntidad getONT(String numSerie);
+	
+	@Query(value="{'id_olt': ?0}")
+	List<inventarioOntsEntidad> getOntByOlt( Integer idOlt);
+
+
+	
+	@Aggregation(pipeline = { "{\r\n"
+			+ "    '$match': {\r\n"
+			+ "      'id_olt': ?0 \r\n"
+			+ "    }\r\n"
+			+ "  } "
+			, "{\r\n"
+			+ "    '$set': {\r\n"
+			+ "      'estatus': 0 \r\n"
+			+ "    }\r\n"
+			+ "  } "
+			, "{\r\n"
+			+ "    '$merge': {\r\n"
+			+ "      'into': 'tb_inventario_onts', \r\n"
+			+ "      'on': '_id', \r\n"
+			+ "      'whenMatched': 'replace', \r\n"
+			+ "      'whenNotMatched': 'insert'\r\n"
+			+ "    }\r\n"
+			+ "  }" })
+	void updateOnt(@Param("idOlt") Integer idOlt);
+
+	
 	
 
 }

@@ -51,6 +51,7 @@ import totalplay.snmpv2.com.persistencia.repositorio.ImonitorEjecucionRepository
 import totalplay.snmpv2.com.persistencia.repositorio.ImonitorPoleoNCERepository;
 import totalplay.snmpv2.com.persistencia.repositorio.ItblDescubrimientoManualRepositorio;
 import totalplay.snmpv2.com.persistencia.entidades.MonitorEjecucionEntity;
+import totalplay.snmpv2.com.persistencia.entidades.MonitorPoleoManualEntity;
 import totalplay.snmpv2.com.persistencia.entidades.UsuariosPermitidosEntidad;
 import totalplay.snmpv2.com.persistencia.entidades.monitorPoleoNCEEntidad;
 @Slf4j
@@ -215,11 +216,21 @@ public class DescubrimientoController extends Constantes {
 			//Encontrar el registro del usuario
 			UsuariosPermitidosEntidad usuario =  usuariosPermitidos.getUsuario(user);
 			userName = usuario.getNombreUsuario();
-			ruta = ruta + userName + ".txt"; 
+			ruta = ruta2 + userName + ".txt"; 
 					
+			long proc = descubrimientoManual.countByEstatus(0);
+			if (proc > 0) {
+				return new GenericResponseDto(PROCESANDO, 1);
+			}
+
+			MonitorPoleoManualEntity procNce = monitorNCE.getUltimoDescubrimiento();
+			if (procNce.getFecha_fin()== null) {
+				return new GenericResponseDto(PROCESANDO, 1);
+			}
+			
 			File file = new File(ruta);
 			
-			if(file.exists()) 
+			if(file.exists())
 				file.delete();
 						
 			util.crearArchivos(ruta, util.prefixLog("Inicia el proceso de descubrimiento."));

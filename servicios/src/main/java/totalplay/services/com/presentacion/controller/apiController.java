@@ -16,9 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import totalplay.services.com.negocio.dto.requestAltaOnts;
+import totalplay.services.com.negocio.dto.requestCambioOltDto;
 import totalplay.services.com.negocio.dto.requestDto;
 import totalplay.services.com.negocio.dto.requestEstatusDto;
+import totalplay.services.com.negocio.dto.requestEstatusOltDto;
 import totalplay.services.com.negocio.dto.responseDto;
+import totalplay.services.com.negocio.dto.responseEstatusOltDto;
 import totalplay.services.com.negocio.dto.respuestaDto;
 import totalplay.services.com.negocio.dto.respuestaStatusDto;
 import totalplay.services.com.negocio.service.IapiService;
@@ -44,7 +47,11 @@ public class apiController {
 
 		return response;
 	}
-	
+	@PutMapping(value = "/putStatusOlt", produces = MediaType.APPLICATION_JSON_VALUE)
+	public responseEstatusOltDto putStatusOlt(@RequestBody List<requestEstatusOltDto> datos) throws Exception {
+
+		return apiService.putStatusOlt(datos);
+	}
 
 	@GetMapping(value = "/getConfiguracionOlt/{tecnologia}", produces = MediaType.APPLICATION_JSON_VALUE)
 	public responseDto getConfiguracionOlt(@PathVariable("tecnologia") String tecnologia) throws Exception {
@@ -66,6 +73,14 @@ public class apiController {
 	@PostMapping(value = "/altas/validaEstatus", produces = MediaType.APPLICATION_JSON_VALUE)
 	public respuestaDto validaONT(@RequestBody requestAltaOnts datos) throws Exception {
 		respuestaDto response = apiService.validaONT(datos);
+
+		return response;
+	}
+
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@RequestMapping(value = "/altas/cambioIPOlt", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public respuestaStatusDto cambioIPOlt(@RequestBody requestCambioOltDto datos) throws Exception {
+		respuestaStatusDto response = apiService.cambioIPOlt(datos);
 
 		return response;
 	}

@@ -1,15 +1,11 @@
 package totalplay.monitor.snmp.com.negocio.service;
 
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Map;
 
-import totalplay.monitor.snmp.com.negocio.dto.requestEstatusDto;
-import totalplay.monitor.snmp.com.negocio.dto.responseDto;
-import totalplay.monitor.snmp.com.negocio.dto.responseFindDto;
-import totalplay.monitor.snmp.com.negocio.dto.responseFindOntDto;
-import totalplay.monitor.snmp.com.negocio.dto.responseMetricasDto;
-import totalplay.monitor.snmp.com.negocio.dto.respuestaStatusDto;
+import totalplay.monitor.snmp.com.negocio.dto.*;
 import totalplay.monitor.snmp.com.persistencia.entidad.catOltsEntidad;
 
 
@@ -23,4 +19,6 @@ public interface IconsultaService {
 	responseMetricasDto getMetrics(Integer idOlt, String oid);
 	List<String> getArchivo(Integer archivo, String usuario);
     responseDto actualizaOnt(String serie,Integer idOlt);
+
+    List<DetalleActualizacionesOltsPojo> getDetalleActualizacionOlt() throws InvocationTargetException, IllegalAccessException;
 }

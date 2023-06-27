@@ -30,30 +30,8 @@ import totalplay.snmpv2.com.persistencia.entidades.*;
 import totalplay.snmpv2.com.persistencia.entidades.InventarioOntsEntity;
 import totalplay.snmpv2.com.persistencia.repositorio.*;
 import org.springframework.scheduling.annotation.Async;
-import totalplay.snmpv2.com.persistencia.repositorio.IauxiliarJoinEstatusRepository;
-import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
-import totalplay.snmpv2.com.persistencia.repositorio.IconfiguracionMetricaRepository;
-import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesEstatusRepository;
-import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasManualRepository;
-import totalplay.snmpv2.com.persistencia.repositorio.IfaltantesMetricasRepository;
-import totalplay.snmpv2.com.persistencia.repositorio.IhistoricoConteoOltRepository;
+
 import totalplay.snmpv2.com.presentacion.MetricaController.MetricaPoleo;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosAliasEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosCpuEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosDownBytesEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosDownPacketsEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosDropDownPacketsEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosDropUpPacketsEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosEstatusEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosFrameSlotPortEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosLastDownCauseEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosLastDownTimeEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosLastUpTimeEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosMemoryEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosProfNameEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosTimeOutEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosUpBytesEntity;
-import totalplay.snmpv2.com.persistencia.entidades.PoleosUpPacketsEntity;
 
 
 @Slf4j
@@ -367,13 +345,13 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                 if (oid != null && ont.getId_configuracion() != 0 && !ont.getIp().equals("")) {
 
                     if (tecnologia != "FIBER HOME") {
-                        comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + "2" + SPACE
+                        comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + "1" + SPACE
                                 + conf.getVersion() + USER_NAME + conf.getUsuario() + LEVEL + conf.getNivel()
                                 + PROTOCOL_ENCR + conf.getProt_encriptado() + PASSPHRASE + conf.getPassword()
                                 + PROTOCOL_PRIV + conf.getProt_privado() + PROTOCOL_PHRASE + conf.getFrase() + SPACE + IR
                                 + ont.getIp() + SPACE;
                     } else {
-                        comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + "2"
+                        comando = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + "1"
                                 + SPACE + conf.getVersion() + " -c " + conf.getProt_privado() + SPACE
                                 + ont.getIp() + SPACE;
                     }
@@ -381,6 +359,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                     configPoleo.setComando(comando);
                     configPoleo.setIdConfiguracion(configuracion);
                     configPoleo.setTecnologia(tecnologia);
+                    configPoleo.setIp(ont.getIp());
 
                     // TODO: LLAMAR A LOS COMANDOS PARA LAS MÈTRICAS
                     CompletableFuture<GenericResponseDto> metrica = new CompletableFuture<GenericResponseDto>();
@@ -647,7 +626,7 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
                 OID_METRICA = ont.getOid();// + "." + ont.getUid();
             }
 
-            if (ont.getTecnologia().equalsIgnoreCase("FH")) {
+            if (ont.getTecnologia().equalsIgnoreCase("FIBER HOME")) {
                 OID_METRICA = ont.getOid();// + "." + ont.getUid();
             }
             //Caso especial: Poleo de FRAME
@@ -669,11 +648,16 @@ public class PoleoMetricasServiceImpl extends Constantes implements IpoleoMetric
         configuracionPoleo = utilerias.getConfiguracion(out.getMappedResults());
         System.out.println(ont);
 
-        final String BASE_COMMAND = SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + TIME_OUT_VALUE
+        final String BASE_COMMAND = tecnologia.equals("FIBER HOME")?SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + TIME_OUT_VALUE
+                + SPACE + configuracionPoleo.getVersion()+ SPACE + C+SPACE+configuracionPoleo.getProtPriv()+SPACE+ IR + olt.getIp() :
+                SNMP_GET + RETRIES_COMAD + RETRIES_VALUE + TIME_OUT_COMAND + TIME_OUT_VALUE
                 + SPACE + configuracionPoleo.getVersion() + USER_NAME + configuracionPoleo.getUserName() + LEVEL
                 + configuracionPoleo.getLevel() + PROTOCOL_ENCR + configuracionPoleo.getProtEn() + PASSPHRASE
                 + configuracionPoleo.getPassword() + PROTOCOL_PRIV + configuracionPoleo.getProtPriv()
                 + PROTOCOL_PHRASE + configuracionPoleo.getPhrase() + SPACE + IR + olt.getIp();
+
+ 
+                
 
     
         //String idMonitorPoleo = monitorPoleo.findFirstByOrderByIdDesc().getId();

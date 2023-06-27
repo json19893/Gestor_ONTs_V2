@@ -82,6 +82,8 @@ export class ClasificacionComponent implements OnInit {
   muestraDetalle:any;
   public ses:any;
 
+  public detalleActualizacionOlts:any;
+
   @ViewChild('tbl1', { static: false }) paginator!: MatPaginator;
   @ViewChild(MatSort) sort: MatSort | undefined;
   pageSize = 11;
@@ -103,6 +105,7 @@ export class ClasificacionComponent implements OnInit {
       this.muestraHome = localStorage.getItem('muestraHome');
       this.muestraDetalle= localStorage.getItem('muestraDetalle');
       this.detalleClasificacion= localStorage.getItem('detalleClasificacion');
+      this.detalleActualizacionOlts = localStorage.getItem('detalleActualizacionOlts');
       this.detalleOnts= localStorage.getItem('detalleOnts');
       if (this.ses==1){
       if(this.muestraHome=='false' && this.muestraDetalle=='false' && this.detalleClasificacion=='false'  && this.detalleOnts=='false'  || this.muestraHome==undefined && this.muestraDetalle==undefined && this.detalleClasificacion==undefined && this.detalleOnts==undefined){                setInterval(() => this.getTecnAsn('E'), 200000);

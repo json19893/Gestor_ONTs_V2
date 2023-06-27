@@ -2,11 +2,7 @@ package totalplay.monitor.snmp.com.presentacion.controller;
 
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,7 +13,9 @@ import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +32,7 @@ import totalplay.monitor.snmp.com.negocio.service.IBlockMetricService;
 import totalplay.monitor.snmp.com.negocio.service.IProcesamientoTotalesOntService;
 import totalplay.monitor.snmp.com.negocio.service.IconsultaService;
 import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
+import totalplay.monitor.snmp.com.negocio.service.impl.DiferenciaCargaManualServiceImpl;
 import totalplay.monitor.snmp.com.negocio.service.impl.InsertaOntsServiceImpl;
 import totalplay.monitor.snmp.com.negocio.service.procesobatch.IEstadoOntsResumenService;
 import totalplay.monitor.snmp.com.negocio.service.procesobatch.IUpdateOLTsNCEService;
@@ -119,26 +118,11 @@ public class monitorController extends constantes {
     public responseRegionDto getOltsByRegion(@PathVariable("idRegion") Integer idRegion,
             @PathVariable("tipo") String tipo) throws Exception {
         responseRegionDto response = new responseRegionDto();
-
         if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
             try {
-                EnvoltorioGetOltsByRegionEntidad region = getOltsByRegionRepository.obtenerEntidad(idRegion);
-                if(region !=null){
-                    switch (tipo){
-                        case "T":
-                            return region.getRegionOntTodoEstatus().getResumenStatusOnts();
-                        case "E":
-                            return region.getRegionOntEmpresarialesEstatus().getResumenStatusOnts();
-                        case "V":
-                            return region.getRegionOntVipsEstatus().getResumenStatusOnts();
-                    }
-                }
-
-                //response = monitorServicio.getOltsByRegion(idRegion, tipo, false);
+                response = monitorServicio.getOltsByRegion(idRegion, tipo, false);
             } catch (Exception e) {
-
             }
-
             return response;
         }
         return null;
@@ -230,11 +214,11 @@ public class monitorController extends constantes {
     public List<datosRegionDto> getTotalesByTecnologia(@PathVariable("tipo") String tipo) throws Exception {
 
         if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
-            TotalesByTecnologiaEntidad existe = totalesByTecnologiaRepository.getEntity(tipo);
-
-            if(existe != null){
-                return existe.getResumenStatusOnts();
+            TotalesByTecnologiaEntidad resumenExist = totalesByTecnologiaRepository.getEntity(tipo);
+            if(resumenExist != null){
+                return resumenExist.getResumenStatusOnts();
             }
+            //Si no existe el resumen se manda a llamar directamente la logica del negocio:
             return monitorServicio.getTotalesByTecnologia(tipo);
         }
         return null;
@@ -249,37 +233,14 @@ public class monitorController extends constantes {
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @RequestMapping(value = "/getTotalesActivo/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public totalesActivoDto getTotalesActivo(@PathVariable("tipo") String tipo) throws Exception {
-        //Le pega directo a la logica del negocio:
-        //Obtener la fecha de la peticion
-
         LocalTime timeRequestClient = utils.getDateTime().toLocalTime();
 
         if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
-            //Busco el ultmo resumen en la base de datos:
-            List<EnvoltorioOntsTotalesActivoEntidad> resumenEstadoOntsList = new ArrayList<>();
-
-            resumenEstadoOntsList = repositorioOntEstatusTotales.findAll(Sort.by(Sort.Direction.DESC, "id"));
-            EnvoltorioOntsTotalesActivoEntidad resumenEstadoOnts = new EnvoltorioOntsTotalesActivoEntidad();
-
-            if(resumenEstadoOntsList.size() == 0 || resumenEstadoOntsList == null){
-                //Ejectua el proceso y settear la lista
-                estadoOntsResumenService.process();
-                resumenEstadoOntsList = repositorioOntEstatusTotales.findAll(Sort.by(Sort.Direction.DESC, "id"));
+            EnvoltorioOntsTotalesActivoEntidad resumenExist = repositorioOntEstatusTotales.getEntity(tipo.toUpperCase());
+            if(resumenExist != null){
+                return resumenExist.getTotalesOntsActivas();
             }
-
-            resumenEstadoOnts = resumenEstadoOntsList.get(0);
-
-            if (tipo.equals(resumenEstadoOnts.getTotalesOntsActivas().getTipo())) {
-                return resumenEstadoOnts.getTotalesOntsActivas().getResumenStatusOnts();
-            }
-
-            if (tipo.equals(resumenEstadoOnts.getTotalesOntsActivasVips().getTipo())) {
-                return resumenEstadoOnts.getTotalesOntsActivasVips().getResumenStatusOnts();
-            }
-
-            if (tipo.equals(resumenEstadoOnts.getTotalesOnstsActivasEmpresariales().getTipo())) {
-                return resumenEstadoOnts.getTotalesOnstsActivasEmpresariales().getResumenStatusOnts();
-            }
+            return monitorServicio.getTotalesActivo(tipo);
         }
         return null;
     }
@@ -814,7 +775,29 @@ public class monitorController extends constantes {
 		}
  		return new GenericResponseDto(respuesta, 0);
 	}
-    
+
+
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+    @GetMapping("/detalleActualizacionOlt")
+    public ResponseEntity<DetalleActualizacionesOltsPojo> getDetalleActualizacionOlt() throws Exception {
+
+        ResponseEntity responseServerHttp = new ResponseEntity("", HttpStatus.OK);
+
+       List<DetalleActualizacionesOltsPojo> listDetalle = new ArrayList<DetalleActualizacionesOltsPojo>();
+        try {
+            listDetalle = consulta.getDetalleActualizacionOlt();
+
+            if (listDetalle.isEmpty()) {
+
+                responseServerHttp = new ResponseEntity(listDetalle, HttpStatus.NOT_FOUND);
+            } else {
+                responseServerHttp = new ResponseEntity(listDetalle, HttpStatus.OK);
+            }
+        } catch (Exception e) {
+            responseServerHttp = new ResponseEntity("Error interno del servidor", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return responseServerHttp;
+    }
     
 
 }

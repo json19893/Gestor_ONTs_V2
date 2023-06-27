@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -21,56 +22,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
-import totalplay.monitor.snmp.com.negocio.dto.dataRegionResponseDto;
-import totalplay.monitor.snmp.com.negocio.dto.requestEstatusDto;
-import totalplay.monitor.snmp.com.negocio.dto.responseDto;
-import totalplay.monitor.snmp.com.negocio.dto.responseFindDto;
-import totalplay.monitor.snmp.com.negocio.dto.responseFindOntDto;
-import totalplay.monitor.snmp.com.negocio.dto.responseMetricasDto;
-import totalplay.monitor.snmp.com.negocio.dto.responseRegionDto;
+import totalplay.monitor.snmp.com.negocio.dto.*;
 
-import totalplay.monitor.snmp.com.negocio.dto.respuestaStatusDto;
-import totalplay.monitor.snmp.com.negocio.dto.totalesOltsDto;
 import totalplay.monitor.snmp.com.negocio.service.IconsultaService;
 import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
 import totalplay.monitor.snmp.com.negocio.util.utils;
-import totalplay.monitor.snmp.com.persistencia.entidad.DiferenciasManualEntity;
-import totalplay.monitor.snmp.com.persistencia.entidad.catOltsEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.detalleActualizacionesEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.inventarioOntsPdmEntidad;
+import totalplay.monitor.snmp.com.persistencia.entidad.*;
 
-import totalplay.monitor.snmp.com.persistencia.entidad.poleosCpuEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.poleosDownBytesEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.poleosDownPacketsEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.poleosDropDownPacketsEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.poleosDropUpPacketsEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.poleosLastUpTimeEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.poleosMemoryEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.poleosProfNameEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.poleosTimeOutEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.poleosUpBytesEntidad;
-import totalplay.monitor.snmp.com.persistencia.entidad.poleosUpPacketsEntidad;
-import totalplay.monitor.snmp.com.persistencia.repository.IcatOltsRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IdetalleActualizacionRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IdiferenciasManualRepository;
-import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOltsReposirorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsPdmRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IinventarioOntsRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.ImonitorPoleoRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IpoleoCpuRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IpoleoDownBytesRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IpoleoDownPacketsRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IpoleoDropDownPacketsRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IpoleoDropUpPacketsRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IpoleoLastUpTimeRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IpoleoMemoryRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IpoleoProfNameRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IpoleoTimeOutRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IpoleoUpBytesRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IpoleoUpPacketsRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IvwTotalOntsEmpresarialesRepositorio;
-import totalplay.monitor.snmp.com.persistencia.repository.IvwTotalOntsRepositorio;
+import totalplay.monitor.snmp.com.persistencia.repository.*;
 
 @Service
 @Slf4j
@@ -118,6 +77,8 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 	IinventarioOntsPdmRepositorio ontsPdm;
 	@Autowired
 	IdiferenciasManualRepository diferencias;
+	@Autowired
+	IDetalleActualizacionesOltsRepository detalleActualizacionesOltsRepository;
 	
 	@Value("${ruta.archivo.metrica}")
 	private String rutaMetrica;
@@ -552,6 +513,20 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 			log.error("error", e);
 		}
 		return response;
+	}
+
+	@Override
+	public List<DetalleActualizacionesOltsPojo> getDetalleActualizacionOlt() throws InvocationTargetException, IllegalAccessException {
+		List<DetalleActualizacionesOltsPojo> list = new ArrayList<>();
+		DetalleActualizacionesOltsPojo obj = null;
+
+		for (DetalleActualizacionesOltsEntity det : detalleActualizacionesOltsRepository.findAll() ){
+			obj = new DetalleActualizacionesOltsPojo();
+			BeanUtils.copyProperties(obj,det);
+			list.add(obj);
+		}
+
+		return list;
 	}
 
 }
