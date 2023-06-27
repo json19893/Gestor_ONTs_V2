@@ -21,6 +21,6 @@ public interface IconsultaService {
 	List<catOltsEntidad> obtenerOLTsActivas();
 	responseFindOntDto getOnt(String tipo, String data, boolean serie);
 	responseMetricasDto getMetrics(Integer idOlt, String oid);
-	List<String> getArchivo(Integer archivo);
+	List<String> getArchivo(Integer archivo, String usuario);
     responseDto actualizaOnt(String serie,Integer idOlt);
 }

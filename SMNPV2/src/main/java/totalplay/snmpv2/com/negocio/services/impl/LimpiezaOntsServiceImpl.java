@@ -266,7 +266,7 @@ public class LimpiezaOntsServiceImpl extends Constantes implements IlimpiezaOnts
 			crucesMetricas(14,idPoleo, "auxiliar_descubrimiento_manual", olts, true, false );
 			crucesMetricas(16,idPoleo, "auxiliar_descubrimiento_manual", olts, true, false );
 			
-			getEmpresarialesVips(false);
+			getEmpresarialesVips(true);
 			
 			updateDescripcion(monitor, INICIO_DESC+" SEND INVENTARIO");
 			log.info(INICIO_DESC+" SEND INVENTARIO");

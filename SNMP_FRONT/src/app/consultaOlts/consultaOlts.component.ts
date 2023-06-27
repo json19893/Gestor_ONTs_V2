@@ -269,22 +269,24 @@ export class ConsultaOltsComponent implements OnInit {
 
   }
 
-  openDetalleAceptadas(olt: Olts) {
+  openDetalleAceptadas(olt: Olts, fecInic:string, fecFinal:string, usuario:string, detalle:boolean, logs:boolean ) {
+    
     let wrapper ={
       olt: olt,
-      list: this.listAceptadas
+      fecInic,
+      fecFinal,
+      usuario,
+      detalle,
+      logs
     }
 
-    const { id_olt } = olt;
     const dialogConfig = new MatDialogConfig<any>();
     dialogConfig.disableClose = false;
     dialogConfig.autoFocus = true;
-    dialogConfig.height = '65vh';
+    dialogConfig.height = '90vh';
     dialogConfig.width = '130vw';
     dialogConfig.data = wrapper;
-
-    this.dialog.open(DialogInventarioComponent, dialogConfig);
-
+    
     const dialogRef = this.dialog.open(DialogInventarioComponent, dialogConfig);
 
     dialogRef.afterClosed().subscribe(
@@ -303,29 +305,21 @@ export class ConsultaOltsComponent implements OnInit {
   }
 
   poleoOlt(idOlt: Olts) {
-    console.log('servicio 1');
-    this.spinner.show();
-    this.service.poleoOlt(idOlt.id_olt, this.usuario).subscribe((data) => {
-      console.log(data);
 
-    if (data.cod == 0) {
-    this.service.getAceptadosInventario(idOlt.id_olt, idOlt.ip, new Date().toISOString(), new Date().toISOString(), this.usuario).subscribe((resp) => {
-      console.log('servicio 2');
-      this.spinner.hide();
-      this.listAceptadas = resp;
-      this.openDetalleAceptadas(idOlt);
-    });
-    }
-    });
+    //this.openDetalleAceptadas(idOlt);
+    let fecInic = new Date().toISOString();
+    let fecFinal  = new Date().toISOString();
+    
+    
+    this.openDetalleAceptadas(idOlt, fecInic, fecFinal, this.usuario, false, true);
   }
   
   detalleSin(idOlt: Olts){
-    this.service.getAceptadosInventario(idOlt.id_olt, idOlt.ip, new Date().toISOString(), new Date().toISOString(), this.usuario).subscribe((resp) => {
-      console.log('servicio 2');
-      this.spinner.hide();
-      this.listAceptadas = resp;
-      this.openDetalleAceptadas(idOlt);
-    });
+    let fecInic = new Date().toISOString();
+    let fecFinal  = new Date().toISOString();
+
+    this.openDetalleAceptadas(idOlt, fecInic, fecFinal, this.usuario, true, false);
+    
   }
 
 }
@@ -558,7 +552,7 @@ export class detalleEjecucionDialog implements OnInit {
 
   }
   getaArchivo() {
-    this.service.getArchivo(1).subscribe(
+    this.service.getArchivo(1, "").subscribe(
       res => {
         this.archivo = res;
       })

@@ -691,7 +691,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
      
     
       getaArchivo() {
-        this.service.getArchivo(2).subscribe(
+        this.service.getArchivo(2, "").subscribe(
           res => {
             this.archivo=res;
           })

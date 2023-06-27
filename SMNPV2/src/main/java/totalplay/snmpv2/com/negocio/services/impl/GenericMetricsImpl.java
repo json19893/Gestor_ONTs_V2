@@ -105,7 +105,7 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
 	
 
 	@Override																					
-	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error,boolean manual, boolean nce, boolean oltNCE) throws IOException, NoSuchFieldException, NoSuchMethodException {
+	public  <T extends GenericPoleosDto> CompletableFuture<GenericResponseDto> poleo(configuracionDto configuracion, String idProceso, Integer metrica,Integer idOlt,Class<T> entidad, boolean saveErroneos, String referencia, boolean error,boolean manual, boolean nce, boolean oltNCE, String ruta) throws IOException, NoSuchFieldException, NoSuchMethodException {
 
 		EjecucionDto proces = new EjecucionDto();
 		List data = new ArrayList<T>();
@@ -168,7 +168,7 @@ public class GenericMetricsImpl extends Constantes implements IGenericMetrics {
     			
     			
     			data= limpiezaCadena.getMetricasBypoleo(proces, metrica, idOlt,
-    					configuracion.getIdRegion(), idProceso, configuracion.getTecnologia(),entidad, cadenasMetrica, saveErroneos, contador,manual, nce);
+    					configuracion.getIdRegion(), idProceso, configuracion.getTecnologia(),entidad, cadenasMetrica, saveErroneos, contador,manual, nce, ruta);
 
     			log.info("count data "+data.size());
     			

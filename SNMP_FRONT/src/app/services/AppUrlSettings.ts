@@ -1,7 +1,7 @@
 export class AppUrlSettings{
 
-    public static BASE_API = 'http://10.180.199.75:9100/Totalplay/';
-    //public static BASE_API = 'http://localhost:9081/';
+    //public static BASE_API = 'http://10.180.199.75:9100/Totalplay/';
+    public static BASE_API = 'http://localhost:9081/';
     //public static BASE_API_LOGIN = 'http://localhost:9084/';
     //public static BASE_API_DESCUBRIMIENTO = 'http://localhost:9080/';
     //public static BASE_API = 'http://10.180.199.75:9081/';
@@ -51,7 +51,7 @@ export class AppUrlSettings{
     public static ACTUALIZA_OLT_BY_ONT="snmp-monitor/actualizaOltOnOnt/"
     public static GET_RECHAZADOS_NCE= 'snmp-monitor/getSinActualizar'
     public static GET_RECHAZADAS_OLT='snmp-monitor/getRechazadasByOlt';
-    public static GET_RECHAZADAS_OLT_NCE ='descubrimientoNCE';
+    public static GET_RECHAZADAS_OLT_NCE ='snmpv2/descubrimientoNCE';
     public static GET_RECHAZADOS_INVENTARIO_FINAL = 'snmp-monitor/getRechazadasByOltInventario';
     public static MOVER_ONT_INVENTARIO_FINAL = 'snmp-monitor/insertInventario';
 }

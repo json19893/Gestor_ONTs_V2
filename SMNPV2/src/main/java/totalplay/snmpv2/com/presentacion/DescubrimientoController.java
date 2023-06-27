@@ -55,6 +55,7 @@ import totalplay.snmpv2.com.persistencia.entidades.UsuariosPermitidosEntidad;
 import totalplay.snmpv2.com.persistencia.entidades.monitorPoleoNCEEntidad;
 @Slf4j
 @RestController
+@RequestMapping(path = "/snmpv2")
 public class DescubrimientoController extends Constantes {
 
 	@Autowired
@@ -97,6 +98,12 @@ public class DescubrimientoController extends Constantes {
 	private String ruta;
 	@Value("${ruta.archivo.nce}")
 	private String ruta2;
+	
+	//@Scheduled(cron = "0 2 0 * * *", zone = "CST")
+	public void cleanTables() {
+		inventarioDesNCE.deleteAll();
+		usuariosPermitidos.cleanDescubrimietosUsuarios();
+	}
 	
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	//@Scheduled(cron = "0 2 0 * * *", zone = "CST")
@@ -156,14 +163,14 @@ public class DescubrimientoController extends Constantes {
 				}
 				List<CatOltsEntity> segmentOlts = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
 				CompletableFuture<GenericResponseDto> executeProcess = descubrimientoService
-						.getDescubrimiento(segmentOlts, idProceso, manual,usuario,false);
+						.getDescubrimiento(segmentOlts, idProceso, manual,usuario,false, "");
 				thredOlts.add(executeProcess);
 			}
 			return thredOlts;
 	}
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@PostMapping("/descubrimientoManual")
-	public GenericResponseDto descubrimientoManual(@RequestBody DescubrimientoManualDto datos) throws Exception {
+    public GenericResponseDto descubrimientoManual(@RequestBody DescubrimientoManualDto datos) throws Exception {
 
 		try {
 			ibitacoraEventos.save(new BitacoraEventosEntity(LocalDateTime.now().toString(),DES_MANUAL,datos.getUsuario(),DESC_EVENTO_MANUAL + datos.getOlts()));
@@ -195,31 +202,33 @@ public class DescubrimientoController extends Constantes {
 			return new GenericResponseDto(EJECUCION_ERROR, 1);
 		}
 		return new GenericResponseDto(EJECUCION_EXITOSA, 0);
+		
 	}
 	
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 	@GetMapping("/descubrimientoNCE/{idOlt}/{user}")
 	public GenericResponseDto descubrimientoNCE(@PathVariable("idOlt") Integer idOlt, @PathVariable("user") String user) throws Exception {
 		monitorPoleoNCEEntidad monitor=null;
+		String userName;
+		String ruta=ruta2;
 		try {
+			//Encontrar el registro del usuario
+			UsuariosPermitidosEntidad usuario =  usuariosPermitidos.getUsuario(user);
+			userName = usuario.getNombreUsuario();
+			ruta = ruta + userName + ".txt"; 
+					
+			File file = new File(ruta);
 			
-			File file = new File(ruta2);
-			
-			if(file.exists())
+			if(file.exists()) 
 				file.delete();
 						
-			util.crearArchivos(ruta2, util.prefixLog("Inicia el proceso de descubrimiento."));
+			util.crearArchivos(ruta, util.prefixLog("Inicia el proceso de descubrimiento."));
 			
 			monitor= monitorNCE.save(new monitorPoleoNCEEntidad(util.getDate(),"POLEO DE NCE, OLT: "+ idOlt,INICIO, idOlt));
 			//1. TODO: La limpieza de tabla se realizarà a media noche
 			tempNCE.deleteAll();
 			//2. TODOSe realizarà la limpieza de regstros por usuario en la noche
 			//3. TODO: En un areglo guardas los id del proceso de ejecucion en la tabla de usuarios 
-			
-			//Encontrar el registro del usuario
-			UsuariosPermitidosEntidad usuario =  usuariosPermitidos.getUsuario(user);
-			//UsuariosPermitidosEntidad usuario = usuarios.get(1);
-			
 			
 			//buscar si ya habìa realizado un descubrimiento sobre esa olt
 			List<DescubrimientoNCEUsuariosDto> descubrimientos = usuario.getDescubrimientos();
@@ -269,7 +278,7 @@ public class DescubrimientoController extends Constantes {
 				}
 				List<CatOltsEntity> segmentOlts = new ArrayList<CatOltsEntity>(olts.subList(i, limMax));
 				CompletableFuture<GenericResponseDto> executeProcess = descubrimientoService
-						.getDescubrimiento(segmentOlts, monitor.getId(), false,"", true);
+						.getDescubrimiento(segmentOlts, monitor.getId(), false,"", true, ruta);
 				thredOlts.add(executeProcess);
 			}
 			
@@ -288,7 +297,7 @@ public class DescubrimientoController extends Constantes {
 			
 			monitorNCE.save(monitor);
 			
-			util.crearArchivos(ruta2, util.prefixLog("Termina el proceso de descubrimiento."));
+			util.crearArchivos(ruta, util.prefixLog("Termina el proceso de descubrimiento."));
 		}catch (Exception e) {
 			if(monitor != null)
 				monitor.setFecha_fin(util.getDate());

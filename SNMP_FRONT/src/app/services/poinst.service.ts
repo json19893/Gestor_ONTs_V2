@@ -18,6 +18,8 @@ import { Actualizacion, ValidaUser } from '../detalleOnt/interfaces/atcualizacio
 export class pointService {
   public to: any;
 
+  public aceptadas!: [];
+
   constructor(private http: HttpClient) {
 
 
@@ -270,16 +272,13 @@ export class pointService {
     return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.DESASIGNA_BLOQUE_METRICA + idMetrica + "/block/" + idBloque, { headers });
   }
 
-  getArchivo(archivo: any): Observable<any> {
+  getArchivo(archivo: any, usuario:string): Observable<any> {
     var headers = new HttpHeaders({
       'mode': 'no-cors',
       'Access-Control-Allow-Origin': '*'
     });
-    return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.GET_ARCHIVO + "/" + archivo, { headers });
+    return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.GET_ARCHIVO + "/" + archivo + "/" + usuario, { headers });
   }
-
-
-
 
   cambios(idOlt: any): Observable<any> {
     var headers = new HttpHeaders({
@@ -354,12 +353,13 @@ export class pointService {
     var headers = new HttpHeaders({
       'mode': 'no-cors'
     });
-    return this.http.post<any>(AppUrlSettings.BASE_API_LOGIN + AppUrlSettings.POLEO_METRICA_OID, data, { headers });
+    return this.http.post<any>(AppUrlSettings.BASE_API + AppUrlSettings.POLEO_METRICA_OID, data, { headers });
   }
 
   poleoOlt(idOlt: number, usuario:string) {
     return this.http.get<{ sms: string, cod: number }>(AppUrlSettings.BASE_API_LOGIN + AppUrlSettings.GET_RECHAZADAS_OLT_NCE + `/${idOlt}/${usuario}`);
   }
+
 
   getAceptadosInventario(idOlt: number, ip: string, fechaIni: string, fechaFin: string, usuario:string) {
     const params = `/${idOlt}/${ip}/${usuario}/${fechaIni}/${fechaFin}`;
