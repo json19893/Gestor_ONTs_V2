@@ -200,7 +200,7 @@
                         <ng-container matColumnDef="fechaUltimaCaida">
                           <th mat-header-cell *matHeaderCellDef mat-sort-header> Fecha última caída</th>
                           <td mat-cell *matCellDef="let row"> 
-                            <span>{{row.fecha_ultima_caida | date: "dd/MM/yy hh:mm:ss"}}</span>
+                            <span>{{row.fecha_ultima_caida |textPipe}}</span>
               
                           </td>
                         </ng-container>
