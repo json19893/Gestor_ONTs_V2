@@ -23,7 +23,6 @@ export class DetalleActualizacionOltComponent implements OnInit {
   ngOnInit(): void {
    
     this._serviceDetalleActualizacion.getDetallesActualizacion().subscribe(data=>{
-      console.log("------------ ",data);
 
       this.listDetalleActualizacionOlts = data;
 
