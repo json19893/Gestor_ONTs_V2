@@ -100,10 +100,16 @@ public class DescubrimientoController extends Constantes {
 	@Value("${ruta.archivo.nce}")
 	private String ruta2;
 	
-	//@Scheduled(cron = "0 2 0 * * *", zone = "CST")
+	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@Scheduled(cron = "0 2 0 * * *", zone = "CST")
+	@GetMapping("/limpiezaNCE")
 	public void cleanTables() {
-		inventarioDesNCE.deleteAll();
-		usuariosPermitidos.cleanDescubrimietosUsuarios();
+		try{
+			inventarioDesNCE.deleteAll();
+			usuariosPermitidos.cleanDescubrimietosUsuarios();
+		}catch (Exception e) {
+			
+		}
 	}
 	
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
