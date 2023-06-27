@@ -6,6 +6,8 @@ import { OntResponse } from '../../interfaces/ResponseOnt';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { pointService } from 'src/app/services/poinst.service';
 import { poleoMetricaOidRequest } from 'src/app/model/poleoMetricaOidRequest';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 export interface OntElement {
   _id: string;
@@ -75,7 +77,9 @@ export class DialogInventarioComponent implements OnInit, AfterViewChecked {
 
   constructor(public dialogRef: MatDialogRef<String>,
     @Inject(MAT_DIALOG_DATA) public obj: { olt: Olts, fecInic:string, fecFinal:string, usuario:string, detalle:boolean, logs:boolean},
-    private service: pointService) {
+    private service: pointService,
+    private spinner: NgxSpinnerService,
+    private _snackBar: MatSnackBar) {
       
       dialogRef.disableClose = true;
   }
@@ -127,6 +131,10 @@ export class DialogInventarioComponent implements OnInit, AfterViewChecked {
           this.demo1TabIndex=1; 
           this.dialogRef.disableClose = false;   
         },()=>{clearInterval( this.interval); this.dialogRef.disableClose = false;},()=>{clearInterval( this.interval); this.dialogRef.disableClose = false;} );
+      }else{
+          this._snackBar.open("En estos momentos se encuentra en proceso una sincronización ", "Cerrar", {
+          duration: 4000
+        });
       }
     }, ()=>{clearInterval( this.interval); this.dialogRef.disableClose = false;},()=>{clearInterval( this.interval); this.dialogRef.disableClose = false;});
 
@@ -208,11 +216,18 @@ export class DialogInventarioComponent implements OnInit, AfterViewChecked {
   }
 
   actualizarFrame(serie:string){
+    this.spinner.show();
+    let  olt = this.obj.olt;  
+    this.service.getAceptadosInventario(olt.id_olt, olt.ip, this.obj.fecInic, this.obj.fecFinal, this.obj.usuario).subscribe((resp) => {
+      this.dataSource = new MatTableDataSource<any>(resp); 
+      this.data =  this.dataSource.data.length === 0;
+      this.spinner.hide();  
+    },()=>{this.spinner.hide(); });
       
-    this.requestPoleoOid=new poleoMetricaOidRequest(serie,13);      
-    this.service.poleoMetricaOid(this.requestPoleoOid).subscribe(
-        res =>{}
-    )
+    // this.requestPoleoOid=new poleoMetricaOidRequest(serie,13);      
+    // this.service.poleoMetricaOid(this.requestPoleoOid).subscribe(
+    //     res =>{}
+    // )
   }
 
 

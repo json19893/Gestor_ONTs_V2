@@ -357,7 +357,7 @@ export class pointService {
   }
 
   poleoOlt(idOlt: number, usuario:string) {
-    return this.http.get<{ sms: string, cod: number }>(AppUrlSettings.BASE_API_LOGIN + AppUrlSettings.GET_RECHAZADAS_OLT_NCE + `/${idOlt}/${usuario}`);
+    return this.http.get<{ sms: string, cod: number }>(AppUrlSettings.BASE_API + AppUrlSettings.GET_RECHAZADAS_OLT_NCE + `/${idOlt}/${usuario}`);
   }
 
 
