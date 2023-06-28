@@ -119,7 +119,7 @@ public class monitorController extends constantes {
     public responseRegionDto getOltsByRegion(@PathVariable("idRegion") Integer idRegion,
             @PathVariable("tipo") String tipo) throws Exception {
         responseRegionDto response = new responseRegionDto();
-        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0 || tipo.compareTo("S") == 0) {
             try {
                 response = monitorServicio.getOltsByRegion(idRegion, tipo, false);
             } catch (Exception e) {
@@ -145,7 +145,7 @@ public class monitorController extends constantes {
     public List<inventarioOntsEntidad> getOntsByOlts(@PathVariable("idOlt") Integer idOlt,
             @PathVariable("estatus") Integer estatus, @PathVariable("tipo") String tipo) throws Exception {
 
-        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0 || tipo.compareTo("S") == 0) {
             return monitorServicio.getOntsByOlts(idOlt, estatus, tipo);
         } else {
             return null;
@@ -157,7 +157,7 @@ public class monitorController extends constantes {
     @RequestMapping(value = "/getTotalesByOlt/{idOlt}/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public totalesOltsDto getTotalesByOlt(@PathVariable("idOlt") Integer idOlt, @PathVariable("tipo") String tipo)
             throws Exception {
-        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0 || tipo.compareTo("S") == 0) {
             return monitorServicio.getTotalesByOlt(idOlt, tipo);
         } else {
             return null;
@@ -176,7 +176,7 @@ public class monitorController extends constantes {
     @RequestMapping(value = "/finOntsByIdAll/{idOlt}/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<inventarioOntsEntidad> finOntsByIdAll(@PathVariable("idOlt") Integer idOlt,
             @PathVariable("tipo") String tipo) throws Exception {
-        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0 || tipo.compareTo("S") == 0) {
             return monitorServicio.finOntsByIdAll(idOlt, tipo);
         } else {
             return null;
@@ -214,13 +214,14 @@ public class monitorController extends constantes {
     @RequestMapping(value = "/getTotalesByTecnologia/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<datosRegionDto> getTotalesByTecnologia(@PathVariable("tipo") String tipo) throws Exception {
 
-        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0 || tipo.compareTo("S") == 0) {
             TotalesByTecnologiaEntidad resumenExist = totalesByTecnologiaRepository.getEntity(tipo);
             if(resumenExist != null){
                 return resumenExist.getResumenStatusOnts();
             }
             //Si no existe el resumen se manda a llamar directamente la logica del negocio:
-            return monitorServicio.getTotalesByTecnologia(tipo);
+            List<datosRegionDto> response = monitorServicio.getTotalesByTecnologia(tipo);
+            return response;
         }
         return null;
     }
@@ -236,7 +237,7 @@ public class monitorController extends constantes {
     public totalesActivoDto getTotalesActivo(@PathVariable("tipo") String tipo) throws Exception {
         LocalTime timeRequestClient = utils.getDateTime().toLocalTime();
 
-        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0||tipo.compareTo("S") == 0) {
             EnvoltorioOntsTotalesActivoEntidad resumenExist = repositorioOntEstatusTotales.getEntity(tipo.toUpperCase());
             if(resumenExist != null){
                 return resumenExist.getTotalesOntsActivas();
@@ -779,14 +780,14 @@ public class monitorController extends constantes {
 
 
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-    @GetMapping("/detalleActualizacionOlt")
-    public ResponseEntity<DetalleActualizacionesOltsPojo> getDetalleActualizacionOlt() throws Exception {
+    @GetMapping("/detalleActualizacionOlt/{ipOlt}")
+    public ResponseEntity<DetalleActualizacionesOltsPojo> getDetalleActualizacionOlt(@PathVariable("ipOlt") String ipOlt) throws Exception {
 
         ResponseEntity responseServerHttp = new ResponseEntity("", HttpStatus.OK);
 
        List<DetalleActualizacionesOltsPojo> listDetalle = new ArrayList<DetalleActualizacionesOltsPojo>();
         try {
-            listDetalle = consulta.getDetalleActualizacionOlt();
+            listDetalle = consulta.getDetalleActualizacionOlt(ipOlt);
 
             if (listDetalle.isEmpty()) {
 

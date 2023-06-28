@@ -20,5 +20,5 @@ public interface IconsultaService {
 	List<String> getArchivo(Integer archivo, String usuario);
     responseDto actualizaOnt(String serie,Integer idOlt);
 
-    List<DetalleActualizacionesOltsPojo> getDetalleActualizacionOlt() throws InvocationTargetException, IllegalAccessException;
+    List<DetalleActualizacionesOltsPojo> getDetalleActualizacionOlt(String ipOlt) throws InvocationTargetException, IllegalAccessException;
 }

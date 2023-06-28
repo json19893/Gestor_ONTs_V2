@@ -218,7 +218,23 @@ export class HomeComponent implements OnInit {
 
           }
            }
-        }
+        } else if (this.mostrar == 'S' ) {
+          for(let d in res.totalesRegionSA){
+            if (res.totalesRegionSA[d].total_onts>0|| idRegion==11){
+             dat={
+               nombre: res.totalesRegionSA[d].nombre,
+               id_olt:res.totalesRegionSA[d].id_olt ,
+               ip:res.totalesRegionSA[d].ip,
+               totalOnts:res.totalesRegionSA[d].total_onts,
+               tecnologia:res.totalesRegionSA[d].tecnologia,
+               selected:false
+             }
+             olts.push(dat);
+             localStorage.setItem("dataRegion", JSON.stringify(olts));
+
+          }
+           }
+          }
        
        this.dataUp.paginator = this.paginator;
        this.spinner.hide();

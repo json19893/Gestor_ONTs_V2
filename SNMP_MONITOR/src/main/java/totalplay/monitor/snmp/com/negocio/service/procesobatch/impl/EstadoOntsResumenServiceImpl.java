@@ -42,17 +42,20 @@ public class EstadoOntsResumenServiceImpl implements IEstadoOntsResumenService {
             CompletableFuture<EnvoltorioAuxiliarDto> estatusTotales = obtenerResumenAltasOnts(ONT_TOTALES);
             CompletableFuture<EnvoltorioAuxiliarDto> estatusEmpresariales = obtenerResumenAltasOnts(ONT_EMPRESARIALES);
             CompletableFuture<EnvoltorioAuxiliarDto> estatusVips = obtenerResumenAltasOnts(ONT_VIP);
+            CompletableFuture<EnvoltorioAuxiliarDto> estatusSA = obtenerResumenAltasOnts(ONT_SA);
 
             // Wait until they are all done
-            CompletableFuture.allOf(estatusTotales, estatusEmpresariales, estatusVips).join();
+            CompletableFuture.allOf(estatusTotales, estatusEmpresariales, estatusVips, estatusSA).join();
 
             EnvoltorioAuxiliarDto resumenEstadoOntTotales = estatusTotales.get();
             EnvoltorioAuxiliarDto resumenEstadoOntEmpresariales = estatusEmpresariales.get();
             EnvoltorioAuxiliarDto resumenEstadoOntVip = estatusVips.get();
+            EnvoltorioAuxiliarDto resumenEstadoOntSA = estatusSA.get();
 
             persistirInformacion(adapterEntidad(resumenEstadoOntTotales));
             persistirInformacion(adapterEntidad(resumenEstadoOntEmpresariales));
             persistirInformacion(adapterEntidad(resumenEstadoOntVip));
+            persistirInformacion(adapterEntidad(resumenEstadoOntSA));
 
             System.out.println("Finalizo proceso para obtener el estatus los totales de todas las onts");
         } catch (Exception ex) {
@@ -108,6 +111,12 @@ public class EstadoOntsResumenServiceImpl implements IEstadoOntsResumenService {
                 consultar = "V";
                 descripcion_corta = "Vip";
                 descripcion_larga = "Resumen - Conteo: Estado de las Ont's Vip (Agrupadas por Tipo Vip)";
+                break;
+            case ONT_SA:
+                //Settea los datos:
+                consultar = "S";
+                descripcion_corta = "SA";
+                descripcion_larga = "Resumen - Conteo: Estado de las Ont's Sistemas Administrados (Agrupadas por Tipo S)";
                 break;
         }
         //Estructura de datos para almacenar datos resultantes del proceso:

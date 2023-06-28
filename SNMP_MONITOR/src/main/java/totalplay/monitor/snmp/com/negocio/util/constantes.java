@@ -10,6 +10,7 @@ public class constantes {
 	public static final String ONT_TOTALES="resumen_activas";
 	public static final String ONT_RESIDENCIALES="resumen_activas_residenciales";
 	public static final String ONT_VIP="resumen_activas_vip";
+	public static final String ONT_SA="resumen_activas_sa";
 	public static final String ONT_EMPRESARIALES="resumen_activas_empresariales";
 	public static final String ONT_SERVICIOS_ADMINISTRADOS = "resumen_servicios_administrados";
 	public static final String MODULO_METRICAS = "MODULO METRICAS";

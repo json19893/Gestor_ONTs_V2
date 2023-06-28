@@ -17,6 +17,7 @@ import { poleoManual } from '../model/poleoManual';
 import * as FileSaver from "file-saver";
 import { OntComponentDialog } from "./components/ont/ont.component";
 import { DialogInventarioComponent } from "./components/dialog-inventario/dialog-inventario.component";
+import { DetalleActualizacionOltComponent } from "../detalle-actualizacion-olt/detalle-actualizacion-olt.component";
 const EXCEL_TYPE = 'application/vnd.openxmlformats- officedocument.spreadsheetml.sheet;charset=UTF-8';
 const EXCEL_EXTENSION = '.xlsx';
 interface Olts {
@@ -294,6 +295,7 @@ export class ConsultaOltsComponent implements OnInit {
         () => this.getDataTable()
     )
   }
+  
 
   applyFilter(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -323,6 +325,31 @@ export class ConsultaOltsComponent implements OnInit {
     
   }
 
+
+  detalleActualizacionOlt(oltObj: Olts){
+
+    this.opendetalleActualizacionOlt(oltObj);
+  }
+
+  opendetalleActualizacionOlt(olt: Olts) {
+    
+    let wrapper ={
+      ipOlt: olt.ip
+    }
+
+    const dialogConfig = new MatDialogConfig<any>();
+    dialogConfig.disableClose = false;
+    dialogConfig.autoFocus = true;
+    dialogConfig.height = '90vh';
+    dialogConfig.width = '130vw';
+    dialogConfig.data = wrapper;
+    
+    const dialogRef = this.dialog.open(DetalleActualizacionOltComponent, dialogConfig);
+
+    dialogRef.afterClosed().subscribe(
+        () => this.getDataTable()
+    )
+  }
 }
 
 @Component({
