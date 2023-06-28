@@ -36,7 +36,7 @@ public class UpdateOLTsNCEServiceImpl implements IUpdateOLTsNCEService {
     
     
 	@Override
-	@Scheduled(fixedDelay = 10000)
+	//@Scheduled(fixedDelay = 10000)
 	public void updateOlts() {
     	System.out.println("Inicia el proceso de actualización de estatus nce");
     	try {

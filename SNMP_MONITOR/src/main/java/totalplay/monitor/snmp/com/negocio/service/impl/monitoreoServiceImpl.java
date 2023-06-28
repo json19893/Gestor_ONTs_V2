@@ -115,7 +115,7 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 			totalesRegion = catOltsRepositorio.getTotalesTecnologiaRegion(idRegion);
 		} else if(tipo.equals("V")){
 			totalesRegion = catOltsRepositorio.getTotalesTecnologiaRegionVips(idRegion);
-		} else {
+		} else if(tipo.equals("S") || tipo.equals("")){
 			totalesRegion = catOltsRepositorio.getTotalesTecnologiaRegionServiciosAdministrados(idRegion);
 		}
 		
@@ -201,7 +201,7 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 				response.setTotalesRegionEmp(catOltsRepositorio.getDataRegionEmpresariales(idRegion));
 			else if(tipo.equals("V"))
 				response.setTotalesRegionVips(catOltsRepositorio.getDataRegionVips(idRegion));
-			else
+			else if(tipo.equals("S") || tipo.equals(""))
 				response.setTotalesRegionSA(catOltsRepositorio.getDataRegionSA(idRegion));
 		}	
 
@@ -237,6 +237,13 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 			}else{
 				return invOLts.finOntsByIdOltsEmpDown(idOlt,tipo);
 			}
+		}else if(tipo.compareTo("S")==0){
+			if(estatus==1){
+				List<inventarioOntsEntidad> res = invOLts.finOntsByIdOltsSa(idOlt, estatus);
+				return res;
+			}else{
+				return invOLts.finOntsByIdOltsDownSa(idOlt);
+			}
 		}else {
 			if(estatus==1){
 			return invOLts.finOntsByIdOltsVips(idOlt, estatus);
@@ -256,6 +263,8 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 					onts= invOLts.finOntsByIdAll(idOlt);
 				}else if (tipo.compareTo("E")==0) {
 					onts= invOLts.finOntsByIdAllEmp(idOlt);
+				}else if (tipo.compareTo("S")==0) {
+					onts= invOLts.finOntsByIdAllSa(idOlt);
 				}else {
 					onts= invOLts.finOntsByIdAllVips(idOlt);
 				}
@@ -352,7 +361,8 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 			}else if(tipo.compareTo("V") == 0){
 				return inventario.getTotalesRegionesVips();
 			}else if(tipo.compareTo("S") == 0){
-				return inventario.getTotalesByTecnologiaSA();
+				List<datosRegionDto> result = inventario.getTotalesByTecnologiaSA();
+				return result;
 			}
 		}catch(Exception e) {
 			log.error("error", e);
@@ -401,11 +411,17 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 			totalesRegion = catOltsRepositorio.getTotalesTecnologiaTSA();
 		}
 
-		result = inventario.getAllOntEmp();
+		if(tipo.compareTo("S") == 0){
+			result = inventario.getAllOntEmpSA();
+		}else {
+			result = inventario.getAllOntEmp();
+		}
+
 		
 		if(result != null) {
 			
 			totalesOntsEmpDto tecnologia =new totalesOntsEmpDto();
+
 			tecnologia.setTecnologia("HUAWEI");
 			Integer huawei= result.indexOf(tecnologia);
 			tecnologia.setTecnologia("ZTE");
@@ -482,10 +498,13 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
            totalOnts= totaEmpresarial;
 	    }else if(tipo.equals("V")) {
 			response.setConteoPdmOnts(detalleAct.getDetalleVips(fechaDia).size());
-			log.info("###################################total vip #######################################"+response.getConteoPdmOnts());
-	    	totalOnts =  inventario.finOntsByClasificionV();
-
-	    }else {
+			log.info("###################################total vip #######################################" + response.getConteoPdmOnts());
+			totalOnts = inventario.finOntsByClasificionV();
+		}else if(tipo.equals("S")) {
+				response.setConteoPdmOnts(detalleAct.getDetalleSA(fechaDia).size());
+				log.info("###################################total SA #######################################"+response.getConteoPdmOnts());
+				totalOnts =  inventario.finOntsByClasificionSA();
+	    } else {
 	    	 totalOnts = inventario.finOntsByTotal()+inventarioPdm.finOntsByTotalT();
 	    	 ///response.setConteoPdmOnts( inventarioPdm.finOntsByTotalT()+ inventario.findTotalCambiosT());
 			int detalle = detalleAct.getDetalle(fechaDia).size();
@@ -549,6 +568,13 @@ public class monitoreoServiceImpl extends utils implements ImonitorService {
 				
 				//response.setCambios(historicoDiferencias.findTotalCambiosOltEmp(idOlt));
 				
+			}else if(tipo.compareTo("S")==0){
+				response.setArriba(inventario.finOntsByTotalEstatusSa(idOlt, 1)+inventarioPdm.finOntsByTotalEstatusByTipoSa(idOlt, 1));
+				response.setAbajo(inventario.finOntsByTotalEstatusSa(idOlt, 2)+inventarioPdm.finOntsByTotalEstatusByTipoSa(idOlt, 2)+inventarioPdm.finOntsByTotalEstatusByTipoSa(idOlt, 0));
+				response.setTotalOlt(inventario.finOntsByTotalOltSa(idOlt)+inventarioPdm.finOntsByTotalOltByTipo(idOlt,"E"));
+
+				//response.setCambios(historicoDiferencias.findTotalCambiosOltEmp(idOlt));
+
 			}else {
 				response.setTotalOlt(inventario.finOntsByTotalOltVip(idOlt)+inventarioPdm.finOntsByTotalOltByTipo(idOlt,"V"));
 				response.setArriba(inventario.finOntsByTotalEstatusVip(idOlt, 1)+inventarioPdm.finOntsByTotalEstatusByTipo(idOlt, 1,"V"));

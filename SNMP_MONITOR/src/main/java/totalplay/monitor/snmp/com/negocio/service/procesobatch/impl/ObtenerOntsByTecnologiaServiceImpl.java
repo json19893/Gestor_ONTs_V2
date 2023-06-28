@@ -42,17 +42,20 @@ public class ObtenerOntsByTecnologiaServiceImpl implements IObtenerOntsByTecnolo
             CompletableFuture<EnvoltorioAuxiliarOntsByTecnologiaDto> ontsTotales = obtenerResumenOntsByTecnologia(ONT_TOTALES);
             CompletableFuture<EnvoltorioAuxiliarOntsByTecnologiaDto> ontsEmpresariales = obtenerResumenOntsByTecnologia(ONT_EMPRESARIALES);
             CompletableFuture<EnvoltorioAuxiliarOntsByTecnologiaDto> ontsVips = obtenerResumenOntsByTecnologia(ONT_VIP);
+            CompletableFuture<EnvoltorioAuxiliarOntsByTecnologiaDto> ontsSA = obtenerResumenOntsByTecnologia(ONT_SA);
 
             // Wait until they are all done
-            CompletableFuture.allOf(ontsTotales, ontsEmpresariales, ontsVips).join();
+            CompletableFuture.allOf(ontsTotales, ontsEmpresariales, ontsVips, ontsSA).join();
 
             EnvoltorioAuxiliarOntsByTecnologiaDto resumenEstadoOntTotales = ontsTotales.get();  // ONT_TOTALES
             EnvoltorioAuxiliarOntsByTecnologiaDto resumenEstadoOntEmpresariales = ontsEmpresariales.get();  // ONT_EMPRESARIALES
             EnvoltorioAuxiliarOntsByTecnologiaDto resumenEstadoOntVip = ontsVips.get();  // ONT_VIP
+            EnvoltorioAuxiliarOntsByTecnologiaDto resumenEstadoOntSA = ontsSA.get();  // ONT_VIP
 
             persistirInformacion(adapterEntidad(resumenEstadoOntTotales));
             persistirInformacion(adapterEntidad(resumenEstadoOntEmpresariales));
             persistirInformacion(adapterEntidad(resumenEstadoOntVip));
+            persistirInformacion(adapterEntidad(resumenEstadoOntSA));
 
             //System.out.println("El proceso actualizacion del resumen: estatus de onts tomo: " +  df.format(minutos)  + " segundos en terminar la ejecuccion.");
             System.out.println("Finalizo el proceso para consultar los totales de las onts por tecnologia");
@@ -105,6 +108,12 @@ public class ObtenerOntsByTecnologiaServiceImpl implements IObtenerOntsByTecnolo
                 consultar = "V";
                 descripcion_corta = "Vip";
                 descripcion_larga = "Resumen del estado de las onts Vips agrupada por: tipo y tecnologia";
+                break;
+            case ONT_SA:
+                //Settea los datos:
+                consultar = "S";
+                descripcion_corta = "Sistemas Administrados";
+                descripcion_larga = "Resumen del estado de las onts SA agrupada por: tipo y tecnologia";
                 break;
         }
 

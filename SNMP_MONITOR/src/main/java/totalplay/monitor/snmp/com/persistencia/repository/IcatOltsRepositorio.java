@@ -1067,7 +1067,7 @@ public interface IcatOltsRepositorio extends MongoRepository<catOltsEntidad, Str
 					+ "  as: 'total'\n"
 					+ " }\n"
 					+ "}"
-			, "{$match: { 'total': {$ne:[]} } }"
+			, "{$match: { 'total': {$ne:[]} } }, {$match:{sa:true}},"
 			,"{$group: {\n"
 			+ "  _id: {\n"
 			+ "   tecnologia: '$tecnologia',\n"

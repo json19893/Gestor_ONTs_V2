@@ -31,7 +31,8 @@ export interface up {
     selected:boolean;
     fecha_ultima_caida: string;
     olts:oltsAsignacion[]
-    settings:boolean
+    settings:boolean,
+    sa: boolean
   }
 
   export interface clasificacion {
@@ -247,7 +248,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                 fecha_ultima_caida: res[d].lastDownTime=='0-0-0,0:0:0.0,.0:0'?'1 ':res[d].lastDownTime,
                 selected:false,
                 olts:[],
-                settings:res[d].oid==null?true:res[d].oid==""?true:res[d].oid==undefined?true:false
+                settings:res[d].oid==null?true:res[d].oid==""?true:res[d].oid==undefined?true:false,
+                sa: res[d].sa
               }
               ELEMENT_DATA.push(dat);
             }
@@ -303,7 +305,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                 fecha_ultima_caida: res.listOnts[0].lastDownTime,
                 selected:false,
                 olts:[],
-                settings: res.listOnts[0].oid==null?true: res.listOnts[0].oid==""?true: res.listOnts[0].oid==undefined?true:false
+                settings: res.listOnts[0].oid==null?true: res.listOnts[0].oid==""?true: res.listOnts[0].oid==undefined?true:false,
+                sa: res[d].sa
               }
               ELEMENT_DATA.push(dat);
            }
@@ -369,7 +372,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
             desEstatus:res[d].descripcionAlarma,
             selected:res[d].selected,
             olts:[],
-            settings:res[d].oid!=null?true:res[d].oid!=""?true:res[d].oid==undefined?true:false
+            settings:res[d].oid!=null?true:res[d].oid!=""?true:res[d].oid==undefined?true:false,
+            sa: res[d].sa
           }
           ELEMENT_DATA.push(dat);
         }
@@ -419,7 +423,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                  fecha_ultima_caida: res[d].lastDownTime=='0-0-0,0:0:0.0,.0:0'?'1 ':res[d].lastDownTime,
                  selected:false,
                  olts:[],
-                 settings:res[d].oid!=null?true:res[d].oid!=""?true:res[d].oid==undefined?true:false
+                 settings:res[d].oid!=null?true:res[d].oid!=""?true:res[d].oid==undefined?true:false,
+                 sa: res[d].sa
               }
               ELEMENT_DATA.push(dat);
             }
@@ -456,7 +461,8 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                  fecha_ultima_caida: "---",
                  selected:false,
                  olts:res.onts[d].oltList,
-                 settings:res[d].oid!=null?true:res[d].oid!=""?true:res[d].oid==undefined?true:false
+                 settings:res[d].oid!=null?true:res[d].oid!=""?true:res[d].oid==undefined?true:false,
+                 sa: res[d].sa
               }
               ELEMENT_DATA.push(dat);
             }
@@ -526,10 +532,12 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
                 fecha_ultima_caida: res[d].lastDownTime,
                 selected:false,
                 olts:[],
-                settings:res[d].oid===null?true:res[d].oid==""?true:res[d].oid==undefined?true:false
+                settings:res[d].oid===null?true:res[d].oid==""?true:res[d].oid==undefined?true:false,
+                sa: res[d].sa
               }
               ELEMENT_DATA.push(dat);
             }
+            console.log({ELEMENT_DATA});
             this.dataUp.paginator = this.paginator;
             this.spinner.hide();
           },

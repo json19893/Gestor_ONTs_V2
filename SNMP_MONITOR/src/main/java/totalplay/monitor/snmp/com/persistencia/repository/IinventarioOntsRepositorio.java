@@ -48,6 +48,9 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 	
 	@Query(value = " {'vip':1}",count = true)
 	Integer finOntsByClasificionV();
+
+	@Query(value = " {sa:true}",count = true)
+	Integer finOntsByClasificionSA();
 	
 	@Query(value = "{'tipo':'E'}",count = true)
 	Integer  findCatOltsByTipo();
@@ -66,9 +69,15 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 
 	@Query(value = " {'id_olt': ?0, 'tipo': 'E' }",count = true)
 	Integer finOntsByTotalOltEmp(@Param("idOlt") Integer idOlt);
+
+	@Query(value = " {'id_olt': ?0, 'sa': true }",count = true)
+	Integer finOntsByTotalOltSa(@Param("idOlt") Integer idOlt);
 	
 	@Query(value = " {'id_olt': ?0, 'estatus': ?1, 'tipo': 'E' }",count = true)
 	Integer finOntsByTotalEstatusEmp(@Param("idOlt") Integer idOlt,@Param("estatus") Integer estatus);
+
+	@Query(value = " {'id_olt': ?0, 'estatus': ?1, 'sa': true }",count = true)
+	Integer finOntsByTotalEstatusSa(@Param("idOlt") Integer idOlt,@Param("estatus") Integer estatus);
 	
 	@Query(value = " {'id_olt': ?0, 'vip': 1 }",count = true)
 	Integer finOntsByTotalOltVip(@Param("idOlt") Integer idOlt);
@@ -203,7 +212,48 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 			+ "    $unset: ['datos', '_id'],\n"
 			+ "  }"})
 	List<totalesOntsEmpDto> getAllOntEmp();
-		
+	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}"
+			," {$match: {tipo: 'E'}},{$match: {sa: 'true'}}"
+			,"{\n"
+			+ "    $group: {\n"
+			+ "      _id: {\n"
+			+ "        tecnologia: '$tecnologia',\n"
+			+ "        estatus: '$estatus',\n"
+			+ "      },\n"
+			+ "      count: {$sum: 1,},\n"
+			+ "    },\n"
+			+ "  }\n"
+			, "  {\n"
+			+ "    $group: {\n"
+			+ "      _id: '$_id.tecnologia',\n"
+			+ "      total: {$sum: '$count',},\n"
+			+ "      datos: {\n"
+			+ "        $push: {\n"
+			+ "          estatus: '$_id.estatus',\n"
+			+ "          count: '$count',\n"
+			+ "        },\n"
+			+ "      },\n"
+			+ "    },\n"
+			+ "  }"
+			,"{\n"
+			+ "    $set: {\n"
+			+ "      arriba: {$ifNull: [{$filter: {input: '$datos',cond: {$eq: ['$$this.estatus', 1],},},},0],},\n"
+			+ "      abajo: {$ifNull: [{$filter: {input: '$datos',cond: {$eq: ['$$this.estatus', 2],},},},0,],},\n"
+			+ "      sin_informacion: {$ifNull: [{$filter: {input: '$datos',cond: {$eq: ['$$this.estatus', 0],},},},0,],},\n"
+			+ "    },\n"
+			+ "  }"
+			,"{\n"
+			+ "    $set: {\n"
+			+ "		 tecnologia: {$ifNull: ['$_id',''],},\n	"
+			+ "      arriba: {$ifNull: [{$arrayElemAt: ['$arriba.count', 0],},NumberInt(0),],},\n"
+			+ "      abajo: {$ifNull: [{$arrayElemAt: ['$abajo.count', 0],},NumberInt(0),],},\n"
+			+ "      sin_informacion: {$ifNull: [{$arrayElemAt: ['$sin_informacion.count', 0],},NumberInt(0),],},\n"
+			+ "    },\n"
+			+ "  }"
+			,"{\n"
+			+ "    $unset: ['datos', '_id'],\n"
+			+ "  }"})
+	List<totalesOntsEmpDto> getAllOntEmpSA();
 	@Aggregation(pipeline = { 
 			"{$match: {tipo: 'E'}}"
 			,"{$group: {_id: {id_region: '$id_region',estatus: '$estatus'},\n"
@@ -727,7 +777,7 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 			List<responseOltsOntsDto> getOltsOnts();
 
 	@Aggregation(pipeline = {
-			"{$unionWith: 'tb_inventario_onts_pdm'}"
+			"{$match: { sa: true }},{$unionWith: {coll:'tb_inventario_onts_pdm', pipeline: [{$match: { sa: true }}]}}"
 			," { '$group': {\n"
 			+ "        '_id': {\n"
 			+ "            'id_region': '$id_region',\n"
@@ -753,7 +803,7 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 			+ "			let: { region: '$_id'},\n"
 			+ "			\n"
 			+ "			pipeline: [\n"
-			+ "                 {$match: { SA: true }},{ '$group': {\n"
+			+ "                 {$match: { sa: true }},{ '$group': {\n"
 			+ "                    '_id': {\n"
 			+ "                        'id_region': '$id_region',\n"
 			+ "                        'olts':'$id_olt'\n"
@@ -799,7 +849,7 @@ public interface IinventarioOntsRepositorio extends MongoRepository<inventarioOn
 			+ "		'$lookup':{\n"
 			+ "			from: 'tb_historico_diferencias',\n"
 			+ "			let: { region: '$_id'},			\n"
-			+ "			pipeline: [\n"
+			+ "			pipeline: [{ $match: { sa: true}}\n,"
 			+ "              {\n"
 			+ "                    '$group': {\n"
 			+ "                            '_id': '$id_region', \n"

@@ -119,7 +119,10 @@
                         <table mat-table [dataSource]="dataUp" multiTemplateDataRows matSort class="mat-elevation-z8" >
                         <ng-container matColumnDef="tipo">
                           <th mat-header-cell *matHeaderCellDef mat-sort-header > Tipo </th>
-                          <td mat-cell *matCellDef="let row" > <img *ngIf="row.selected" class="icon-avata" src="./assets/img/flecha-derecha.png"/>{{row.tipo}}</td>
+                          <td mat-cell *matCellDef="let row" > 
+                            <img *ngIf="row.selected" class="icon-avata" src="./assets/img/flecha-derecha.png"/>
+                            {{row.sa ? 'S':row.tipo}}
+                          </td>
                         </ng-container>
 
                          <!-- Progress Column -->

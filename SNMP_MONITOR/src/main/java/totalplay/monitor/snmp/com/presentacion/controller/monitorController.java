@@ -114,7 +114,7 @@ public class monitorController extends constantes {
     public responseRegionDto getOltsByRegion(@PathVariable("idRegion") Integer idRegion,
             @PathVariable("tipo") String tipo) throws Exception {
         responseRegionDto response = new responseRegionDto();
-        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0 || tipo.compareTo("S") == 0) {
             try {
                 response = monitorServicio.getOltsByRegion(idRegion, tipo, false);
             } catch (Exception e) {
@@ -140,7 +140,7 @@ public class monitorController extends constantes {
     public List<inventarioOntsEntidad> getOntsByOlts(@PathVariable("idOlt") Integer idOlt,
             @PathVariable("estatus") Integer estatus, @PathVariable("tipo") String tipo) throws Exception {
 
-        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0 || tipo.compareTo("S") == 0) {
             return monitorServicio.getOntsByOlts(idOlt, estatus, tipo);
         } else {
             return null;
@@ -152,7 +152,7 @@ public class monitorController extends constantes {
     @RequestMapping(value = "/getTotalesByOlt/{idOlt}/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public totalesOltsDto getTotalesByOlt(@PathVariable("idOlt") Integer idOlt, @PathVariable("tipo") String tipo)
             throws Exception {
-        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0 || tipo.compareTo("S") == 0) {
             return monitorServicio.getTotalesByOlt(idOlt, tipo);
         } else {
             return null;
@@ -171,7 +171,7 @@ public class monitorController extends constantes {
     @RequestMapping(value = "/finOntsByIdAll/{idOlt}/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public List<inventarioOntsEntidad> finOntsByIdAll(@PathVariable("idOlt") Integer idOlt,
             @PathVariable("tipo") String tipo) throws Exception {
-        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0) {
+        if (tipo.compareTo("T") == 0 || tipo.compareTo("E") == 0 || tipo.compareTo("V") == 0 || tipo.compareTo("S") == 0) {
             return monitorServicio.finOntsByIdAll(idOlt, tipo);
         } else {
             return null;
