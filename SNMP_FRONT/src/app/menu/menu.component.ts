@@ -76,7 +76,7 @@ public ses:any;
   showSubmenu: boolean = false;
   showSubmenu2: boolean = false;
   isShowing = false;
-
+  public isSistemaAdministrado: boolean = false;
   public vips: any;
   clasificacion: string = '';
 
@@ -111,7 +111,9 @@ public ses:any;
     }
     this.mostrar = localStorage.getItem('mostrar'); // se creo una variable en localStorage, con Get es para mostrar 
     this.usuario = localStorage.getItem('usuario');
-   
+    if(this.mostrar === "S"){
+        this.isSistemaAdministrado = true;
+    }
     if (this.mostrar == 'E') {
       this.checked = true;
       this.clasificacion = 'Emp';
