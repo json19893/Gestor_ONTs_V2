@@ -1,11 +1,9 @@
 package totalplay.monitor.snmp.com.negocio.service.impl;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 
 import java.lang.reflect.InvocationTargetException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -516,11 +514,11 @@ public class consultaServiceImpl extends utils implements IconsultaService {
 	}
 
 	@Override
-	public List<DetalleActualizacionesOltsPojo> getDetalleActualizacionOlt() throws InvocationTargetException, IllegalAccessException {
+	public List<DetalleActualizacionesOltsPojo> getDetalleActualizacionOlt(String ipOlt) throws InvocationTargetException, IllegalAccessException {
 		List<DetalleActualizacionesOltsPojo> list = new ArrayList<>();
 		DetalleActualizacionesOltsPojo obj = null;
 
-		for (DetalleActualizacionesOltsEntity det : detalleActualizacionesOltsRepository.findAll() ){
+		for (DetalleActualizacionesOltsEntity det : detalleActualizacionesOltsRepository.findByIp(ipOlt) ){
 			obj = new DetalleActualizacionesOltsPojo();
 			BeanUtils.copyProperties(obj,det);
 			list.add(obj);

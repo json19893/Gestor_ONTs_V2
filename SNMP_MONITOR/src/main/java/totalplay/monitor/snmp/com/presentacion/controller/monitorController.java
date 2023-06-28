@@ -779,14 +779,14 @@ public class monitorController extends constantes {
 
 
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
-    @GetMapping("/detalleActualizacionOlt")
-    public ResponseEntity<DetalleActualizacionesOltsPojo> getDetalleActualizacionOlt() throws Exception {
+    @GetMapping("/detalleActualizacionOlt/{ipOlt}")
+    public ResponseEntity<DetalleActualizacionesOltsPojo> getDetalleActualizacionOlt(@PathVariable("ipOlt") String ipOlt) throws Exception {
 
         ResponseEntity responseServerHttp = new ResponseEntity("", HttpStatus.OK);
 
        List<DetalleActualizacionesOltsPojo> listDetalle = new ArrayList<DetalleActualizacionesOltsPojo>();
         try {
-            listDetalle = consulta.getDetalleActualizacionOlt();
+            listDetalle = consulta.getDetalleActualizacionOlt(ipOlt);
 
             if (listDetalle.isEmpty()) {
 
