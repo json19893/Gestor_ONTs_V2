@@ -102,7 +102,8 @@ public class monitorController extends constantes {
     IUpdateOLTsNCEService oltsNCE;
     @Autowired
     IUsuariosPermitidosRepositorio usuariosPermitidos;
-    
+    @Autowired
+    ITConfigMetricsRepository metricasRepository;
    
     
     /**
@@ -799,6 +800,41 @@ public class monitorController extends constantes {
         }
         return responseServerHttp;
     }
+    
+    
+    @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
+	@PostMapping("/updateMetricas")
+	public GenericResponseDto updateMetricas(@RequestBody requestUpdateMetricasDto datos) throws Exception {
+		String respuesta = "EJECUCION EXITOSA";
+		
+		try {
+			if(datos.getIdMetrica()!=null) {
+				ConfiguracionMetricaEntity metrica =  metricasRepository.findByidMetrica(datos.getIdMetrica());
+				
+				String Huawei = metrica.getHUAWEI().getOid();
+				String FH = metrica.getFH().getOid();
+				String ZTE = metrica.getZTE().getOid();
+				
+				metrica.getHUAWEI().setOid(datos.getOidHuawei());
+				metrica.getFH().setOid(datos.getOidFH());
+				metrica.getZTE().setOid(datos.getOidZTE());
+				
+				metricasRepository.save(metrica);
+				
+				String descripcion = "HUAWEI: "+ Huawei +" a "+ datos.getOidHuawei() +", " 
+									 +"FH: "+ FH +" a "+ datos.getOidFH() +", "
+								     +"ZTE: "+ ZTE +" a "+ datos.getOidZTE() +",";
+				
+				bitacoraEventos.save(new tblBitacoraEventosEntidad(LocalDateTime.now().toString(), datos.getUsario(), MODULO_METRICAS, descripcion ) );
+			}
+			
+			
+		} catch (Exception e) {
+			return  new GenericResponseDto("EJECUCION ERROR", 1);
+		}
+ 		return new GenericResponseDto(respuesta, 0);
+	}
+
     
 
 }

@@ -357,7 +357,7 @@ export class pointService {
   }
 
   poleoOlt(idOlt: number, usuario:string) {
-    return this.http.get<{ sms: string, cod: number }>(AppUrlSettings.BASE_API + AppUrlSettings.GET_RECHAZADAS_OLT_NCE + `/${idOlt}/${usuario}`);
+    return this.http.get<{ sms: string, cod: number }>(AppUrlSettings.BASE_API_LOGIN + AppUrlSettings.GET_RECHAZADAS_OLT_NCE + `/${idOlt}/${usuario}`);
   }
 
 
@@ -371,6 +371,12 @@ export class pointService {
   moverOntInventario(numero_serie: string, tipo: string, ejecucion:string ) {
     let resource = `${AppUrlSettings.BASE_API}${AppUrlSettings.MOVER_ONT_INVENTARIO_FINAL}/${numero_serie}/${tipo}/${ejecucion}`;
     return this.http.get<{ sms: string, cod: number }>(resource);
+  }
+  updateMetricas(data: any): Observable<any> {
+    var headers = new HttpHeaders({
+      'mode': 'no-cors'
+    });
+    return this.http.post<any>(AppUrlSettings.BASE_API + AppUrlSettings.UPDATE_OID_METRICAS, data, { headers });
   }
 }
 
