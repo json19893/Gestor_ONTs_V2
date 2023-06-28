@@ -4,6 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
 import totalplay.monitor.snmp.com.negocio.dto.EnvoltorioAuxiliarDto;
 import totalplay.monitor.snmp.com.negocio.dto.EnvoltorioAuxiliarOntsByTecnologiaDto;
 import totalplay.monitor.snmp.com.negocio.dto.datosRegionDto;
@@ -30,15 +32,16 @@ import java.util.concurrent.CompletableFuture;
 import static totalplay.monitor.snmp.com.negocio.util.constantes.*;
 
 @Service
+@Slf4j
 public class UpdateOLTsNCEServiceImpl implements IUpdateOLTsNCEService {
     @Autowired
     IcatOltsRepositorio catOlts;
     
     
 	@Override
-	//@Scheduled(fixedDelay = 10000)
+	@Scheduled(fixedDelay = 10000)
 	public void updateOlts() {
-    	System.out.println("Inicia el proceso de actualización de estatus nce");
+    	log.info("Inicia el proceso de actualización de estatus nce");
     	try {
 			Date date =  Date.from(ZonedDateTime.now(ZoneId.of("America/Mexico_City")).toInstant().minus(7,ChronoUnit.DAYS).minus(1,ChronoUnit.HOURS));
 			date.setHours(0);
@@ -50,7 +53,7 @@ public class UpdateOLTsNCEServiceImpl implements IUpdateOLTsNCEService {
     		System.out.println("Termina el proceso de actualización de estatus nce de forma FALLIDA");
     		return ;
     	}
-		System.out.println("termina el proceso de actualización de estatus nce");
+		log.info("termina el proceso de actualización de estatus nce");
 	}
     
     

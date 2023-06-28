@@ -46,6 +46,10 @@
 				<span class="full-width letra" *ngIf="isExpanded || isShowing">Muestra OLTs</span>
 				<mat-icon  [ngStyle]="{'color':'aliceblue'}" mat-list-icon>phonelink</mat-icon>
       </mat-list-item>
+      <mat-list-item   mat-button (click)="getMuestraDetalleActualizacionOlts()">
+				<span class="full-width letra" *ngIf="isExpanded || isShowing">Detalle Actualización OLTs</span>
+				<mat-icon  [ngStyle]="{'color':'aliceblue'}" mat-list-icon>multiline_chart</mat-icon>
+      </mat-list-item>
 
      
 			<!--mat-list-item >

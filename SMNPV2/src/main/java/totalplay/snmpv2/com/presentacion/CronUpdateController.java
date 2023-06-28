@@ -5,9 +5,11 @@ import totalplay.snmpv2.com.configuracion.Utils;
 import totalplay.snmpv2.com.negocio.dto.GenericResponseDto;
 import totalplay.snmpv2.com.negocio.services.ICronUpdateService;
 import totalplay.snmpv2.com.persistencia.entidades.CatOltsEntity;
+import totalplay.snmpv2.com.persistencia.entidades.ParametrosGeneralesEntity;
 import totalplay.snmpv2.com.persistencia.entidades.oltsNcePolearEntidad;
 import totalplay.snmpv2.com.persistencia.repositorio.IcatOltsRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IoltsNcePolearRepository;
+import totalplay.snmpv2.com.persistencia.repositorio.IparametrosGeneralesRepository;
 import totalplay.snmpv2.com.persistencia.repositorio.IpoleoEstatusOltsNCERepository;
 
 import java.util.List;
@@ -30,6 +32,8 @@ public class CronUpdateController {
 	IcatOltsRepository catOlts;
 	@Autowired
 	IpoleoEstatusOltsNCERepository poleoOlts;
+	@Autowired
+	IparametrosGeneralesRepository parametrosGenerales;
 	
 	Utils utl=new Utils();
 	
@@ -37,12 +41,21 @@ public class CronUpdateController {
     @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
     @GetMapping(value = "/updateStatuslOlt", produces = MediaType.APPLICATION_JSON_VALUE)
     public GenericResponseDto updateStatuslOlt() {
-    	//Encontrar los registros con estatus cero 
+    	//Encontrar los registros con estatus cero
+		ParametrosGeneralesEntity param=null;
     	try {
+    		param =  parametrosGenerales.getParametros(1);
+    		param.setInicio_nce(utl.getDate());
+    		parametrosGenerales.save(param);
+    		
     		List<oltsNcePolearEntidad> oltsNCE = oltsNCERepository.getOltEstatus(0);
         	
+    		
         	//Iterar los registros para polear
         	for(oltsNcePolearEntidad olt: oltsNCE) {
+        		param.setOlt_actualizada(olt.getId_olt());
+        		parametrosGenerales.save(param);
+        		
         		olt.setEstatus_poleo(1);
         		oltsNCERepository.save(olt);
         		//Encontrar la Olt
@@ -73,8 +86,10 @@ public class CronUpdateController {
 		} catch (Exception e) {
 			log.info("Error al actaulizar las olts");
 		}
-    	
-    	
+    	if(param != null) {
+	    	param.setFin_nce(utl.getDate());
+			parametrosGenerales.save(param);
+    	}
         return null;
     }
 }

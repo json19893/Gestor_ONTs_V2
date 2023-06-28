@@ -45,7 +45,7 @@ public class DescubrimientoServiceImpl extends Constantes implements Idescubrimi
 	@Override
 	@Async("taskExecutor")
 	public CompletableFuture<GenericResponseDto> getDescubrimiento(List<CatOltsEntity> olts, String idProceso,
-			boolean manual,String usuario, boolean nce) throws IOException {
+			boolean manual,String usuario, boolean nce, String ruta) throws IOException {
 		try {
 	
 				for (CatOltsEntity o : olts) {
@@ -57,18 +57,19 @@ public class DescubrimientoServiceImpl extends Constantes implements Idescubrimi
 					o.setOnts_error(!pin?0:null);
 					catOLtsRepository.save(o);
 					if(pin)
-						descubrimiento(o.getId_olt(), idProceso,manual,usuario, nce);
+						descubrimiento(o.getId_olt(), idProceso,manual,usuario, nce, ruta);
 			}
 
 		} catch (Exception e) {
 			log.error("error", e);
+			util.crearArchivos(ruta, util.prefixLog("Error al polear la olt"));
 			return CompletableFuture.completedFuture(new GenericResponseDto(EJECUCION_ERROR, 1));
 		}
 
 		return CompletableFuture.completedFuture(new GenericResponseDto(EJECUCION_EXITOSA, 0));
 	}
 
-	public boolean descubrimiento(Integer olt, String idProceso,boolean manual,String usuario, boolean nce) throws IOException {
+	public boolean descubrimiento(Integer olt, String idProceso,boolean manual,String usuario, boolean nce, String ruta) throws IOException {
 		String oid="";
 		String idDescubrimientoManual="";
 		EstatusPoleoManualEntidad registro= new EstatusPoleoManualEntidad();
@@ -92,9 +93,9 @@ public class DescubrimientoServiceImpl extends Constantes implements Idescubrimi
 			}
 			
 			if(nce)
-				 descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpNCEEntity.class, true, "", false,manual, nce,false);
+				 descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpNCEEntity.class, true, "", false,manual, nce,false, ruta);
 			else
-				descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpEntity.class, true, "", false,manual, nce,false);
+				descubrimiento=genericMetrics.poleo(configuracion, idProceso, 0,olt ,InventarioOntsTmpEntity.class, true, "", false,manual, nce,false, "");
 			
 			CompletableFuture.allOf(descubrimiento);
 			if(manual){

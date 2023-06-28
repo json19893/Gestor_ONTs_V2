@@ -15,4 +15,13 @@ public interface ImonitorPoleoNCERepository extends MongoRepository<monitorPoleo
 	MonitorPoleoManualEntity findFirstByOrderByIdDesc();
 	@Aggregation(pipeline = {"{'$match':{_id: ObjectId(?0)} } "})
 	MonitorPoleoManualEntity  getMonitorPoleo(@Param("id") String id);
+
+	@Aggregation(pipeline = {"{\r\n" + //
+			"    '$sort': {\r\n" + //
+			"      '_id': -1\r\n" + //
+			"    }\r\n" + //
+			"  }"," {\r\n" + //
+			"    '$limit': 1\r\n" + //
+			"  }"})
+	MonitorPoleoManualEntity  getUltimoDescubrimiento();
 }
