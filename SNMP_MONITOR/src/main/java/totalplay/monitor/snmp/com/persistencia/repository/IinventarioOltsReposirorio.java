@@ -26,6 +26,9 @@ public interface IinventarioOltsReposirorio extends MongoRepository<inventarioOn
 	
 	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}", "{'$match':{'$and':[{'id_olt':?0},{'vip': 1}]} }" })
 	List<inventarioOntsEntidad> finOntsByIdAllVips(@Param("idOlts") Integer idOlts);
+
+	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}", "{'$match':{'$and':[{'id_olt':?0},{sa: true}]} }" })
+	List<inventarioOntsEntidad> finOntsByIdAllSa(@Param("idOlts") Integer idOlts);
 	
 	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}", "{'$match':{'$and':[{'id_olt':?0},{'tipo': 'E'}]} }" })
 	List<listInventarioOntsDto> finOntsByIdAllEmpService(@Param("idOlts") Integer idOlts);
@@ -36,9 +39,14 @@ public interface IinventarioOltsReposirorio extends MongoRepository<inventarioOn
 	@Aggregation(pipeline = { "{$unionWith: 'tb_inventario_onts_pdm'}","{'$match':{'$and':[{'id_olt':?0},{'estatus':?1},{'tipo':'E'}]}}" })
 	List<inventarioOntsEntidad> finOntsByIdOltsEmp(@Param("idOlts") Integer idOlts, @Param("status") Integer status);
 
+	@Aggregation(pipeline = { "{$unionWith: 'tb_inventario_onts_pdm'}","{ $match:{$and:[{id_olt:?0},{estatus:?1},{sa:true}]}}" })
+	List<inventarioOntsEntidad> finOntsByIdOltsSa(@Param("idOlts") int idOlts, @Param("status") int status);
+
 	@Aggregation(pipeline = {"{$unionWith: 'tb_inventario_onts_pdm'}", "{'$match':{'$and':[{'id_olt':?0},{'estatus':{$in:[2,0]}},{'tipo':?1}]}}" })
 	List<inventarioOntsEntidad> finOntsByIdOltsEmpDown(@Param("idOlts") Integer idOlts,@Param("tipo") String tipo);
-	
+
+	@Aggregation(pipeline = {"{$unionWith: {coll:'tb_inventario_onts_pdm', pipeline:[{$match:{sa:true}}]}}", "{'$match':{'$and':[{'id_olt':?0},{'estatus':{$in:[2,0]}},{sa:true}]}}" })
+	List<inventarioOntsEntidad> finOntsByIdOltsDownSa(@Param("idOlts") Integer idOlts);
 	@Aggregation(pipeline = { "{$unionWith: 'tb_inventario_onts_pdm'}","{'$match':{'$and':[{'id_olt':?0},{'estatus':?1},{'vip':1}]}}" })
 	List<inventarioOntsEntidad> finOntsByIdOltsVips(@Param("idOlts") Integer idOlts, @Param("status") Integer status);
 }

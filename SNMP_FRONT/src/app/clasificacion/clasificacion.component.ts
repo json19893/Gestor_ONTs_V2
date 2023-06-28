@@ -34,6 +34,8 @@ const ELEMENT_DATA: data[] = []
 const ELEMENT_DATAE: data[] = []
 const ELEMENT_DATAT: data[] = []
 const ELEMENT_DATAV: data[] = []  //Se metio en un arreglo de TIPO data 
+const ELEMENT_DATAS: data[] = []  //Sistemas Administrados
+
 @Component({
   selector: 'app-clasificacion',
   templateUrl: './clasificacion.component.html',
@@ -76,6 +78,7 @@ export class ClasificacionComponent implements OnInit {
   public dataE: any;
   public dataT: any;
   public dataV: any;  //se creo una variable 
+  public dataS: any;
   public busqueda:any;
   public detalleClasificacion:any;
   public detalleOnts:any;
@@ -108,14 +111,24 @@ export class ClasificacionComponent implements OnInit {
       this.detalleActualizacionOlts = localStorage.getItem('detalleActualizacionOlts');
       this.detalleOnts= localStorage.getItem('detalleOnts');
       if (this.ses==1){
-      if(this.muestraHome=='false' && this.muestraDetalle=='false' && this.detalleClasificacion=='false'  && this.detalleOnts=='false'  || this.muestraHome==undefined && this.muestraDetalle==undefined && this.detalleClasificacion==undefined && this.detalleOnts==undefined){                setInterval(() => this.getTecnAsn('E'), 200000);
-                setInterval(() => this.getTecnAsn('T'), 200000);
-                setInterval(() => this.getTecnAsn('V'), 200000);
-                setInterval(() => this.getTotales('T'), 200000);
-                setInterval(() => this.getTotales('E'), 200000);
-                setInterval(() => this.getTotales('V'), 200000);
-  }
-}
+        if(this.muestraHome=='false'
+        && this.muestraDetalle=='false'
+        && this.detalleClasificacion=='false'
+        && this.detalleOnts=='false'  || this.muestraHome==undefined
+        && this.muestraDetalle==undefined 
+        && this.detalleClasificacion==undefined 
+        && this.detalleOnts==undefined){
+          setInterval(() => this.getTecnAsn('E'), 200000);
+          setInterval(() => this.getTecnAsn('T'), 200000);
+          setInterval(() => this.getTecnAsn('V'), 200000);
+          setInterval(() => this.getTecnAsn('S'), 200000);
+          
+          setInterval(() => this.getTotales('T'), 200000);
+          setInterval(() => this.getTotales('E'), 200000);
+          setInterval(() => this.getTotales('V'), 200000);
+          setInterval(() => this.getTotales('S'), 200000);
+        }
+      }
     //setInterval(()=>this.getTotales(),20000)
   }
 
@@ -132,25 +145,35 @@ export class ClasificacionComponent implements OnInit {
     ELEMENT_DATAE.length = ELEMENT_DATAE.length - ELEMENT_DATAE.length
     ELEMENT_DATAT.length = ELEMENT_DATAT.length - ELEMENT_DATAT.length
     ELEMENT_DATAV.length = ELEMENT_DATAV.length - ELEMENT_DATAV.length //se vaceo el arreglo
+    ELEMENT_DATAS.length = 0;
     this.dataE = JSON.parse(localStorage.getItem("dataE")!);
     this.dataT = JSON.parse(localStorage.getItem("dataT")!);
     this.dataV = JSON.parse(localStorage.getItem("dataV")!);
+    this.dataS = JSON.parse(localStorage.getItem("dataS")!);
 
     if (this.dataT == null) {
       this.getTecnAsn('T');
      this.getTotales('T')
-    }if (this.dataV == null ) {
+    }
+    
+    if (this.dataV == null ) {
      this.getTecnAsn('V');
       this.getTotales('V')
-
     }
+
+    if (this.dataS == null ) {
+      this.getTecnAsn('S');
+       this.getTotales('S')
+    }
+
     if (this.mostrar == 'T') {
       this.llenaTabla(this.dataT, this.mostrar);
     } else if (this.mostrar == 'E') {
       this.llenaTabla(this.dataE, this.mostrar);
-    }
-    else if (this.mostrar == 'V') {
+    }else if (this.mostrar == 'V') {
       this.llenaTabla(this.dataV, this.mostrar);
+    }else if (this.mostrar == 'S') {
+      this.llenaTabla(this.dataS, this.mostrar);
     }else {
      this.getTecnAsn('E');
       this.llenaTabla(this.dataE, this.mostrar);
@@ -158,18 +181,26 @@ export class ClasificacionComponent implements OnInit {
     }
 
     window.addEventListener("keydown", function (event) {
+    console.log();
   
      /* if (event.shiftKey && event.key === 't'  || event.shiftKey && event.key === 'T') {
       
         localStorage.setItem('mostrar', 'T');
         window.location.reload();
       }*/
+      
       if (event.shiftKey && event.key === 'e'  || event.shiftKey && event.key === 'E') {
         localStorage.setItem('mostrar', 'E');
         window.location.reload();
       }
       if (event.shiftKey && event.key === 'v'  || event.shiftKey && event.key === 'V') {
         localStorage.setItem('mostrar', 'V');
+        window.location.reload();
+      }
+
+      if (event.shiftKey && event.key === 's'  || event.shiftKey && event.key === 'S') {
+        event.preventDefault();
+        localStorage.setItem('mostrar', 'S');
         window.location.reload();
       }
     }, false);
@@ -193,7 +224,11 @@ export class ClasificacionComponent implements OnInit {
     if(this.mostrar == 'E'){
       this.muestraTotales('E');
     }
-  
+    
+    if (this.mostrar == 'S') {
+      this.muestraTotales('S');
+    }
+
     /*this.paginator.pageIndex = 0;
     this.dataUp.paginator = this.paginator;*/
     this.dataUp.sort = this.sort!;
@@ -202,7 +237,6 @@ export class ClasificacionComponent implements OnInit {
 
   getClasificacion(idRegion: any, region: any) {
     this.muestraHome = 'true';
-
     localStorage.setItem('muestraHome', this.muestraHome);
     localStorage.setItem('muestraOnt', 'true');
     localStorage.setItem('IdRegion', idRegion);
@@ -233,6 +267,8 @@ export class ClasificacionComponent implements OnInit {
       ELEMENT_DATAT.length = ELEMENT_DATAT.length - ELEMENT_DATAT.length
     } else if (tipo == 'V' ) {
       ELEMENT_DATAV.length = ELEMENT_DATAV.length - ELEMENT_DATAV.length
+    }else if (tipo == 'S' ) {
+      ELEMENT_DATAS.length = ELEMENT_DATAS.length - ELEMENT_DATAS.length
     }
     this.service.getTotalesByTecnologia(tipo).subscribe(
       data => {
@@ -255,6 +291,9 @@ export class ClasificacionComponent implements OnInit {
           } else if (tipo == 'V'){
             ELEMENT_DATAV.push(dat);
             localStorage.setItem("dataV", JSON.stringify(ELEMENT_DATAV));
+          }else if (tipo == 'S'){
+            ELEMENT_DATAS.push(dat);
+            localStorage.setItem("dataS", JSON.stringify(ELEMENT_DATAS));
           }else {
             ELEMENT_DATAE.push(dat);
             localStorage.setItem("dataE", JSON.stringify(ELEMENT_DATAE));
@@ -265,7 +304,9 @@ export class ClasificacionComponent implements OnInit {
             this.llenaTabla(ELEMENT_DATAE, '');
           }else if(this.mostrar== 'V') {
             this.llenaTabla(ELEMENT_DATAV, '');
-          }  else if (this.mostrar==null){
+          }else if(this.mostrar== 'S') {
+            this.llenaTabla(ELEMENT_DATAS, '');
+          } else if (this.mostrar==null){
             this.llenaTabla(ELEMENT_DATAE, '');
           }
         }
@@ -356,13 +397,39 @@ export class ClasificacionComponent implements OnInit {
           localStorage.setItem('totalAbajoFhEmpV', res.totalAbajoFhEmp);
           localStorage.setItem('graficaV', JSON.stringify(res.grafica));
           }
+          if (tipo=='S'){
+              localStorage.setItem('totalHuaweiS',  res.totalHuawei);
+              localStorage.setItem('totalZteS',  res.totalZte);
+              localStorage.setItem('totalArribaZteS', res.totalArribaZte);
+              localStorage.setItem('totalArribaHuaweiS',res.totalArribaHuawei);
+              localStorage.setItem('totalAbajoHuaweiS', res.totalAbajoHuawei);
+              localStorage.setItem('totalAbajoZteS', res.totalAbajoZte);
+              localStorage.setItem('totalOltsS', res.totalOlts);
+              localStorage.setItem('totalFbS',res.totalFh);
+              localStorage.setItem('totalFbArribaS',res.totalArribaFh);
+              localStorage.setItem('totalFbAbajoS', res.totalAbajoFh);
+              localStorage.setItem('fechaActS', res.ultimaActualizacion);
+              localStorage.setItem('FechaDesS', res.proximoDescubrimiento);
+              localStorage.setItem('PdmOntsS', res.conteoPdmOnts);
+              localStorage.setItem('totalHuaweiEmpS', res.totalHuaweiEmp);
+              localStorage.setItem('totalZteEmpS', res.totalZteEmp);
+              localStorage.setItem('totalFhEmpS', res.totalFhEmp);
+              localStorage.setItem('totalArribaZteEmpS',res.totalArribaZteEmp);
+              localStorage.setItem('totalArribaHuaweiEmpS', res.totalArribaHuaweiEmp);
+              localStorage.setItem('totalArribaFhEmpS', res.totalArribaFhEmp);
+              localStorage.setItem('totalAbajoHuaweiEmpS', res.totalAbajoHuaweiEmp);
+              localStorage.setItem('totalAbajoZteEmpS', res.totalAbajoZteEmp);
+              localStorage.setItem('totalAbajoFhEmpS', res.totalAbajoFhEmp);
+              localStorage.setItem('graficaS', JSON.stringify(res.grafica));
+          }
         if (this.mostrar == 'T') {
          this.muestraTotales('T')
         } else if(this.mostrar== 'E') {
           this.muestraTotales('E')
-        }
-        else if(this.mostrar== 'V') {
+        } else if(this.mostrar== 'V') {
           this.muestraTotales('V')
+        } else if(this.mostrar== 'S') {
+          this.muestraTotales('S')
         } else if (this.mostrar==null){
           this.muestraTotales('E')
           if(this.dataE == null){
@@ -441,6 +508,36 @@ export class ClasificacionComponent implements OnInit {
   this.totalAbajoZteEmp = localStorage.getItem('totalAbajoZteEmpV');
   this.totalAbajoFhEmp =  localStorage.getItem('totalAbajoFhEmpV');
   this.getGrafica(JSON.parse(localStorage.getItem('graficaV')!));
+ 
+  setTimeout(() => {
+    this.spinner.hide();
+  }, 1000);
+}
+if (tipo=='S'){
+  this.totalHuawei = localStorage.getItem('totalHuaweiS');
+  this.totalZte =localStorage.getItem('totalZteS');
+  this.totalArribaZte = localStorage.getItem('totalArribaZteS');
+  this.totalArribaHuawei =  localStorage.getItem('totalArribaHuaweiS');
+  this.totalAbajoHuawei =localStorage.getItem('totalAbajoHuaweiS');
+  this.totalAbajoZte =localStorage.getItem('totalAbajoZteS');
+  this.totalOlts =localStorage.getItem('totalOltsS');
+  this.totalFb = localStorage.getItem('totalFbS');
+  this.totalFbArriba=localStorage.getItem('totalFbArribaS');
+  this.totalFbAbajo =localStorage.getItem('totalFbAbajoS');
+  this.conteoPdmOnts = localStorage.getItem('PdmOntsS');
+  this.fechaAct = localStorage.getItem('fechaActS');
+  this.FechaDes = localStorage.getItem('FechaDesS');
+
+  this.totalHuaweiEmp = localStorage.getItem('totalHuaweiEmpS');
+  this.totalZteEmp = localStorage.getItem('totalZteEmpS');
+  this.totalFhEmp =localStorage.getItem('totalFhEmpS');
+  this.totalArribaZteEmp = localStorage.getItem('totalArribaZteEmpS');
+  this.totalArribaHuaweiEmp = localStorage.getItem('totalArribaHuaweiEmpS');
+  this.totalArribaFhEmp =localStorage.getItem('totalArribaFhEmpS');
+  this.totalAbajoHuaweiEmp = localStorage.getItem('totalAbajoHuaweiEmpS');
+  this.totalAbajoZteEmp = localStorage.getItem('totalAbajoZteEmpS');
+  this.totalAbajoFhEmp =  localStorage.getItem('totalAbajoFhEmpS');
+  this.getGrafica(JSON.parse(localStorage.getItem('graficaS')!));
  
   setTimeout(() => {
     this.spinner.hide();
