@@ -6,8 +6,8 @@ export class AppUrlSettings{
     //public static BASE_API_DESCUBRIMIENTO = 'http://localhost:9080/';
     //public static BASE_API = 'http://10.180.199.75:9081/';
     //public static BASE_API_DESCUBRIMIENTO = 'http://localhost:9082/';
-    //public static BASE_API_LOGIN = 'http://localhost:9084/';
-    public static BASE_API_LOGIN = 'http://10.180.199.75:9084/';
+    public static BASE_API_LOGIN = 'http://localhost:9084/';
+    //public static BASE_API_LOGIN = 'http://10.180.199.75:9084/';
     //public static BASE_API = 'http://10.180.251.83:9081/';
     //public static BASE_API_DESCUBRIMIENTO = 'http://10.180.251.83:9080/';
     //public static BASE_API_LOGIN = 'http://10.180.251.83:9084/';
@@ -55,5 +55,7 @@ export class AppUrlSettings{
     public static GET_RECHAZADOS_INVENTARIO_FINAL = 'snmp-monitor/getRechazadasByOltInventario';
     public static MOVER_ONT_INVENTARIO_FINAL = 'snmp-monitor/insertInventario';
     public static GET_DETALLE_ACTUALIZACION_OLT = 'snmp-monitor/detalleActualizacionOlt';
+    public static UPDATE_OID_METRICAS = 'snmp-monitor/updateMetricas';
+
 }
 
