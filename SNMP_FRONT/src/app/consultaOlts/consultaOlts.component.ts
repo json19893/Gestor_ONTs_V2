@@ -66,6 +66,7 @@ export class ConsultaOltsComponent implements OnInit {
   ELEMENT_DATA: Olts[] = [];
   descubrimiento: any = []
   dataSource = new MatTableDataSource<Olts>;
+
   columnsToDisplay = ['select', 'ip', 'nombre', 'tecnologia', 'id_region', 'totalOnts',
     'descripcion', 'slide', 'opciones', 'eventos'];
   headers = ['Ip OLT', 'Nombre', 'Tecnología', 'Región', 'eventos'];
@@ -567,7 +568,9 @@ export class detalleEjecucionDialog implements OnInit {
 })
 export class DialogElementsExampleDialog implements OnInit {
   panelOpenState = false;
-  selection = new SelectionModel<Imetricas>(true, []);
+  indexExpanded:number=-1;
+  usuario:string="";
+   selection = new SelectionModel<Imetricas>(true, []);
   displayedColumns: string[] = ['nombre', 'huawei', 'zte', 'fh', 'acciones'];
   ELEMENT_DATA: lisMetrics[] = [];
   bloqueAnt: any;
@@ -587,6 +590,7 @@ export class DialogElementsExampleDialog implements OnInit {
     private spinner: NgxSpinnerService,
     private _snackbar: MatSnackBar
   ) {
+    this.usuario = localStorage.getItem('usuario')!;
   }
   ngOnInit() {
     this.getMetricas();
@@ -610,8 +614,8 @@ export class DialogElementsExampleDialog implements OnInit {
         for (let d in res.entity) {
           val = {
             nombre: res.entity[d].nombre,
-            oidHuawei: res.entity[d].zte.oid == '' ? null : res.entity[d].zte.oid,
-            oidZte: res.entity[d].huawei.oid == '' ? null : res.entity[d].huawei.oid,
+            oidZte: res.entity[d].zte.oid == '' ? null : res.entity[d].zte.oid,
+            oidHuawei: res.entity[d].huawei.oid == '' ? null : res.entity[d].huawei.oid,
             oidFh: res.entity[d].fh.oid == '' ? null : res.entity[d].fh.oid,
             id_metrica: res.entity[d].id_metrica,
           }
@@ -723,6 +727,41 @@ export class DialogElementsExampleDialog implements OnInit {
 
     }
   }
+
+  editOid(row:any, panel:number){
+    console.log(row);
+
+    let data={
+      idMetrica :  row.id_metrica,
+      oidFH: row.oidFh,
+      oidHuawei: row.oidHuawei,
+      oidZTE: row.oidZte,	
+      usario: this.usuario
+    }
+    //TODO:mandar los datos a un rest para almacenarlos
+    this.service.updateMetricas(data).subscribe(
+      res=>{
+        if (res.cod == 0) {
+          this._snackbar.open("Actualización exitosa", "Cerrar", { duration: 4000});
+        }else{
+          this._snackbar.open("Problemas al actualizar", "Cerrar", { duration: 4000});
+        }
+        this.getMetricas();
+        this.indexExpanded= panel;
+      }, () => {this._snackbar.open("Problemas al actualizar", "Cerrar", { duration: 4000}); }
+    );
+
+
+  }
+
+  cancelEdit(row:any, panel:number){
+    row.isEdit=false;
+    //TODO: recargar los datos por si realiò algun cambio
+    this.getMetricas();
+    this.indexExpanded= panel;
+  }
+
+
 }
 export interface Imetricas {
   nombre: string;
@@ -745,3 +784,11 @@ export interface lisMetrics {
 }
 
 
+export interface UpdateMetricas {
+  idMetrica:number;
+	oidFH: string;
+  oidHuawei: string;
+	oidZTE: string;	
+	usario: string;
+
+}
