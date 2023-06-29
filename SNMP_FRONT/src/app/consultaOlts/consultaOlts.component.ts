@@ -580,7 +580,7 @@ export class detalleEjecucionDialog implements OnInit {
 
   }
   getaArchivo() {
-    this.service.getArchivo(1, "").subscribe(
+    this.service.getArchivo(1, "sin" ).subscribe(
       res => {
         this.archivo = res;
       })
