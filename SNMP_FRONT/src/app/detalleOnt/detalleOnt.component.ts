@@ -681,6 +681,7 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
   
   export class detalleEjecucionMetricaDialog implements OnInit {
     archivo:any;
+    usuario:any
     public idOlt:any;
       constructor(
         public dialogRef:MatDialogRef<detalleEjecucionMetricaDialog>,
@@ -694,12 +695,13 @@ this.displayedColumns=['tipo','oid','frame','slot','puerto','uid','numeroSerie',
       }
       ngOnInit() {
         this.getaArchivo();
+        this.usuario = localStorage.getItem('usuario');
       
       }
      
     
       getaArchivo() {
-        this.service.getArchivo(2, "").subscribe(
+        this.service.getArchivo(2,  this.usuario).subscribe(
           res => {
             this.archivo=res;
           })
