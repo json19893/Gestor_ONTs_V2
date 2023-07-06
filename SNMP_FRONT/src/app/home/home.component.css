@@ -124,26 +124,34 @@ mat-grid-tile:hover {
 
 
 .subtitulo{
-  font-size: 12px;
-  font-family: 'Montserrat', sans-serif;
+  font-size: 15px;
+  /*  font-family: 'Montserrat', sans-serif;*/
+    color: aliceblue;
+    font-weight: bold;
   }
   .tituloTec{
-    font-size: 11px;
-    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+  /*  font-family: 'Montserrat', sans-serif;*/
+    color: aliceblue;
+    font-weight: bold;
   }
   .tituloTe2{
-    font-size: 13px;
-    font-family: 'Montserrat', sans-serif;
+    font-size: 15px;
+    /*font-family: 'Montserrat', sans-serif;*/
+    color: aliceblue;
+    font-weight: bold;
   }
   .totales{
-    font-size: 10px;
-    font-family: 'Montserrat', sans-serif;
-  font-weight: bold
+    font-size: 15px;
+    /*font-family: 'Montserrat', sans-serif;*/
+    color: aliceblue;
+    font-weight: bold;
   }
   .tatalUpDown{
-    font-size: 10px;
-    font-family: 'Montserrat', sans-serif;
-    font-weight: bold
+    font-size: 15px;
+  /*  font-family: 'Montserrat', sans-serif;*/
+    color: aliceblue;
+    font-weight: bold;
   }
   
   .title-center2 {

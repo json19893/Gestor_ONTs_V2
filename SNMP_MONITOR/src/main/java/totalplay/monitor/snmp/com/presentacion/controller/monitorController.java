@@ -17,21 +17,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.multipart.MultipartFile;
 import totalplay.monitor.snmp.com.negocio.dto.*;
-import totalplay.monitor.snmp.com.negocio.service.IBlockMetricService;
-import totalplay.monitor.snmp.com.negocio.service.IProcesamientoTotalesOntService;
-import totalplay.monitor.snmp.com.negocio.service.IconsultaService;
-import totalplay.monitor.snmp.com.negocio.service.ImonitorService;
+import totalplay.monitor.snmp.com.negocio.service.*;
 import totalplay.monitor.snmp.com.negocio.service.impl.DiferenciaCargaManualServiceImpl;
 import totalplay.monitor.snmp.com.negocio.service.impl.InsertaOntsServiceImpl;
 import totalplay.monitor.snmp.com.negocio.service.procesobatch.IEstadoOntsResumenService;
@@ -47,6 +38,10 @@ import totalplay.monitor.snmp.com.persistencia.repository.*;
 @CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST })
 //@RequestMapping(path = "/snmp-monitor")
 public class monitorController extends constantes {
+
+    @Autowired
+    ICargaOntSaService cargaOntSaService;
+
     @Autowired
     ImonitorService monitorServicio;
     @Autowired
@@ -834,6 +829,16 @@ public class monitorController extends constantes {
 		}
  		return new GenericResponseDto(respuesta, 0);
 	}
+
+    @PostMapping("/archivoSA")
+    public String archivoSA(@RequestParam("fileSA") MultipartFile fileSA) {
+
+
+        boolean respuesta= cargaOntSaService.archivoSA(fileSA);
+
+        return "OK: "+respuesta;
+
+    }
 
     
 
