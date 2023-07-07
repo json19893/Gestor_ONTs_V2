@@ -56,7 +56,7 @@ export class HomeComponent implements OnInit {
   public page:any;
   seleIdRegion:any;
    totalHistorico:any;
-   displayedColumns: string[] = ['olt', 'nombre', 'totalOnts','tecnologia','acciones'];
+   displayedColumns: string[] = ['olt', 'nombre', 'totalOnts','tecnologia','estado','acciones'];
   selectFormRegion = new FormControl('', Validators.required);
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort: MatSort | undefined;
@@ -179,6 +179,7 @@ export class HomeComponent implements OnInit {
               ip:res.totalesRegion[d].ip,
               totalOnts:res.totalesRegion[d].total_onts,
               tecnologia:res.totalesRegion[d].tecnologia,
+              estado:res.totalesRegion[d].estatus,
               selected:false
             }
             olts.push(dat);
@@ -195,6 +196,7 @@ export class HomeComponent implements OnInit {
               ip:res.totalesRegionVips[d].ip,
               totalOnts:res.totalesRegionVips[d].total_onts,
               tecnologia:res.totalesRegionVips[d].tecnologia,
+              estado:res.totalesRegionVips[d].estatus,
               selected:false
             }
             olts.push(dat);
@@ -211,6 +213,7 @@ export class HomeComponent implements OnInit {
                ip:res.totalesRegionEmp[d].ip,
                totalOnts:res.totalesRegionEmp[d].total_onts,
                tecnologia:res.totalesRegionEmp[d].tecnologia,
+               estado:res.totalesRegionEmp[d].estatus,
                selected:false
              }
              olts.push(dat);
@@ -227,6 +230,7 @@ export class HomeComponent implements OnInit {
                ip:res.totalesRegionSA[d].ip,
                totalOnts:res.totalesRegionSA[d].total_onts,
                tecnologia:res.totalesRegionSA[d].tecnologia,
+               estado:res.totalesRegionSA[d].estatus,
                selected:false
              }
              olts.push(dat);
@@ -275,6 +279,7 @@ export class HomeComponent implements OnInit {
            ip:data[d].ip,
            totalOnts:data[d].totalOnts,
            tecnologia:data[d].tecnologia,
+           estado:data[d].estatus,
            selected:data[d].selected
          }
          olts.push(dat);
@@ -325,6 +330,7 @@ export class HomeComponent implements OnInit {
             ip:res.data.totalesRegion[d].ip,
             totalOnts:res.data.totalesRegion[d].total_onts,
             tecnologia:res.data.totalesRegion[d].tecnologia,
+            estado:res.data.totalesRegion[d].estatus,
             selected:res.data.totalesRegion[d].selected
           }
           olts.push(dat);
@@ -340,6 +346,7 @@ export class HomeComponent implements OnInit {
              ip:res.data.totalesRegionEmp[d].ip,
              totalOnts:res.data.totalesRegionEmp[d].total_onts,
              tecnologia:res.data.totalesRegionEmp[d].tecnologia,
+             estado:res.data.totalesRegionEmp[d].estatus,
              selected:res.data.totalesRegionEmp[d].selected
            }
            olts.push(dat);
@@ -476,10 +483,9 @@ export class HomeComponent implements OnInit {
     interface olt {
       nombre: string;
       id_olt: number;
-      ip:string
+      ip:string;
       totalOnts:number;
-      tecnologia:string
-      selected:boolean
-        }   
-
-
+      tecnologia:string;
+      estado: number;
+      selected:boolean;
+        }  
