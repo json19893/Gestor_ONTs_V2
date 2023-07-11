@@ -230,8 +230,6 @@ console.log("e.skip ::: "+this.skip);
     this.length = e.length;
     this.pageSize = e.pageSize;
     this.pageIndex = e.pageIndex;
-    console.log("e.length::: "+e.length)
-    console.log("e.pageIndex::: "+e.pageIndex)
 
     this.limit=(e.pageIndex+1)*e.pageSize
     this.skip=e.pageIndex*e.pageSize
@@ -247,7 +245,6 @@ this.service.getDetalleActuacionData(this.mostrar,this.limit,this.skip).subscrib
   err => console.error(err)
 );
 
-console.log(this.dataSource)
 }
      
 
