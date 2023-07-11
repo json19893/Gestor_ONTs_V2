@@ -605,8 +605,8 @@ public class monitorController extends constantes {
     }
     
     @CrossOrigin(origins = "*", methods = {RequestMethod.GET, RequestMethod.POST})
-    @RequestMapping(value = "/getDetalleActuacionData/{tipo}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-    public List<detalleActualizacionesEntidad> getActualizacionData(@PathVariable("tipo") String tipo) throws Exception {
+    @RequestMapping(value = "/getDetalleActuacionData/{tipo}/{limit}/{skip}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<detalleActualizacionesEntidad> getActualizacionData(@PathVariable("tipo") String tipo,@PathVariable("limit")long limit,@PathVariable("skip")long skip) throws Exception {
         List<detalleActualizacionesEntidad> response = new ArrayList<detalleActualizacionesEntidad>();
         try {
         	 
@@ -615,11 +615,12 @@ public class monitorController extends constantes {
         	fecha.setHours(0);
         	fecha.setMinutes(0);
         	fecha.setSeconds(0);
+            log.info(""+utils.getDateTime().toString());
         	
             if (tipo.equals("E")) {
-            	return detalleAct.getDetalleEmpresariales(fecha);
+            	return detalleAct.getDetalleEmpresarialesLimitSkip(fecha,limit,skip);
             } else if(tipo.equals("V")) {
-            	return detalleAct.getDetalleVips(fecha);
+            	return detalleAct.getDetalleVipsLimitSkip(fecha,limit,skip);
             } else {
             	return detalleAct.getDetalle(fecha);
             }

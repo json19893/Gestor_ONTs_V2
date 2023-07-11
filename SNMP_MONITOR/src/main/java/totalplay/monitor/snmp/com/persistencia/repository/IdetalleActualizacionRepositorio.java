@@ -37,7 +37,7 @@ public interface IdetalleActualizacionRepositorio extends MongoRepository<detall
 			+ "}\r\n"
 			, "{$match:{ont:{$ne:[]}}}" 
 			})
-	@Meta(allowDiskUse = true)
+	
 	List<detalleActualizacionesEntidad> getDetalleEmpresariales(@Param("date") Date date);
 	
 	
@@ -128,4 +128,77 @@ public interface IdetalleActualizacionRepositorio extends MongoRepository<detall
 		     "{$match:{numeroSerie: ?0 }}\r\n"
 	})		
 	List<detalleActualizacionesEntidad> getDetalleBySerie(@Param("serie") String serie);
+
+
+
+		@Aggregation(pipeline = { 
+			  "{$match:{fechaActualizacion:{$gte: ?0 }}}\r\n"
+			  ,"{\r\n" + //
+			  		"        '$sort': {\r\n" + //
+			  		"            'fechaActualizacion': -1\r\n" + //
+			  		"        }\r\n" + //
+			  		"    }"
+			, "{\r\n"
+			+ "	'$group': {\r\n"
+			+ "		'_id': '$numeroSerie', \r\n"
+			+ "		datos:{$last:'$$ROOT'}\r\n"
+			+ "			   \r\n"
+			+ "	},\r\n"
+			+ "}\r\n"
+			, "{ $replaceRoot: { newRoot: '$datos' } }\r\n"
+			, "{\r\n"
+			+ "	'$lookup':{\r\n"
+			+ "		from: 'tb_inventario_onts',\r\n"
+			+ "		localField:'numeroSerie',\r\n"
+			+ "		foreignField:'numero_serie',\r\n"
+			+ "		pipeline:[ {$match:{tipo:'E'}} ],\r\n"
+			+ "		as: 'ont',\r\n"
+			+ "	}\r\n"
+			+ "}\r\n"
+			, "{$match:{ont:{$ne:[]}}}" 
+			, " {\n"
+				+ "    '$limit': ?1\n"
+				+ "  }"
+				, " {\n"
+				+ "    '$skip': ?2\n"
+				+ "  }"})
+	@Meta(allowDiskUse = true)
+	List<detalleActualizacionesEntidad> getDetalleEmpresarialesLimitSkip(@Param("date") Date date,@Param("limit")long limit,@Param("skip")long skip);
+	
+	
+	
+		@Aggregation(pipeline = { 
+			  "{$match:{fechaActualizacion:{$gte: ?0 }}}\r\n"
+			  ,"{\r\n" + //
+			  		"        '$sort': {\r\n" + //
+			  		"            'fechaActualizacion': -1\r\n" + //
+			  		"        }\r\n" + //
+			  		"    }"
+			, "{\r\n"
+				+ "	'$group': {\r\n"
+				+ "		'_id': '$numeroSerie', \r\n"
+				+ "		datos:{$last:'$$ROOT'}\r\n"
+				+ "			   \r\n"
+				+ "	},\r\n"
+				+ "}\r\n"
+				, "{ $replaceRoot: { newRoot: '$datos' } }\r\n"
+				, "{\r\n"
+				+ "	'$lookup':{\r\n"
+				+ "		from: 'tb_inventario_onts',\r\n"
+				+ "		localField:'numeroSerie',\r\n"
+				+ "		foreignField:'numero_serie',\r\n"
+				+ "		pipeline:[ {$match:{vip:1}} ],\r\n"
+				+ "		as: 'ont',\r\n"
+				+ "	}\r\n"
+				+ "}\r\n"
+				, "{$match:{ont:{$ne:[]}}}"
+				, " {\n"
+				+ "    '$limit': ?1\n"
+				+ "  }"
+				, " {\n"
+				+ "    '$skip': ?2\n"
+				+ "  }"})
+		@Meta(allowDiskUse = true)
+	List<detalleActualizacionesEntidad> getDetalleVipsLimitSkip(@Param("date") Date date,@Param("limit")long limit,@Param("skip")long skip);
+
 }

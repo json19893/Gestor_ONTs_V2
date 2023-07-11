@@ -80,4 +80,17 @@
     </tr>
   </table>
   <br>
-  <mat-paginator  #paginator [pageSizeOptions]="[10]" aria-label="Select page of users"></mat-paginator>
+  <!--mat-paginator  #paginator [pageSizeOptions]="[10]" aria-label="Select page of users"></mat-paginator-->
+
+  <mat-paginator #paginator
+  class="demo-paginator"
+  (page)="handlePageEvent($event)"
+  [length]="totalEventos"
+  [pageSize]="pageSize"
+  [disabled]="disabled"
+  [showFirstLastButtons]="showFirstLastButtons"
+  [pageSizeOptions]="showPageSizeOptions ? pageSizeOptions : []"
+  [hidePageSize]="hidePageSize"
+  [pageIndex]="pageIndex"
+  aria-label="Select page">
+</mat-paginator>

@@ -34,13 +34,13 @@ export interface clasificacion {
 export class ActualizacionComponent  implements OnInit{ 
   //displayedColumns: string[] = ['tipo', 'numeroSerie', 'region', 'estatus','fechaDescubrimiento','desActualizacion'];
   displayedColumns: string[] = ['ip', 'numeroSerie', 'frame', 'slot','port','uid','fechaActualizacion','descripcionAlarma','causa','accion'];
-  ELEMENT_DATA: clasificacion[] = []
-  dataSource = new MatTableDataSource<clasificacion>;
-  //public dataSource :any;
+  //ELEMENT_DATA: clasificacion[] = []
+  //dataSource = new MatTableDataSource<clasificacion>;
+  public dataSource :any;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort: MatSort | undefined;
   public mostrar:any;
-   /*public skip:any;
+   public skip:any;
   public limit:any;
   length = 0;
  pageSize = 10;
@@ -50,10 +50,10 @@ export class ActualizacionComponent  implements OnInit{
   hidePageSize = false;
   showPageSizeOptions = false;
   showFirstLastButtons = false;
-  */
+  totalEventos:any
   disabled = false;
   form1: FormGroup | any;
-  //pageEvent!: PageEvent;
+  pageEvent!: PageEvent;
   optionsSerieOnts: ActualizacionDetalle[] = [];
   constructor(
     private router: Router,
@@ -76,11 +76,11 @@ export class ActualizacionComponent  implements OnInit{
     if(this.mostrar==null||this.mostrar==undefined){
       this.mostrar='E';
      }
-   // this.limit=10;
-   // this.skip=0;
+    this.limit=10;
+    this.skip=0;
 
     //this.getDetalleActualizacion(this.mostrar,this.skip,this.limit);
-    this.getDetalleActualizacionData( this.mostrar);
+    this.getDetalleActualizacionData( this.mostrar,this.limit,this.skip);
   }
 
 
@@ -119,19 +119,20 @@ export class ActualizacionComponent  implements OnInit{
       err => console.error(err)
     );
   }*/
-  getDetalleActualizacionData(mostrar:any) {
+
+  getDetalleActualizacionData(mostrar:any,limit:any,skip:any) {
+  this.totalEventos=  localStorage.getItem('PdmOntsE');
     this.spinner.show();
     this.mostrar = localStorage.getItem('mostrar');
     if(this.mostrar==undefined){
       this.mostrar="E"
     }
 
-    this.service.getDetalleActuacionData(mostrar).subscribe(
+    this.service.getDetalleActuacionData(mostrar,limit,skip).subscribe(
       data => {
-        let dat
-        this.ELEMENT_DATA = data;
-        this.dataSource = new MatTableDataSource<clasificacion>(this.ELEMENT_DATA);
-        this.dataSource!.paginator = this.paginator!;
+        this.dataSource=[];
+        //this.ELEMENT_DATA = data;
+        this.dataSource = data;
         this.spinner.hide();
       },
       err => console.error(err)
@@ -222,6 +223,33 @@ console.log("e.skip ::: "+this.skip);
         this.getDetalleActualizacion(this.mostrar,this.skip,this.limit);  
      
   }*/
+
+  handlePageEvent(e: PageEvent) {
+    this.spinner.show();
+    this.pageEvent = e;
+    this.length = e.length;
+    this.pageSize = e.pageSize;
+    this.pageIndex = e.pageIndex;
+    console.log("e.length::: "+e.length)
+    console.log("e.pageIndex::: "+e.pageIndex)
+
+    this.limit=(e.pageIndex+1)*e.pageSize
+    this.skip=e.pageIndex*e.pageSize
+    this.dataSource=[];
+    //this.paginator.pageIndex=e.pageIndex;
+console.log("e.limit ::: "+this.limit);
+console.log("e.skip ::: "+this.skip);
+this.service.getDetalleActuacionData(this.mostrar,this.limit,this.skip).subscribe(
+  data => {
+    this.dataSource = data;
+    this.spinner.hide();
+  },
+  err => console.error(err)
+);
+
+console.log(this.dataSource)
+}
+     
 
   getDetalle(ns:any){
     localStorage.setItem("serial",ns)

@@ -168,12 +168,12 @@ export class pointService {
     return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.GET_DETALLE_ACTUALIZACION + tipo + "/" + skip + "/" + limit, { headers });
 
   }
-  getDetalleActuacionData(tipo: any): Observable<any> {
+  getDetalleActuacionData(tipo: any,limit:any,skip:any): Observable<any> {
     var headers = new HttpHeaders({
       'mode': 'no-cors',
       'Access-Control-Allow-Origin': '*'
     });
-    return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.GET_DETALLE_ACTUALIZACION_DATA + tipo, { headers });
+    return this.http.get<any>(AppUrlSettings.BASE_API + AppUrlSettings.GET_DETALLE_ACTUALIZACION_DATA + tipo+"/"+limit+"/"+skip, { headers });
 
   }
 
